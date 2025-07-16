@@ -1,44 +1,19 @@
-source("setup.R")
+source("scripts/setup.R")
 
-simulation_info <- list(seed = 1234, iterations = 100, same_lambda = FALSE, true_lambda = FALSE, true_sigma = FALSE,
-                        simulation_function = "gen_data_distribution", simulation_arguments = list(
-                          p = 101, SNR = 1, sigma = 10, fixed = TRUE, corr = "exchangeable", rho = 0
-                        ), script_name = "fit-gams")
+results <- readRDS("rds/laplace_gam_fits.R")[["100"]]
 
-## Load data back in
-methods <- methods[c("relaxed_lasso_posterior")] 
-ns <- c(100)
-distributions <- c( "laplace")
+line_data_avg <- data.frame(avg = results$line_data_avg, method = method_labels["relaxed_lasso_posterior"])
+line_data <- results$line_data %>%
+  mutate(method = method_labels[method])
 
-files <- expand.grid("method" = names(methods), "n" = ns, "distribution" = distributions, stringsAsFactors = FALSE)
-
-line_data <- list()
-line_data_avg <- list()
-for (i in 1:nrow(files)) {
-
-  simulation_info$simulation_arguments$n <- files[i,] %>% pull(n)
-  simulation_info$simulation_arguments$distribution <- files[i,] %>% pull(distribution)
-
-  line_data_list <- indexr::read_objects(
-    rds_path,
-    c(methods[[files[i,"method"]]], simulation_info)
-  )
-  line_data[[i]] <- line_data_list[[1]]
-  line_data_avg[[i]] <- data.frame(avg = line_data_list[[2]], method = methods_pretty[files[i, "method"]])
-
-}
-
-line_data_avg <- do.call(rbind, line_data_avg)
-line_data <- do.call(rbind, line_data)
-
-cutoff <- 3
+cutoff <- max(line_data$x)
 xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
 density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414))
 
 p1 <- ggplot() +
-  geom_line(data = line_data %>% mutate(method = methods_pretty[method]), aes(x = x, y = y, color = method)) +
+  geom_line(data = line_data, aes(x = x, y = y, color = method)) +
   geom_hline(data = line_data_avg, aes(yintercept = avg, color = method), linetype = 2) +
-  geom_hline(aes(yintercept = 1 - alpha), linetype = 1, alpha = .5) +
+  geom_hline(aes(yintercept = 0.8), linetype = 1, alpha = .5) +
   geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
   theme_minimal() +
   xlab(expression(beta)) +
@@ -105,6 +80,6 @@ p2 <- ggplot(data, aes(x = theta_values)) +
   ylim(0, 1) +  # Set y-axis limits
   theme_minimal()  # Minimal theme for clarity
 
-pdf("out/laplace.pdf", height = 4, width = 8)
+pdf("out/figure1.pdf", height = 4, width = 8)
 p2 + p1 + patchwork::plot_layout(axes = "collect")
 dev.off()

@@ -14,6 +14,9 @@ quietlyLoadPackage <- function(package) {
 }
 lapply(packages, quietlyLoadPackage)
 
+colors <- palette()[c(2, 4, 3, 6, 7, 5)]
+sec_colors <- c("black", "grey62")
+background_colors <- c("#E2E2E2", "#F5F5F5")
 
 methods <- list(
   "selective_inference" = list(method = "selective_inference", method_arguments = list()),
@@ -21,10 +24,10 @@ methods <- list(
   "lasso_proj_original" = list(method = "lp", method_arguments = list(original = TRUE)),
   "ridge" = list(method = "ridge_fit", method_arguments = list()),
   "ridge_boot" = list(method = "ridge_bootstrap_ci", method_arguments = list()),
-  "relaxed_lasso_posterior"  = list(method = "pipe_ncvreg", method_arguments = list(posterior = TRUE, relaxed = TRUE, penalty = "lasso")),
-  "relaxed_mcp_posterior"  = list(method = "pipe_ncvreg", method_arguments = list(posterior = TRUE, relaxed = TRUE, penalty = "MCP"))
+  "relaxed_lasso_posterior"  = list(method = "pipe_ncvreg", method_arguments = list(relaxed = TRUE, penalty = "lasso")),
+  "relaxed_mcp_posterior"  = list(method = "pipe_ncvreg", method_arguments = list(relaxed = TRUE, penalty = "MCP"))
 )
-methods_labels <- c(
+method_labels <- c(
   "selective_inference" = "Selective Inference",
   "lasso_proj" = "Desparsified Lasso",
   "lasso_proj_original" = "Desparsified Lasso (original)",
