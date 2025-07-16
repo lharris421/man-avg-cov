@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage[left=0.5in,right=0.5in,bottom=0.75in,top=0.75in]{geometry}
+
+% Packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{graphicx}
+\graphicspath{{code/out/}}
+\usepackage{natbib}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, citecolor=black, linkcolor=., urlcolor=cyan}
+\usepackage[font = small]{caption}
+%\captionsetup{width=\linewidth}
+\usepackage[shortlabels]{enumitem}
+%\numberwithin{equation}{section}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\algdef{SxnE}[FOR]{For}{EndFor}[1]{\algorithmicfor\ #1 }
+\usepackage{tikz}
+\usetikzlibrary{tikzmark}
+\usepackage{array} %% required by kableExtra if column_spec
+\usepackage[normalem]{ulem}
+\usepackage{appendix}
+
+% Theorems and algorithms
+\newtheorem{thm}{Theorem}
+\algnewcommand\algorithmicswitch{\textbf{switch}}
+\algnewcommand\algorithmiccase{\textbf{case}}
+\algnewcommand\algorithmicassert{\textbf{then }}
+\algnewcommand\Assert[1]{\State \algorithmicassert #1}%
+\algnewcommand\Assertif[2]{\State \textbf{if} #1 \algorithmicassert #2}
+\algnewcommand\Assertelse[1]{\State \textbf{else} #1}
+\algdef{SE}[SWITCH]{Switch}{EndSwitch}[1]{\algorithmicswitch\ #1}{\algorithmicend\ \algorithmicswitch}%
+\algdef{SE}[CASE]{Case}{EndCase}[1]{\algorithmiccase\ #1}{\algorithmicend\ \algorithmiccase}%
+\algtext*{EndSwitch}%
+\algtext*{EndCase}%
+
+% Macros
+\input{commands}
+
+% Notes to each other
+\newcommand{\pb}[1]{\textcolor{red}{#1}}
+\newcommand{\logan}[1]{\textcolor{blue}{#1}}
+\newlength{\li} \setlength{\li}{12pt}
+\newcommand{\singlespace}{\baselineskip 1.1\li}
+
+% Define abstract environment
+\renewcommand{\abstract}[1]{
+ \centerline{
+ \begin{minipage}{0.7\linewidth}
+ \hrule
+ \vskip 0.1in
+  \begin{center}
+    {\bf Abstract}
+  \end{center}
+  #1
+ \vskip 0.1in
+ \hrule
+ \end{minipage}}
+ \vskip 0.3in}
+
+% Title/author/date
+\title{A New Perspective on High Dimensional Confidence Intervals}
+\author{
+  Logan Harris\\Department of Biostatistics\\University of Iowa
+  \and
+  Patrick Breheny\\Department of Biostatistics\\University of Iowa
+}
+\date{\today}
+
+
+\begin{document}
+
+\maketitle
+
+\abstract{\input{abstract}}
+
+\input{main}
+
+\bibliographystyle{ims-nourl}
+\bibliography{avg-cov}
+
+\newpage
+
+\input{supp}
+
+\end{document}

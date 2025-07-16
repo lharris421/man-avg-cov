@@ -1,0 +1,7 @@
+ℹ Loading lasso-boot
+# A tibble: 1 × 2
+  method          `sum(is_not_zero)`
+  <chr>                        <int>
+1 lasso_proj_boot               2712
+null device 
+          1 

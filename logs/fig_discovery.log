@@ -1,0 +1,46 @@
+# Detected figure scripts and products
+
+FIGS mapping (stem  →  ext)
+  beta_lambda_heatmap_laplace -> png
+  distribution_table   -> tex
+  comparison_data_whoari_original -> pdf
+  epsilon_conundrum_coverage -> tex
+  laplace_comparison   -> pdf
+  laplace_other        -> pdf
+  laplace              -> pdf
+  lasso_boot_failure   -> pdf
+  ridge_posterior_converge -> pdf
+  full_conditional_ex  -> pdf
+  bias_decomp_single_B -> pdf
+  correlation_structure -> pdf
+  comparison_data      -> pdf
+  comparison_data_scheetz -> pdf
+  true_param           -> pdf
+  discrete_coverage    -> pdf
+  highcorr             -> pdf
+  comparison_data_scheetz_original -> pdf
+  stability_selection  -> tex
+  coverage_by_n        -> pdf
+
+Concrete output paths
+  code/out/beta_lambda_heatmap_laplace.png
+  code/out/distribution_table.tex
+  code/out/comparison_data_whoari_original.pdf
+  code/out/epsilon_conundrum_coverage.tex
+  code/out/laplace_comparison.pdf
+  code/out/laplace_other.pdf
+  code/out/laplace.pdf
+  code/out/lasso_boot_failure.pdf
+  code/out/ridge_posterior_converge.pdf
+  code/out/full_conditional_ex.pdf
+  code/out/bias_decomp_single_B.pdf
+  code/out/correlation_structure.pdf
+  code/out/comparison_data.pdf
+  code/out/comparison_data_scheetz.pdf
+  code/out/true_param.pdf
+  code/out/discrete_coverage.pdf
+  code/out/highcorr.pdf
+  code/out/comparison_data_scheetz_original.pdf
+  code/out/stability_selection.tex
+  code/out/coverage_by_n.pdf
+

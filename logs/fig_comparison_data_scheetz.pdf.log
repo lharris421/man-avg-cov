@@ -1,0 +1,15 @@
+ℹ Loading lasso-boot
+[1] "4be2fd25224be815"
+[1] "39f9b40018051499"
+[1] "4ba14d7cafff0e20"
+[1] 0.006877054          NA 0.049353792
+# A tibble: 3 × 5
+  method              sum(is_not_zero, na.…¹ `sum(is_not_na)` `sum(is_infinite)`
+  <chr>                                <int>            <int>              <int>
+1 lasso_proj                             989            18975                  0
+2 relaxed_lasso_post…                     73            18975                  0
+3 selective_inference                     66               66                 66
+# ℹ abbreviated name: ¹​`sum(is_not_zero, na.rm = TRUE)`
+# ℹ 1 more variable: `sum(est_not_in, na.rm = TRUE)` <int>
+null device 
+          1 

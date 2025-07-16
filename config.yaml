@@ -1,0 +1,2 @@
+manuscript: "avg-cov"
+exclude_figs: ["setup"]
