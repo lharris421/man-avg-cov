@@ -3,8 +3,6 @@ rm(list=ls())
 
 devtools::load_all(quiet = TRUE)
 
-devtools::load_all(res_dir)
-
 packages <- c(
   "dplyr", "tidyr", "ggplot2", "gridExtra", "scales", "kableExtra",
   "grid", "glue", "patchwork", "knitr", "mgcv", "gt", "purrr", "stringr",
