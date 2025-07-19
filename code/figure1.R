@@ -1,6 +1,10 @@
-source("scripts/setup.R")
-
-results <- readRDS("rds/laplace_gam_fits.R")[["100"]]
+if (interactive()) {
+  source("scripts/setup.R")
+  results <- readRDS("rds/laplace_gam_fits.rds")[["100"]]
+} else {
+  source("code/scripts/setup.R")
+  results <- readRDS("code/rds/laplace_gam_fits.rds")[["100"]]
+}
 
 line_data_avg <- data.frame(avg = results$line_data_avg, method = method_labels["relaxed_lasso_posterior"])
 line_data <- results$line_data %>%
@@ -80,6 +84,10 @@ p2 <- ggplot(data, aes(x = theta_values)) +
   ylim(0, 1) +  # Set y-axis limits
   theme_minimal()  # Minimal theme for clarity
 
-pdf("out/figure1.pdf", height = 4, width = 8)
+if (interactive()) {
+  pdf("out/figure1.pdf", height = 4, width = 8)
+} else {
+  pdf("code/out/figure1.pdf", height = 4, width = 8)
+}
 p2 + p1 + patchwork::plot_layout(axes = "collect")
 dev.off()
