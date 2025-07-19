@@ -1,5 +1,5 @@
 gen_data_distribution <- function(n = 100, p = 100,
-                                  distribution = NULL, 
+                                  distribution = NULL,
                                   corr = c("exchangeable", "autoregressive"),
                                   family = c("gaussian", "binomial", "poisson"),
                                   rho = 0, SNR = 1, sigma = 1) {
@@ -23,12 +23,12 @@ gen_data_distribution <- function(n = 100, p = 100,
     betas <- c(qnorm((1:31) / 32, sd = 1), rep(0, 70))
   } else if (distribution == "sparse 3") {
     betas <- c(qnorm((1:51) / 52, sd = 1), rep(0, 50))
-  } 
-  
+  }
+
   gen_data_sigma(
     n = n, p = p, beta = betas, family = family,
     SNR = SNR, sigma = sigma, corr = corr, rho = rho
   )
-  
+
 }
 
