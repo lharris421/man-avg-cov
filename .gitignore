@@ -3,7 +3,7 @@
 .RData
 .Ruserdata
 .snakemake/*
-*.rds
+code/rds/*
 *.pdf
 *.png
 code/out/*.tex
