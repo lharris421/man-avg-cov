@@ -9,8 +9,13 @@ lookup <- data.frame(
   SNR = c(0.188649, 1.15345, 2.387699)
 )
 
-iterations <- 100
-set.seed(1234)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--seed"), type="double", default=1234)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+set.seed(opt$seed)
 
 ridge      <- list()
 ridge_boot <- list()
@@ -63,8 +68,8 @@ for (j in 1:nrow(lookup)) {
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(ridge, ridge_boot), "rds/ridge_posterior_converge.rds")
+  saveRDS(bind_rows(ridge, ridge_boot), "rds/{iterations}/ridge_posterior_converge.rds")
 } else {
-  saveRDS(bind_rows(ridge, ridge_boot), "code/rds/ridge_posterior_converge.rds")
+  saveRDS(bind_rows(ridge, ridge_boot), "code/rds/{iterations}/ridge_posterior_converge.rds")
 }
 

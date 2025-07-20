@@ -1,15 +1,25 @@
 if (interactive()) {
   source("scripts/setup.R")
-  res <- readRDS("rds/ridge_posterior_converge.rds")
 } else {
   source("code/scripts/setup.R")
-  res <- readRDS("code/rds/ridge_posterior_converge.rds")
 }
 
 lookup <- data.frame(
   p = c(20, 100, 200),
   SNR = c(0.188649, 1.15345, 2.387699)
 )
+
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
+if (interactive()) {
+  res <- readRDS("rds/{iterations}/ridge_posterior_converge.rds")
+} else {
+  res <- readRDS("code/rds/{iterations}/ridge_posterior_converge.rds")
+}
 
 ridge <- list()
 ridge_boot <- list()
@@ -44,7 +54,7 @@ for (j in 1:nrow(lookup)) {
 gam_fits <- list("ridge" = ridge, "ridge_boot" = ridge_boot)
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/ridge_gam_fits.rds")
+  saveRDS(gam_fits, "rds/{iterations}/ridge_gam_fits.rds")
 } else {
-  saveRDS(gam_fits, "code/rds/ridge_gam_fits.rds")
+  saveRDS(gam_fits, "code/rds/{iterations}/ridge_gam_fits.rds")
 }

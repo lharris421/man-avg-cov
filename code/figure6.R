@@ -35,8 +35,7 @@ p1 <- ggplot() +
   xlab(expression(beta)) +
   ylab("Estimated Coverage") +
   coord_cartesian(ylim = c(0, 1)) +
-  scale_color_manual(name = "Method", values = colors) +
-  theme(legend.position = "none")
+  scale_color_manual(name = "Method", values = colors)
 
 if (interactive()) {
   pdf("out/figure6.pdf", height = 4, width = 5)

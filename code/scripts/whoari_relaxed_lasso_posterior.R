@@ -4,7 +4,11 @@ if (interactive()) {
   source("code/scripts/setup.R")
 }
 
-set.seed(1234)
+option_list <- list(
+  make_option(c("--seed"), type="double", default=1234)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+set.seed(opt$seed)
 
 data <- read_data("whoari")
 data$X <- std(data$X)

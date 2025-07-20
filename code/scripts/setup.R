@@ -2,9 +2,10 @@
 rm(list=ls())
 
 packages <- c(
-  "ncvreg", "hdrm", "hdi", "dplyr", "tidyr", "ggplot2", "gridExtra", "scales",
-  "kableExtra", "grid", "glue", "patchwork", "knitr", "mgcv", "purrr", "stringr",
-  "selectiveInference", "glmnet", "progress", "loo"
+  "ncvreg", "hdrm", "hdi", "selectiveInference", "glmnet",
+  "dplyr", "tidyr", "purrr", "stringr", "ggplot2", "glue",
+  "kableExtra", "patchwork", "mgcv", "progress", "optparse",
+  "grid"
 )
 quietlyLoadPackage <- function(package) {
   suppressPackageStartupMessages(library(package, character.only = TRUE))
@@ -28,6 +29,6 @@ method_labels <- c(
   "ridge"                       = "Ridge Posterior",
   "ridge_boot"                  = "Ridge Bootstrap",
   "relaxed_lasso_posterior"     = "Relaxed Lasso Posterior",
-  "relaxed_mcp_posterior"       = "Relaxed MCP Posterior",
+  "relaxed_MCP_posterior"       = "Relaxed MCP Posterior",
   "traditional_bootstrap"       = "Traditional Bootstrap"
 )

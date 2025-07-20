@@ -1,2 +1,2 @@
-manuscript: "avg-cov"
-exclude_figs: ["setup"]
+iterations: 100
+seed: 1234

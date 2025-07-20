@@ -4,7 +4,7 @@ if (interactive()) {
   source("code/scripts/setup.R")
 }
 
-ns <- c(50, 100, 400, 1000)
+ns <- c(100)
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--seed"), type="double", default=1234)
@@ -22,10 +22,10 @@ for (j in 1:length(ns)) {
   )
   intermediate_res <- list()
   for (i in 1:iterations) {
-    data <- gen_data_distribution(n = ns[j], p = 101, distribution = "beta", sigma = 10)
+    data <- gen_data_distribution(n = ns[j], p = 101, distribution = "sparse 1", sigma = 10)
     truth <- data.frame(variable = names(data$beta), truth = data$beta)
     t <- system.time({
-      intermediate_res[[i]] <- pipe_ncvreg(data$X, data$y, penalty = "lasso", level = 0.8, relaxed = TRUE)
+      intermediate_res[[i]] <- pipe_ncvreg(data$X, data$y, penalty = "MCP", level = 0.8, relaxed = TRUE)
     })
     intermediate_res[[i]] <- intermediate_res[[i]] %>%
       left_join(truth, by = join_by(variable)) %>%
@@ -36,12 +36,12 @@ for (j in 1:length(ns)) {
     pb$tick(tokens = list(coverage = sprintf("%.3f", rolling_cov)))
   }
   res[[j]] <- bind_rows(intermediate_res) %>%
-    mutate(n = ns[j], distribution = "beta")
+    mutate(n = ns[j], distribution = "sparse 1", method = "relaxed_MCP_posterior")
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(res), "rds/{iterations}/beta_relaxed_lasso_posterior.rds")
+  saveRDS(bind_rows(res), "rds/sparse1_relaxed_MCP_posterior.rds")
 } else {
-  saveRDS(bind_rows(res), "code/rds/{iterations}/beta_relaxed_lasso_posterior.rds")
+  saveRDS(bind_rows(res), "code/rds/sparse1_relaxed_MCP_posterior.rds")
 }
 

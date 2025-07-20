@@ -1,7 +1,7 @@
 traditional_bootstrap <- function(X, y, b = 1000, penalty = "lasso", level = 0.8) {
 
 
-  lambda <- cv.ncvreg(X, y, penalty = "penalty")$lambda.min
+  lambda <- cv.ncvreg(X, y, penalty = penalty)$lambda.min
 
   samples <- matrix(nrow = b, ncol = ncol(X))
   for (i in 1:b) {
@@ -13,8 +13,7 @@ traditional_bootstrap <- function(X, y, b = 1000, penalty = "lasso", level = 0.8
       lambda <- min(fit$lambda) * 1.001
     }
 
-    samples[idx,] <- coef(fit, lambda = lambda)
-
+    samples[i,] <- coef(fit, lambda = lambda)[-1]
   }
 
   lowers <- apply(samples, 2, function(x) quantile(x, (1 - level) / 2))

@@ -12,10 +12,11 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res <- readRDS("rds/{iterations}/laplace_selective_inference.rds")
+  res <- readRDS("rds/{iterations}/laplace_traditional_bootstrap.rds")
 } else {
-  res <- readRDS("code/rds/{iterations}/laplace_selective_inference.rds")
+  res <- readRDS("code/rds/{iterations}/laplace_traditional_bootstrap.rds")
 }
+
 
 gam_fits <- list()
 for (j in 1:length(ns)) {
@@ -26,7 +27,7 @@ for (j in 1:length(ns)) {
   cutoff        <- max(model_res$truth)
   xs            <- seq(-cutoff, cutoff, by = 0.01)
   line_data     <- predict_covered(model_res, xs) %>%
-    mutate(method = "selective_inference")
+    mutate(method = "traditional_bootstrap")
   line_data_avg <- mean(model_res$covered, na.rm = TRUE)
 
   gam_fits[[as.character(ns[j])]] <- list(line_data = line_data, line_data_avg = line_data_avg)
@@ -34,7 +35,7 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/{iterations}/laplace_gam_fits_selective_inference.rds")
+  saveRDS(gam_fits, "rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds")
 } else {
-  saveRDS(gam_fits, "code/rds/{iterations}/laplace_gam_fits_selective_inference.rds")
+  saveRDS(gam_fits, "code/rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds")
 }

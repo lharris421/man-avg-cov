@@ -16,7 +16,8 @@ results <- bind_rows(
   results_si,
   results_dl
 ) %>%
-  mutate(method = method_labels[method])
+  mutate(method = method_labels[method],
+         estimate = ifelse(method == "Relaxed Lasso Posterior", coef, estimate))
 
 if (interactive()) {
   pdf("out/figure8.pdf", height = 6.5, width = 8)

@@ -1,9 +1,12 @@
-# Snakefile
-
 import os
 
 # ensure the RDS directory exists
 os.makedirs("code/rds", exist_ok=True)
+
+configfile: "config.yaml"
+ITER = config["iterations"]
+SEED = config["seed"]
+os.makedirs(f"code/rds/{ITER}", exist_ok=True)
 
 rule all:
     input:
@@ -14,89 +17,105 @@ rule laplace_relaxed_lasso_posterior:
     input:
         script = "code/scripts/laplace_relaxed_lasso_posterior.R"
     output:
-        "code/rds/laplace_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule ridge_posterior_converge:
     input:
         script = "code/scripts/ridge_posterior_converge.R"
     output:
-        "code/rds/ridge_posterior_converge.rds"
+        "code/rds/{ITER}/ridge_posterior_converge.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule laplace_selective_inference:
     input:
         script = "code/scripts/laplace_selective_inference.R"
     output:
-        "code/rds/laplace_selective_inference.rds"
+        "code/rds/{ITER}/laplace_selective_inference.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule laplace_desparsified_lasso:
     input:
         script = "code/scripts/laplace_desparsified_lasso.R"
     output:
-        "code/rds/laplace_desparsified_lasso.rds"
+        "code/rds/{ITER}/laplace_desparsified_lasso.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule laplace_traditional_bootstrap:
+    input:
+        script = "code/scripts/laplace_traditional_bootstrap.R"
+    output:
+        "code/rds/{ITER}/laplace_traditional_bootstrap.rds"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule normal_relaxed_lasso_posterior:
     input:
         script = "code/scripts/normal_relaxed_lasso_posterior.R"
     output:
-        "code/rds/normal_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/normal_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
 rule t_relaxed_lasso_posterior:
     input:
         script = "code/scripts/t_relaxed_lasso_posterior.R"
     output:
-        "code/rds/t_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/t_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule uniform_relaxed_lasso_posterior:
     input:
         script = "code/scripts/uniform_relaxed_lasso_posterior.R"
     output:
-        "code/rds/uniform_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/uniform_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule beta_relaxed_lasso_posterior:
     input:
         script = "code/scripts/beta_relaxed_lasso_posterior.R"
     output:
-        "code/rds/beta_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/beta_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule sparse1_relaxed_lasso_posterior:
     input:
         script = "code/scripts/sparse1_relaxed_lasso_posterior.R"
     output:
-        "code/rds/sparse1_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule sparse1_relaxed_MCP_posterior:
+    input:
+        script = "code/scripts/sparse1_relaxed_MCP_posterior.R"
+    output:
+        "code/rds/{ITER}/sparse1_relaxed_MCP_posterior.rds"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule sparse2_relaxed_lasso_posterior:
     input:
         script = "code/scripts/sparse2_relaxed_lasso_posterior.R"
     output:
-        "code/rds/sparse2_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/sparse2_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule sparse3_relaxed_lasso_posterior:
     input:
         script = "code/scripts/sparse3_relaxed_lasso_posterior.R"
     output:
-        "code/rds/sparse3_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/sparse3_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule whoari_relaxed_lasso_posterior:
     input:
@@ -104,7 +123,7 @@ rule whoari_relaxed_lasso_posterior:
     output:
         "code/rds/whoari_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --seed {SEED}"
         
 rule Scheetz2006_relaxed_lasso_posterior:
     input:
@@ -112,7 +131,7 @@ rule Scheetz2006_relaxed_lasso_posterior:
     output:
         "code/rds/Scheetz2006_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --seed {SEED}"
         
 rule whoari_selective_inference:
     input:
@@ -120,7 +139,7 @@ rule whoari_selective_inference:
     output:
         "code/rds/whoari_selective_inference.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --seed {SEED}"
         
 rule Scheetz2006_selective_inference:
     input:
@@ -128,7 +147,7 @@ rule Scheetz2006_selective_inference:
     output:
         "code/rds/Scheetz2006_selective_inference.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --seed {SEED}"
         
 rule whoari_desparsified_lasso:
     input:
@@ -136,7 +155,7 @@ rule whoari_desparsified_lasso:
     output:
         "code/rds/whoari_desparsified_lasso.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --seed {SEED}"
         
 rule Scheetz2006_desparsified_lasso:
     input:
@@ -144,145 +163,170 @@ rule Scheetz2006_desparsified_lasso:
     output:
         "code/rds/Scheetz2006_desparsified_lasso.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --seed {SEED}"
         
 rule highcorr:
     input:
         script = "code/scripts/highcorr.R"
     output:
-        "code/rds/highcorr.rds"
+        f"code/rds/{ITER}/highcorr.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule laplace_corr_relaxed_lasso_posterior:
     input:
         script = "code/scripts/laplace_corr_relaxed_lasso_posterior.R"
     output:
-        "code/rds/laplace_corr_relaxed_lasso_posterior.rds"
+        "code/rds/{ITER}/laplace_corr_relaxed_lasso_posterior.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
 rule laplace_gam_fits:
     input:
         script = "code/scripts/laplace_gam_fits.R",
-        rds = "code/rds/laplace_relaxed_lasso_posterior.rds"
+        rds = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds"
     output:
-        "code/rds/laplace_gam_fits.rds"
+        "code/rds/{ITER}/laplace_gam_fits.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule ridge_gam_fits:
     input:
         script = "code/scripts/ridge_gam_fits.R",
-        rds = "code/rds/ridge_posterior_converge.rds"
+        rds = "code/rds/{ITER}/ridge_posterior_converge.rds"
     output:
-        "code/rds/ridge_gam_fits.rds"
+        "code/rds/{ITER}/ridge_gam_fits.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule laplace_gam_fits_selective_inference:
     input:
         script = "code/scripts/laplace_gam_fits_selective_inference.R",
-        rds = "code/rds/laplace_selective_inference.rds"
+        rds = "code/rds/{ITER}/laplace_selective_inference.rds"
     output:
-        "code/rds/laplace_gam_fits_selective_inference.rds"
+        "code/rds/{ITER}/laplace_gam_fits_selective_inference.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule laplace_gam_fits_desparsified_lasso:
     input:
         script = "code/scripts/laplace_gam_fits_desparsified_lasso.R",
-        rds = "code/rds/laplace_desparsified_lasso.rds"
+        rds = "code/rds/{ITER}/laplace_desparsified_lasso.rds"
     output:
-        "code/rds/laplace_gam_fits_desparsified_lasso.rds"
+        "code/rds/{ITER}/laplace_gam_fits_desparsified_lasso.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER}"
+        
+rule laplace_gam_fits_traditional_bootstrap:
+    input:
+        script = "code/scripts/laplace_gam_fits_traditional_bootstrap.R",
+        rds = "code/rds/{ITER}/laplace_traditional_bootstrap.rds"
+    output:
+        "code/rds/{ITER}/laplace_gam_fits_traditional_bootstrap.rds"
+    shell:
+        "Rscript {input.script} --iterations {ITER}"
         
 rule across_lambda_coverage:
     input:
         script = "code/scripts/across_lambda_coverage.R"
     output:
-        "code/rds/across_lambda_coverage.rds"
+        "code/rds/{ITER}/across_lambda_coverage.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule across_lambda_gam:
     input:
         script = "code/scripts/across_lambda_gam.R",
-        rds    = "code/rds/across_lambda_coverage.rds"
+        rds    = "code/rds/{ITER}/across_lambda_coverage.rds"
     output:
-        "code/rds/across_lambda_gam.rds"
+        "code/rds/{ITER}/across_lambda_gam.rds"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER}"
+        
+rule bias_decomposition:
+    input:
+        script = "code/scripts/bias_decomposition.R",
+    output:
+        "code/rds/{ITER}/bias_decomposition.rds"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule stability_selection:
+    input:
+        script = "code/scripts/stability_selection.R",
+    output:
+        "code/rds/{ITER}/stability_selection.rds"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
 rule figure1:
     input:
         script = "code/figure1.R",
-        gam_rds = "code/rds/laplace_gam_fits.rds"
+        gam_rds = "code/rds/{ITER}/laplace_gam_fits.rds"
     output:
         "code/out/figure1.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule figure2:
     input:
         script = "code/figure2.R",
-        gam_rds = "code/rds/ridge_gam_fits.rds"
+        gam_rds = "code/rds/{ITER}/ridge_gam_fits.rds"
     output:
         "code/out/figure2.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule figure3:
     input:
         script = "code/figure3.R",
-        rds1 = "code/rds/laplace_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/laplace_corr_relaxed_lasso_posterior.rds"
+        rds1 = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
+        rds2 = "code/rds/{ITER}/laplace_corr_relaxed_lasso_posterior.rds"
     output:
         "code/out/figure3.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule figure4:
     input:
         script = "code/figure4.R",
-        rds1 = "code/rds/across_lambda_coverage.rds",
-        rds2 = "code/rds/across_lambda_gam.rds"
+        rds1 = "code/rds/{ITER}/across_lambda_coverage.rds",
+        rds2 = "code/rds/{ITER}/across_lambda_gam.rds"
     output:
         "code/out/figure4.png"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule figure5:
     input:
         script = "code/figure5.R",
-        rds = "code/rds/highcorr.rds"
+        rds = f"code/rds/{ITER}/highcorr.rds"
     output:
         "code/out/figure5.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule figure6:
     input:
         script = "code/figure6.R",
-        rds1 = "code/rds/laplace_gam_fits.rds",
-        rds2 = "code/rds/laplace_gam_fits_selective_inference.rds",
-        rds3 = "code/rds/laplace_gam_fits_desparsified_lasso.rds"
+        rds1 = "code/rds/{ITER}/laplace_gam_fits.rds",
+        rds2 = "code/rds/{ITER}/laplace_gam_fits_selective_inference.rds",
+        rds3 = "code/rds/{ITER}/laplace_gam_fits_desparsified_lasso.rds"
     output:
         "code/out/figure6.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule figure7:
     input:
         script = "code/figure7.R",
-        rds1 = "code/rds/laplace_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/laplace_selective_inference.rds",
-        rds3 = "code/rds/laplace_desparsified_lasso.rds"
+        rds1 = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
+        rds2 = "code/rds/{ITER}/laplace_selective_inference.rds",
+        rds3 = "code/rds/{ITER}/laplace_desparsified_lasso.rds"
     output:
         "code/out/figure7.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
         
 rule figure8:
@@ -294,43 +338,89 @@ rule figure8:
     output:
         "code/out/figure8.pdf"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
-# rule figure9:
-#     input:
-#         script = "code/figure9.R",
-#         rds1 = "code/rds/Scheetz2006_relaxed_lasso_posterior.rds.rds",
-#         rds2 = "code/rds/Scheetz2006_selective_inference.rds",
-#         rds3 = "code/rds/Scheetz2006_desparsified_lasso.rds"
-#     output:
-#         "code/out/figure9.pdf"
-#     shell:
-#         "Rscript {input.script}"
+rule figure9:
+    input:
+        script = "code/figure9.R",
+        rds1 = "code/rds/Scheetz2006_relaxed_lasso_posterior.rds",
+        rds2 = "code/rds/Scheetz2006_selective_inference.rds",
+        rds3 = "code/rds/Scheetz2006_desparsified_lasso.rds"
+    output:
+        "code/out/figure9.pdf"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+
+rule figureA1:
+    input:
+        script = "code/figureA1.R",
+        rds = "code/rds/{ITER}/laplace_gam_fits_traditional_bootstrap.rds",
+    output:
+        "code/out/figureA1.pdf"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule figureC1:
+    input:
+        script = "code/figureC1.R",
+        rds = "code/rds/{ITER}/laplace_gam_fits.rds",
+    output:
+        "code/out/figureC1.pdf"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule figureF1:
+    input:
+        script = "code/figureF1.R",
+        rds = "code/rds/{ITER}/bias_decomposition.rds",
+    output:
+        "code/out/figureF1.pdf"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule table1:
     input:
         script = "code/table1.R",
-        rds1 = "code/rds/laplace_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/normal_relaxed_lasso_posterior.rds",
-        rds3 = "code/rds/t_relaxed_lasso_posterior.rds",
-        rds4 = "code/rds/uniform_relaxed_lasso_posterior.rds",
-        rds5 = "code/rds/beta_relaxed_lasso_posterior.rds",
-        rds6 = "code/rds/sparse1_relaxed_lasso_posterior.rds",
-        rds7 = "code/rds/sparse2_relaxed_lasso_posterior.rds",
-        rds8 = "code/rds/sparse3_relaxed_lasso_posterior.rds"
+        rds1 = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
+        rds2 = "code/rds/{ITER}/normal_relaxed_lasso_posterior.rds",
+        rds3 = "code/rds/{ITER}/t_relaxed_lasso_posterior.rds",
+        rds4 = "code/rds/{ITER}/uniform_relaxed_lasso_posterior.rds",
+        rds5 = "code/rds/{ITER}/beta_relaxed_lasso_posterior.rds",
+        rds6 = "code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds",
+        rds7 = "code/rds/{ITER}/sparse2_relaxed_lasso_posterior.rds",
+        rds8 = "code/rds/{ITER}/sparse3_relaxed_lasso_posterior.rds"
     output:
         "code/out/table1.tex"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
-rule tableS1:
+rule tableD1:
     input:
-        script = "code/tableS1.R",
-        rds = "code/rds/laplace_selective_inference.rds"
+        script = "code/tableD1.R",
+        rds = "code/rds/{ITER}/laplace_selective_inference.rds"
     output:
-        "code/out/tableS1.tex"
+        "code/out/tableD1.tex"
     shell:
-        "Rscript {input.script}"
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule tableE1:
+    input:
+        script = "code/tableE1.R",
+        rds1 = "code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds",
+        rds2 = "code/rds/{ITER}/sparse1_relaxed_MCP_posterior.rds"
+    output:
+        "code/out/tableE1.tex"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        
+rule tableG1:
+    input:
+        script = "code/tableG1.R",
+        rds = "code/rds/{ITER}/stability_selection.rds",
+    output:
+        "code/out/tableG1.tex"
+    shell:
+        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
 rule manuscript:
     input:
@@ -345,8 +435,14 @@ rule manuscript:
         "code/out/figure6.pdf",
         "code/out/figure7.pdf",
         "code/out/figure8.pdf",
+        "code/out/figure9.pdf",
+        "code/out/figureA1.pdf",
+        "code/out/figureC1.pdf",
+        "code/out/figureF1.pdf",
         "code/out/table1.tex",
-        "code/out/tableS1.tex"
+        "code/out/tableD1.tex",
+        "code/out/tableE1.tex",
+        "code/out/tableG1.tex"
     output:
         "avg-cov.pdf"
     shell:

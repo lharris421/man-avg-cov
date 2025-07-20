@@ -4,8 +4,13 @@ if (interactive()) {
   source("code/scripts/setup.R")
 }
 
-iterations <- 1000
-set.seed(1234)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--seed"), type="double", default=1234)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+set.seed(opt$seed)
 
 pb <- progress_bar$new(
   format = "  [:bar] :percent (:current/:total) | eta: :eta",
@@ -40,8 +45,8 @@ res <- bind_rows(rlp, ridge) %>%
   mutate(distribution = "highcorr")
 
 if (interactive()) {
-  saveRDS(res, "rds/highcorr.rds")
+  saveRDS(res, glue("rds/{iterations}/highcorr.rds"))
 } else {
-  saveRDS(res, "code/rds/highcorr.rds")
+  saveRDS(res, glue("code/rds/{iterations}/highcorr.rds"))
 }
 

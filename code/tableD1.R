@@ -72,4 +72,4 @@ kbl(
   table.envir= NULL,
   linesep    = ""
 ) %>%
-  write(glue("{path_pre}tableS1.tex"))
+  write(glue("{path_pre}tableD1.tex"))

@@ -5,8 +5,13 @@ if (interactive()) {
 }
 
 ns <- c(50, 100, 400, 1000)
-iterations <- 100
-set.seed(1234)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--seed"), type="double", default=1234)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+set.seed(opt$seed)
 
 res <- list()
 for (j in 1:length(ns)) {
@@ -31,12 +36,12 @@ for (j in 1:length(ns)) {
     pb$tick(tokens = list(coverage = sprintf("%.3f", rolling_cov)))
   }
   res[[j]] <- bind_rows(intermediate_res) %>%
-    mutate(n = ns[j], distribution = "sparse 1")
+    mutate(n = ns[j], distribution = "sparse 1", method = "relaxed_lasso_posterior")
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(res), "rds/sparse1_relaxed_lasso_posterior.rds")
+  saveRDS(bind_rows(res), "rds/{iterations}/sparse1_relaxed_lasso_posterior.rds")
 } else {
-  saveRDS(bind_rows(res), "code/rds/sparse1_relaxed_lasso_posterior.rds")
+  saveRDS(bind_rows(res), "code/rds/{iterations}/sparse1_relaxed_lasso_posterior.rds")
 }
 

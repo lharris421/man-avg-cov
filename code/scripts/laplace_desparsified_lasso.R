@@ -5,8 +5,13 @@ if (interactive()) {
 }
 
 ns <- c(50, 100, 400)
-iterations <- 100
-set.seed(1234)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--seed"), type="double", default=1234)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+set.seed(opt$seed)
 
 res <- list()
 for (j in 1:length(ns)) {
@@ -38,8 +43,8 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(res), "rds/laplace_desparsified_lasso.rds")
+  saveRDS(bind_rows(res), "rds/{iterations}/laplace_desparsified_lasso.rds")
 } else {
-  saveRDS(bind_rows(res), "code/rds/laplace_desparsified_lasso.rds")
+  saveRDS(bind_rows(res), "code/rds/{iterations}/laplace_desparsified_lasso.rds")
 }
 
