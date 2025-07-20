@@ -1,11 +1,18 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
 if (interactive()) {
   source("scripts/setup.R")
-  res_list <- readRDS("rds/across_lambda_coverage.rds")
-  model_cov <- readRDS("rds/across_lambda_gam.rds")
+  res_list <- readRDS("rds/{iterations}/across_lambda_coverage.rds")
+  model_cov <- readRDS("rds/{iterations}/across_lambda_gam.rds")
 } else {
   source("code/scripts/setup.R")
-  res_list <- readRDS("code/rds/across_lambda_coverage.rds")
-  model_cov <- readRDS("code/rds/across_lambda_gam.rds")
+  res_list <- readRDS("code/rds/{iterations}/across_lambda_coverage.rds")
+  model_cov <- readRDS("code/rds/{iterations}/across_lambda_gam.rds")
 }
 
 lambdas <- res_list$lambdas

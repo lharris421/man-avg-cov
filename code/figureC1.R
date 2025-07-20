@@ -1,13 +1,20 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
 if (interactive()) {
   source("scripts/setup.R")
-  results50 <- readRDS("rds/laplace_gam_fits.rds")[["50"]]
-  results100 <- readRDS("rds/laplace_gam_fits.rds")[["100"]]
-  results400 <- readRDS("rds/laplace_gam_fits.rds")[["400"]]
+  results50 <- readRDS("rds/{iterations}/laplace_gam_fits.rds")[["50"]]
+  results100 <- readRDS("rds/{iterations}/laplace_gam_fits.rds")[["100"]]
+  results400 <- readRDS("rds/{iterations}/laplace_gam_fits.rds")[["400"]]
 } else {
   source("code/scripts/setup.R")
-  results50 <- readRDS("code/rds/laplace_gam_fits.rds")[["50"]]
-  results100 <- readRDS("code/rds/laplace_gam_fits.rds")[["100"]]
-  results400 <- readRDS("code/rds/laplace_gam_fits.rds")[["400"]]
+  results50 <- readRDS("code/rds/{iterations}/laplace_gam_fits.rds")[["50"]]
+  results100 <- readRDS("code/rds/{iterations}/laplace_gam_fits.rds")[["100"]]
+  results400 <- readRDS("code/rds/{iterations}/laplace_gam_fits.rds")[["400"]]
 }
 
 line_data_avg <- data.frame(

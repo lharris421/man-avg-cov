@@ -1,12 +1,19 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
 if (interactive()) {
   source("scripts/setup.R")
-  results_rlp <- readRDS("rds/sparse1_relaxed_lasso_posterior.rds")
-  results_rmp  <- readRDS("rds/sparse1_relaxed_MCP_posterior.rds")
+  results_rlp <- readRDS("rds/{iterations}/sparse1_relaxed_lasso_posterior.rds")
+  results_rmp  <- readRDS("rds/{iterations}/sparse1_relaxed_MCP_posterior.rds")
   path_pre <- "out/"
 } else {
   source("code/scripts/setup.R")
-  results_rlp <- readRDS("code/rds/sparse1_relaxed_lasso_posterior.rds")
-  results_rmp  <- readRDS("code/rds/sparse1_relaxed_MCP_posterior.rds")
+  results_rlp <- readRDS("code/rds/{iterations}/sparse1_relaxed_lasso_posterior.rds")
+  results_rmp  <- readRDS("code/rds/{iterations}/sparse1_relaxed_MCP_posterior.rds")
   path_pre <- "code/out/"
 }
 

@@ -1,9 +1,16 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
 if (interactive()) {
   source("scripts/setup.R")
-  results <- readRDS("rds/laplace_gam_fits_traditional_bootstrap.rds")[["100"]]
+  results <- readRDS("rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds")[["100"]]
 } else {
   source("code/scripts/setup.R")
-  results <- readRDS("code/rds/laplace_gam_fits_traditional_bootstrap.rds")[["100"]]
+  results <- readRDS("code/rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds")[["100"]]
 }
 
 line_data_avg <- data.frame(avg = results$line_data_avg, method = method_labels["traditional_bootstrap"])

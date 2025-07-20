@@ -1,23 +1,30 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
 if (interactive()) {
   source("scripts/setup.R")
-  laplace <- readRDS("rds/laplace_relaxed_lasso_posterior.rds")
-  normal  <- readRDS("rds/normal_relaxed_lasso_posterior.rds")
-  t       <- readRDS("rds/t_relaxed_lasso_posterior.rds")
-  uniform <- readRDS("rds/uniform_relaxed_lasso_posterior.rds")
-  beta    <- readRDS("rds/beta_relaxed_lasso_posterior.rds")
-  sparse1 <- readRDS("rds/sparse1_relaxed_lasso_posterior.rds")
-  sparse2 <- readRDS("rds/sparse2_relaxed_lasso_posterior.rds")
-  sparse3 <- readRDS("rds/sparse3_relaxed_lasso_posterior.rds")
+  laplace <- readRDS("rds/{iterations}/laplace_relaxed_lasso_posterior.rds")
+  normal  <- readRDS("rds/{iterations}/normal_relaxed_lasso_posterior.rds")
+  t       <- readRDS("rds/{iterations}/t_relaxed_lasso_posterior.rds")
+  uniform <- readRDS("rds/{iterations}/uniform_relaxed_lasso_posterior.rds")
+  beta    <- readRDS("rds/{iterations}/beta_relaxed_lasso_posterior.rds")
+  sparse1 <- readRDS("rds/{iterations}/sparse1_relaxed_lasso_posterior.rds")
+  sparse2 <- readRDS("rds/{iterations}/sparse2_relaxed_lasso_posterior.rds")
+  sparse3 <- readRDS("rds/{iterations}/sparse3_relaxed_lasso_posterior.rds")
 } else {
   source("code/scripts/setup.R")
-  laplace <- readRDS("code/rds/laplace_relaxed_lasso_posterior.rds")
-  normal  <- readRDS("code/rds/normal_relaxed_lasso_posterior.rds")
-  t       <- readRDS("code/rds/t_relaxed_lasso_posterior.rds")
-  uniform <- readRDS("code/rds/uniform_relaxed_lasso_posterior.rds")
-  beta    <- readRDS("code/rds/beta_relaxed_lasso_posterior.rds")
-  sparse1 <- readRDS("code/rds/sparse1_relaxed_lasso_posterior.rds")
-  sparse2 <- readRDS("code/rds/sparse2_relaxed_lasso_posterior.rds")
-  sparse3 <- readRDS("code/rds/sparse3_relaxed_lasso_posterior.rds")
+  laplace <- readRDS("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds")
+  normal  <- readRDS("code/rds/{iterations}/normal_relaxed_lasso_posterior.rds")
+  t       <- readRDS("code/rds/{iterations}/t_relaxed_lasso_posterior.rds")
+  uniform <- readRDS("code/rds/{iterations}/uniform_relaxed_lasso_posterior.rds")
+  beta    <- readRDS("code/rds/{iterations}/beta_relaxed_lasso_posterior.rds")
+  sparse1 <- readRDS("code/rds/{iterations}/sparse1_relaxed_lasso_posterior.rds")
+  sparse2 <- readRDS("code/rds/{iterations}/sparse2_relaxed_lasso_posterior.rds")
+  sparse3 <- readRDS("code/rds/{iterations}/sparse3_relaxed_lasso_posterior.rds")
 }
 
 results <- bind_rows(laplace, normal, t, uniform, beta, sparse1, sparse2, sparse3) %>%

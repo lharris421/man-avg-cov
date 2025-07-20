@@ -6,12 +6,38 @@ os.makedirs("code/rds", exist_ok=True)
 configfile: "config.yaml"
 ITER = config["iterations"]
 SEED = config["seed"]
+DESPARSIFIED = config.get("desparsified", False)
 os.makedirs(f"code/rds/{ITER}", exist_ok=True)
+
+def make_inputs(fig, p1, p2, p3):
+    d = {
+        "script": f"code/figure{fig}.R",
+        "rds1":   f"code/rds/{ITER}/{p1}.rds",
+        "rds2":   f"code/rds/{ITER}/{p2}.rds",
+    }
+    if DESPARSIFIED:
+        d["rds3"] = f"code/rds/{ITER}/{p3}.rds"
+    return d
 
 rule all:
     input:
         "avg-cov.pdf",
-        "code/out/figure1.pdf"
+        "code/out/figure1.pdf",
+        "code/out/figure2.pdf",
+        "code/out/figure3.pdf",
+        "code/out/figure4.png",
+        "code/out/figure5.pdf",
+        "code/out/figure6.pdf",
+        "code/out/figure7.pdf",
+        "code/out/figure8.pdf",
+        "code/out/figure9.pdf",
+        "code/out/figureA1.pdf",
+        "code/out/figureC1.pdf",
+        "code/out/figureF1.pdf",
+        "code/out/table1.tex",
+        "code/out/tableD1.tex",
+        "code/out/tableE1.tex",
+        "code/out/tableG1.tex"
 
 rule laplace_relaxed_lasso_posterior:
     input:
@@ -266,7 +292,7 @@ rule figure1:
     output:
         "code/out/figure1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule figure2:
     input:
@@ -275,7 +301,7 @@ rule figure2:
     output:
         "code/out/figure2.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule figure3:
     input:
@@ -285,7 +311,7 @@ rule figure3:
     output:
         "code/out/figure3.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule figure4:
     input:
@@ -295,7 +321,7 @@ rule figure4:
     output:
         "code/out/figure4.png"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule figure5:
     input:
@@ -304,52 +330,36 @@ rule figure5:
     output:
         "code/out/figure5.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
-        
+        "Rscript {input.script} --iterations {ITER}"
+    
 rule figure6:
-    input:
-        script = "code/figure6.R",
-        rds1 = "code/rds/{ITER}/laplace_gam_fits.rds",
-        rds2 = "code/rds/{ITER}/laplace_gam_fits_selective_inference.rds",
-        rds3 = "code/rds/{ITER}/laplace_gam_fits_desparsified_lasso.rds"
+    input: make_inputs(6, "laplace_gam_fits", "laplace_gam_fits_selective_inference", "laplace_gam_fits_desparsified_lasso")
     output:
         "code/out/figure6.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
         
 rule figure7:
-    input:
-        script = "code/figure7.R",
-        rds1 = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/{ITER}/laplace_selective_inference.rds",
-        rds3 = "code/rds/{ITER}/laplace_desparsified_lasso.rds"
+    input:make_inputs(7,"laplace_relaxed_lasso_posterior","laplace_selective_inference","laplace_desparsified_lasso")
     output:
         "code/out/figure7.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
         
         
 rule figure8:
-    input:
-        script = "code/figure8.R",
-        rds1 = "code/rds/whoari_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/whoari_selective_inference.rds",
-        rds3 = "code/rds/whoari_desparsified_lasso.rds"
+    input: make_inputs(8,"whoari_relaxed_lasso_posterior","whoari_selective_inference","whoari_desparsified_lasso")
     output:
         "code/out/figure8.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
         
 rule figure9:
-    input:
-        script = "code/figure9.R",
-        rds1 = "code/rds/Scheetz2006_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/Scheetz2006_selective_inference.rds",
-        rds3 = "code/rds/Scheetz2006_desparsified_lasso.rds"
+    input:make_inputs(9,"Scheetz2006_relaxed_lasso_posterior","Scheetz2006_selective_inference","Scheetz2006_desparsified_lasso")
     output:
         "code/out/figure9.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
 
 rule figureA1:
     input:
@@ -358,7 +368,7 @@ rule figureA1:
     output:
         "code/out/figureA1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule figureC1:
     input:
@@ -367,7 +377,7 @@ rule figureC1:
     output:
         "code/out/figureC1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule figureF1:
     input:
@@ -376,7 +386,7 @@ rule figureF1:
     output:
         "code/out/figureF1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule table1:
     input:
@@ -392,7 +402,7 @@ rule table1:
     output:
         "code/out/table1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule tableD1:
     input:
@@ -401,7 +411,7 @@ rule tableD1:
     output:
         "code/out/tableD1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule tableE1:
     input:
@@ -411,7 +421,7 @@ rule tableE1:
     output:
         "code/out/tableE1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
         
 rule tableG1:
     input:
@@ -420,7 +430,7 @@ rule tableG1:
     output:
         "code/out/tableG1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} --iterations {ITER}"
 
 rule manuscript:
     input:

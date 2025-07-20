@@ -1,25 +1,38 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+desparsified <- opt$desparsified
+
 if (interactive()) {
   source("scripts/setup.R")
-  results_rlp <- readRDS("rds/laplace_gam_fits.rds")[["100"]]
-  results_si  <- readRDS("rds/laplace_gam_fits_selective_inference.rds")[["100"]]
-  results_dl  <- readRDS("rds/laplace_gam_fits_desparsified_lasso.rds")[["100"]]
+  results_rlp <- readRDS("rds/{iterations}/laplace_gam_fits.rds")[["100"]]
+  results_si  <- readRDS("rds/{iterations}/laplace_gam_fits_selective_inference.rds")[["100"]]
+  if (desparsified) results_dl  <- readRDS("rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds")[["100"]]
 } else {
   source("code/scripts/setup.R")
-  results_rlp <- readRDS("code/rds/laplace_gam_fits.rds")[["100"]]
-  results_si  <- readRDS("code/rds/laplace_gam_fits_selective_inference.rds")[["100"]]
-  results_dl  <- readRDS("code/rds/laplace_gam_fits_desparsified_lasso.rds")[["100"]]
+  results_rlp <- readRDS("code/rds/{iterations}/laplace_gam_fits.rds")[["100"]]
+  results_si  <- readRDS("code/rds/{iterations}/laplace_gam_fits_selective_inference.rds")[["100"]]
+  if (desparsified) results_dl  <- readRDS("code/rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds")[["100"]]
 }
 
 line_data_avg <- bind_rows(
   data.frame(avg = results_rlp$line_data_avg, method = method_labels["relaxed_lasso_posterior"]),
-  data.frame(avg = results_si$line_data_avg, method = method_labels["selective_inference"]),
-  data.frame(avg = results_dl$line_data_avg, method = method_labels["desparsified_lasso"])
+  data.frame(avg = results_si$line_data_avg, method = method_labels["selective_inference"])
 )
 line_data <- bind_rows(
   results_rlp$line_data,
-  results_si$line_data,
-  results_dl$line_data
-  ) %>%
+  results_si$line_data
+  )
+
+if (desparsified) {
+  line_data_avg <- line_data_avg %>% bind_rows(data.frame(avg = results_dl$line_data_avg, method = method_labels["desparsified_lasso"]))
+  line_data <- line_data %>% bind_rows(results_dl$line_data)
+}
+line_data <- line_data %>%
   mutate(method = method_labels[method])
 
 cutoff <- max(line_data$x)

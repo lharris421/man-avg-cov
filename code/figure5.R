@@ -1,9 +1,16 @@
+library(optparse)
+option_list <- list(
+  make_option(c("--iterations"), type="integer", default=1000)
+)
+opt <- parse_args(OptionParser(option_list=option_list))
+iterations <- opt$iterations
+
 if (interactive()) {
   source("scripts/setup.R")
-  results <- readRDS("rds/highcorr.rds")
+  results <- readRDS("rds/{iterations}/highcorr.rds")
 } else {
   source("code/scripts/setup.R")
-  results <- readRDS("code/rds/highcorr.rds")
+  results <- readRDS("code/rds/{iterations}/highcorr.rds")
 }
 
 results <- results %>%
