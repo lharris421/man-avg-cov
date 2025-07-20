@@ -1,4 +1,9 @@
-library(optparse)
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source("code/scripts/setup.R")
+}
+
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000)
 )
@@ -6,11 +11,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  source("scripts/setup.R")
-  results <- readRDS("rds/{iterations}/highcorr.rds")
+  results <- readRDS(glue("rds/{iterations}/highcorr.rds"))
 } else {
-  source("code/scripts/setup.R")
-  results <- readRDS("code/rds/{iterations}/highcorr.rds")
+  results <- readRDS(glue("code/rds/{iterations}/highcorr.rds"))
 }
 
 results <- results %>%
@@ -19,7 +22,7 @@ results <- results %>%
 plots <- list()
 methods <- c("relaxed_lasso_posterior", "ridge")
 set.seed(1234)
-selected_example <- sample(1:1000, 1)
+selected_example <- sample(1:iterations, 1)
 for (i in 1:length(methods)) {
   curr_method <- methods[i]
 

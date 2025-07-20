@@ -40,8 +40,8 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(res), "rds/{iterations}/laplace_traditional_bootstrap.rds")
+  saveRDS(bind_rows(res), glue("rds/{iterations}/laplace_traditional_bootstrap.rds"))
 } else {
-  saveRDS(bind_rows(res), "code/rds/{iterations}/laplace_traditional_bootstrap.rds")
+  saveRDS(bind_rows(res), glue("code/rds/{iterations}/laplace_traditional_bootstrap.rds"))
 }
 

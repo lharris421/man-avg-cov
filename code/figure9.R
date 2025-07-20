@@ -1,22 +1,23 @@
-library(optparse)
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source("code/scripts/setup.R")
+}
+
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
-iterations <- opt$iterations
 desparsified <- opt$desparsified
 
 if (interactive()) {
-  source("scripts/setup.R")
-  results_rlp <- readRDS("rds/{iterations}/Scheetz2006_relaxed_lasso_posterior.rds")
-  results_si  <- readRDS("rds/{iterations}/Scheetz2006_selective_inference.rds")
-  if (desparsified) results_dl  <- readRDS("rds/{iterations}/Scheetz2006_desparsified_lasso.rds")
+  results_rlp <- readRDS(glue("rds/Scheetz2006_relaxed_lasso_posterior.rds"))
+  results_si  <- readRDS(glue("rds/Scheetz2006_selective_inference.rds"))
+  if (desparsified) results_dl  <- readRDS(glue("rds/Scheetz2006_desparsified_lasso.rds"))
 } else {
-  source("code/scripts/setup.R")
-  results_rlp <- readRDS("code/rds/{iterations}/Scheetz2006_relaxed_lasso_posterior.rds")
-  results_si  <- readRDS("code/rds/{iterations}/Scheetz2006_selective_inference.rds")
-  if (desparsified) results_dl  <- readRDS("code/rds/{iterations}/Scheetz2006_desparsified_lasso.rds")
+  results_rlp <- readRDS(glue("code/rds/Scheetz2006_relaxed_lasso_posterior.rds"))
+  results_si  <- readRDS(glue("code/rds/Scheetz2006_selective_inference.rds"))
+  if (desparsified) results_dl  <- readRDS(glue("code/rds/Scheetz2006_desparsified_lasso.rds"))
 }
 
 results <- bind_rows(

@@ -43,7 +43,7 @@ for (i in 1:iterations) {
 }
 
 if (interactive()) {
-  saveRDS(list("orig" = orig_sel, "boot" = boot_sel), "rds/stability_selection.rds")
+  saveRDS(list("orig" = orig_sel, "boot" = boot_sel), glue("rds/{iterations}/stability_selection.rds"))
 } else {
-  saveRDS(list("orig" = orig_sel, "boot" = boot_sel), "code/rds/stability_selection.rds")
+  saveRDS(list("orig" = orig_sel, "boot" = boot_sel), glue("code/rds/{iterations}/stability_selection.rds"))
 }

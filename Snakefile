@@ -9,14 +9,17 @@ SEED = config["seed"]
 DESPARSIFIED = config.get("desparsified", False)
 os.makedirs(f"code/rds/{ITER}", exist_ok=True)
 
-def make_inputs(fig, p1, p2, p3):
+def make_inputs(fig, p1, p2, p3, iter=None):
+    # build the base RDS directory, with or without the iteration folder
+    base = f"code/rds/{iter}" if iter else "code/rds"
+
     d = {
         "script": f"code/figure{fig}.R",
-        "rds1":   f"code/rds/{ITER}/{p1}.rds",
-        "rds2":   f"code/rds/{ITER}/{p2}.rds",
+        "rds1":   f"{base}/{p1}.rds",
+        "rds2":   f"{base}/{p2}.rds",
     }
     if DESPARSIFIED:
-        d["rds3"] = f"code/rds/{ITER}/{p3}.rds"
+        d["rds3"] = f"{base}/{p3}.rds"
     return d
 
 rule all:
@@ -43,7 +46,7 @@ rule laplace_relaxed_lasso_posterior:
     input:
         script = "code/scripts/laplace_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -51,7 +54,7 @@ rule ridge_posterior_converge:
     input:
         script = "code/scripts/ridge_posterior_converge.R"
     output:
-        "code/rds/{ITER}/ridge_posterior_converge.rds"
+        f"code/rds/{ITER}/ridge_posterior_converge.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -59,7 +62,7 @@ rule laplace_selective_inference:
     input:
         script = "code/scripts/laplace_selective_inference.R"
     output:
-        "code/rds/{ITER}/laplace_selective_inference.rds"
+        f"code/rds/{ITER}/laplace_selective_inference.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -67,7 +70,7 @@ rule laplace_desparsified_lasso:
     input:
         script = "code/scripts/laplace_desparsified_lasso.R"
     output:
-        "code/rds/{ITER}/laplace_desparsified_lasso.rds"
+        f"code/rds/{ITER}/laplace_desparsified_lasso.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -75,7 +78,7 @@ rule laplace_traditional_bootstrap:
     input:
         script = "code/scripts/laplace_traditional_bootstrap.R"
     output:
-        "code/rds/{ITER}/laplace_traditional_bootstrap.rds"
+        f"code/rds/{ITER}/laplace_traditional_bootstrap.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -83,7 +86,7 @@ rule normal_relaxed_lasso_posterior:
     input:
         script = "code/scripts/normal_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/normal_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/normal_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
@@ -91,7 +94,7 @@ rule t_relaxed_lasso_posterior:
     input:
         script = "code/scripts/t_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/t_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/t_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -99,7 +102,7 @@ rule uniform_relaxed_lasso_posterior:
     input:
         script = "code/scripts/uniform_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/uniform_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/uniform_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -107,7 +110,7 @@ rule beta_relaxed_lasso_posterior:
     input:
         script = "code/scripts/beta_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/beta_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/beta_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -115,7 +118,7 @@ rule sparse1_relaxed_lasso_posterior:
     input:
         script = "code/scripts/sparse1_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -123,7 +126,7 @@ rule sparse1_relaxed_MCP_posterior:
     input:
         script = "code/scripts/sparse1_relaxed_MCP_posterior.R"
     output:
-        "code/rds/{ITER}/sparse1_relaxed_MCP_posterior.rds"
+        f"code/rds/{ITER}/sparse1_relaxed_MCP_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -131,7 +134,7 @@ rule sparse2_relaxed_lasso_posterior:
     input:
         script = "code/scripts/sparse2_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/sparse2_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/sparse2_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -139,7 +142,7 @@ rule sparse3_relaxed_lasso_posterior:
     input:
         script = "code/scripts/sparse3_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/sparse3_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/sparse3_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -203,52 +206,52 @@ rule laplace_corr_relaxed_lasso_posterior:
     input:
         script = "code/scripts/laplace_corr_relaxed_lasso_posterior.R"
     output:
-        "code/rds/{ITER}/laplace_corr_relaxed_lasso_posterior.rds"
+        f"code/rds/{ITER}/laplace_corr_relaxed_lasso_posterior.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
 rule laplace_gam_fits:
     input:
         script = "code/scripts/laplace_gam_fits.R",
-        rds = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds"
+        rds = f"code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds"
     output:
-        "code/rds/{ITER}/laplace_gam_fits.rds"
+        f"code/rds/{ITER}/laplace_gam_fits.rds"
     shell:
         "Rscript {input.script} --iterations {ITER}"
         
 rule ridge_gam_fits:
     input:
         script = "code/scripts/ridge_gam_fits.R",
-        rds = "code/rds/{ITER}/ridge_posterior_converge.rds"
+        rds = f"code/rds/{ITER}/ridge_posterior_converge.rds"
     output:
-        "code/rds/{ITER}/ridge_gam_fits.rds"
+        f"code/rds/{ITER}/ridge_gam_fits.rds"
     shell:
         "Rscript {input.script} --iterations {ITER}"
         
 rule laplace_gam_fits_selective_inference:
     input:
         script = "code/scripts/laplace_gam_fits_selective_inference.R",
-        rds = "code/rds/{ITER}/laplace_selective_inference.rds"
+        rds = f"code/rds/{ITER}/laplace_selective_inference.rds"
     output:
-        "code/rds/{ITER}/laplace_gam_fits_selective_inference.rds"
+        f"code/rds/{ITER}/laplace_gam_fits_selective_inference.rds"
     shell:
         "Rscript {input.script} --iterations {ITER}"
         
 rule laplace_gam_fits_desparsified_lasso:
     input:
         script = "code/scripts/laplace_gam_fits_desparsified_lasso.R",
-        rds = "code/rds/{ITER}/laplace_desparsified_lasso.rds"
+        rds = f"code/rds/{ITER}/laplace_desparsified_lasso.rds"
     output:
-        "code/rds/{ITER}/laplace_gam_fits_desparsified_lasso.rds"
+        f"code/rds/{ITER}/laplace_gam_fits_desparsified_lasso.rds"
     shell:
         "Rscript {input.script} --iterations {ITER}"
         
 rule laplace_gam_fits_traditional_bootstrap:
     input:
         script = "code/scripts/laplace_gam_fits_traditional_bootstrap.R",
-        rds = "code/rds/{ITER}/laplace_traditional_bootstrap.rds"
+        rds = f"code/rds/{ITER}/laplace_traditional_bootstrap.rds"
     output:
-        "code/rds/{ITER}/laplace_gam_fits_traditional_bootstrap.rds"
+        f"code/rds/{ITER}/laplace_gam_fits_traditional_bootstrap.rds"
     shell:
         "Rscript {input.script} --iterations {ITER}"
         
@@ -256,16 +259,16 @@ rule across_lambda_coverage:
     input:
         script = "code/scripts/across_lambda_coverage.R"
     output:
-        "code/rds/{ITER}/across_lambda_coverage.rds"
+        f"code/rds/{ITER}/across_lambda_coverage.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
 rule across_lambda_gam:
     input:
         script = "code/scripts/across_lambda_gam.R",
-        rds    = "code/rds/{ITER}/across_lambda_coverage.rds"
+        rds    = f"code/rds/{ITER}/across_lambda_coverage.rds"
     output:
-        "code/rds/{ITER}/across_lambda_gam.rds"
+        f"code/rds/{ITER}/across_lambda_gam.rds"
     shell:
         "Rscript {input.script} --iterations {ITER}"
         
@@ -273,7 +276,7 @@ rule bias_decomposition:
     input:
         script = "code/scripts/bias_decomposition.R",
     output:
-        "code/rds/{ITER}/bias_decomposition.rds"
+        f"code/rds/{ITER}/bias_decomposition.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
         
@@ -281,14 +284,14 @@ rule stability_selection:
     input:
         script = "code/scripts/stability_selection.R",
     output:
-        "code/rds/{ITER}/stability_selection.rds"
+        f"code/rds/{ITER}/stability_selection.rds"
     shell:
         "Rscript {input.script} --iterations {ITER} --seed {SEED}"
 
 rule figure1:
     input:
         script = "code/figure1.R",
-        gam_rds = "code/rds/{ITER}/laplace_gam_fits.rds"
+        gam_rds = f"code/rds/{ITER}/laplace_gam_fits.rds"
     output:
         "code/out/figure1.pdf"
     shell:
@@ -297,7 +300,7 @@ rule figure1:
 rule figure2:
     input:
         script = "code/figure2.R",
-        gam_rds = "code/rds/{ITER}/ridge_gam_fits.rds"
+        gam_rds = f"code/rds/{ITER}/ridge_gam_fits.rds"
     output:
         "code/out/figure2.pdf"
     shell:
@@ -306,8 +309,8 @@ rule figure2:
 rule figure3:
     input:
         script = "code/figure3.R",
-        rds1 = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/{ITER}/laplace_corr_relaxed_lasso_posterior.rds"
+        rds1 = f"code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
+        rds2 = f"code/rds/{ITER}/laplace_corr_relaxed_lasso_posterior.rds"
     output:
         "code/out/figure3.pdf"
     shell:
@@ -316,8 +319,8 @@ rule figure3:
 rule figure4:
     input:
         script = "code/figure4.R",
-        rds1 = "code/rds/{ITER}/across_lambda_coverage.rds",
-        rds2 = "code/rds/{ITER}/across_lambda_gam.rds"
+        rds1 = f"code/rds/{ITER}/across_lambda_coverage.rds",
+        rds2 = f"code/rds/{ITER}/across_lambda_gam.rds"
     output:
         "code/out/figure4.png"
     shell:
@@ -333,38 +336,38 @@ rule figure5:
         "Rscript {input.script} --iterations {ITER}"
     
 rule figure6:
-    input: make_inputs(6, "laplace_gam_fits", "laplace_gam_fits_selective_inference", "laplace_gam_fits_desparsified_lasso")
+    input: **make_inputs(6, "laplace_gam_fits", "laplace_gam_fits_selective_inference", "laplace_gam_fits_desparsified_lasso", iter=ITER)
     output:
         "code/out/figure6.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
+        f"Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
         
 rule figure7:
-    input:make_inputs(7,"laplace_relaxed_lasso_posterior","laplace_selective_inference","laplace_desparsified_lasso")
+    input: **make_inputs(7,"laplace_relaxed_lasso_posterior","laplace_selective_inference","laplace_desparsified_lasso", iter=ITER)
     output:
         "code/out/figure7.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
+        f"Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
         
         
 rule figure8:
-    input: make_inputs(8,"whoari_relaxed_lasso_posterior","whoari_selective_inference","whoari_desparsified_lasso")
+    input: **make_inputs(8,"whoari_relaxed_lasso_posterior","whoari_selective_inference","whoari_desparsified_lasso")
     output:
         "code/out/figure8.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
+        f"Rscript {input.script} {'--desparsified' if DESPARSIFIED else ''}"
         
 rule figure9:
-    input:make_inputs(9,"Scheetz2006_relaxed_lasso_posterior","Scheetz2006_selective_inference","Scheetz2006_desparsified_lasso")
+    input: **make_inputs(9,"Scheetz2006_relaxed_lasso_posterior","Scheetz2006_selective_inference","Scheetz2006_desparsified_lasso")
     output:
         "code/out/figure9.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER} {'--desparsified' if DESPARSIFIED else ''}"
+        f"Rscript {input.script} {'--desparsified' if DESPARSIFIED else ''}"
 
 rule figureA1:
     input:
         script = "code/figureA1.R",
-        rds = "code/rds/{ITER}/laplace_gam_fits_traditional_bootstrap.rds",
+        rds = f"code/rds/{ITER}/laplace_gam_fits_traditional_bootstrap.rds",
     output:
         "code/out/figureA1.pdf"
     shell:
@@ -373,7 +376,7 @@ rule figureA1:
 rule figureC1:
     input:
         script = "code/figureC1.R",
-        rds = "code/rds/{ITER}/laplace_gam_fits.rds",
+        rds = f"code/rds/{ITER}/laplace_gam_fits.rds",
     output:
         "code/out/figureC1.pdf"
     shell:
@@ -382,7 +385,7 @@ rule figureC1:
 rule figureF1:
     input:
         script = "code/figureF1.R",
-        rds = "code/rds/{ITER}/bias_decomposition.rds",
+        rds = f"code/rds/{ITER}/bias_decomposition.rds",
     output:
         "code/out/figureF1.pdf"
     shell:
@@ -391,14 +394,14 @@ rule figureF1:
 rule table1:
     input:
         script = "code/table1.R",
-        rds1 = "code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/{ITER}/normal_relaxed_lasso_posterior.rds",
-        rds3 = "code/rds/{ITER}/t_relaxed_lasso_posterior.rds",
-        rds4 = "code/rds/{ITER}/uniform_relaxed_lasso_posterior.rds",
-        rds5 = "code/rds/{ITER}/beta_relaxed_lasso_posterior.rds",
-        rds6 = "code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds",
-        rds7 = "code/rds/{ITER}/sparse2_relaxed_lasso_posterior.rds",
-        rds8 = "code/rds/{ITER}/sparse3_relaxed_lasso_posterior.rds"
+        rds1 = f"code/rds/{ITER}/laplace_relaxed_lasso_posterior.rds",
+        rds2 = f"code/rds/{ITER}/normal_relaxed_lasso_posterior.rds",
+        rds3 = f"code/rds/{ITER}/t_relaxed_lasso_posterior.rds",
+        rds4 = f"code/rds/{ITER}/uniform_relaxed_lasso_posterior.rds",
+        rds5 = f"code/rds/{ITER}/beta_relaxed_lasso_posterior.rds",
+        rds6 = f"code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds",
+        rds7 = f"code/rds/{ITER}/sparse2_relaxed_lasso_posterior.rds",
+        rds8 = f"code/rds/{ITER}/sparse3_relaxed_lasso_posterior.rds"
     output:
         "code/out/table1.tex"
     shell:
@@ -407,7 +410,7 @@ rule table1:
 rule tableD1:
     input:
         script = "code/tableD1.R",
-        rds = "code/rds/{ITER}/laplace_selective_inference.rds"
+        rds = f"code/rds/{ITER}/laplace_selective_inference.rds"
     output:
         "code/out/tableD1.tex"
     shell:
@@ -416,8 +419,8 @@ rule tableD1:
 rule tableE1:
     input:
         script = "code/tableE1.R",
-        rds1 = "code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds",
-        rds2 = "code/rds/{ITER}/sparse1_relaxed_MCP_posterior.rds"
+        rds1 = f"code/rds/{ITER}/sparse1_relaxed_lasso_posterior.rds",
+        rds2 = f"code/rds/{ITER}/sparse1_relaxed_MCP_posterior.rds"
     output:
         "code/out/tableE1.tex"
     shell:
@@ -426,7 +429,7 @@ rule tableE1:
 rule tableG1:
     input:
         script = "code/tableG1.R",
-        rds = "code/rds/{ITER}/stability_selection.rds",
+        rds = f"code/rds/{ITER}/stability_selection.rds",
     output:
         "code/out/tableG1.tex"
     shell:

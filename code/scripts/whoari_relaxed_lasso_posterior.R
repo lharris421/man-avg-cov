@@ -13,14 +13,10 @@ set.seed(opt$seed)
 data <- read_data("whoari")
 data$X <- std(data$X)
 
-
-lambda <- cv.ncvreg(data$X, data$y, penalty = "lasso")$lambda.min
+cv_fit <- cv.ncvreg(data$X, data$y, penalty = "lasso")
 
 run_time <- system.time({
-  res <- pipe_ncvreg(
-    data$X, data$y, penalty = "lasso", level = 0.8,
-    relaxed = TRUE, lambda = lambda
-  )
+  res <- confidence_intervals(cv_fit, level = 0.8, relaxed = TRUE)
 })
 res <- res %>%
   mutate(time = as.numeric(run_time)[3],

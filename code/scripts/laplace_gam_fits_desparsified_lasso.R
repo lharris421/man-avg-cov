@@ -11,9 +11,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res <- readRDS("rds/{iterations}/laplace_desparsified_lasso.rds")
+  res <- readRDS(glue("rds/{iterations}/laplace_desparsified_lasso.rds"))
 } else {
-  res <- readRDS("code/rds/{iterations}/laplace_desparsified_lasso.rds")
+  res <- readRDS(glue("code/rds/{iterations}/laplace_desparsified_lasso.rds"))
 }
 
 ns <- c(100)
@@ -34,7 +34,7 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds")
+  saveRDS(gam_fits, glue("rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds"))
 } else {
-  saveRDS(gam_fits, "code/rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds")
+  saveRDS(gam_fits, glue("code/rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds"))
 }

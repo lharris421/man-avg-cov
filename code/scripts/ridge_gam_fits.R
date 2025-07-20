@@ -16,9 +16,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res <- readRDS("rds/{iterations}/ridge_posterior_converge.rds")
+  res <- readRDS(glue("rds/{iterations}/ridge_posterior_converge.rds"))
 } else {
-  res <- readRDS("code/rds/{iterations}/ridge_posterior_converge.rds")
+  res <- readRDS(glue("code/rds/{iterations}/ridge_posterior_converge.rds"))
 }
 
 ridge <- list()
@@ -54,7 +54,7 @@ for (j in 1:nrow(lookup)) {
 gam_fits <- list("ridge" = ridge, "ridge_boot" = ridge_boot)
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/{iterations}/ridge_gam_fits.rds")
+  saveRDS(gam_fits, glue("rds/{iterations}/ridge_gam_fits.rds"))
 } else {
-  saveRDS(gam_fits, "code/rds/{iterations}/ridge_gam_fits.rds")
+  saveRDS(gam_fits, glue("code/rds/{iterations}/ridge_gam_fits.rds"))
 }

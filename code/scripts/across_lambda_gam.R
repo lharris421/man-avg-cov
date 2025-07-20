@@ -11,9 +11,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res_list <- readRDS("rds/{iterations}/across_lambda_coverage.rds")
+  res_list <- readRDS(glue("rds/{iterations}/across_lambda_coverage.rds"))
 } else {
-  res_list <- readRDS("code/rds/{iterations}/across_lambda_coverage.rds")
+  res_list <- readRDS(glue("code/rds/{iterations}/across_lambda_coverage.rds"))
 }
 
 lambdas <- res_list$lambdas
@@ -38,7 +38,7 @@ lambda_cov <- pdat %>%
 model_cov <- gam(covered ~ te(lambda, truth), data = pdat, family = binomial)
 
 if (interactive()) {
-  saveRDS(model_cov, "rds/{iterations}/across_lambda_gam.rds")
+  saveRDS(model_cov, glue("rds/{iterations}/across_lambda_gam.rds"))
 } else {
-  saveRDS(model_cov, "code/rds/{iterations}/across_lambda_gam.rds")
+  saveRDS(model_cov, glue("code/rds/{iterations}/across_lambda_gam.rds"))
 }

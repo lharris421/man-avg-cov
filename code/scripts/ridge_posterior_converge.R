@@ -68,8 +68,8 @@ for (j in 1:nrow(lookup)) {
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(ridge, ridge_boot), "rds/{iterations}/ridge_posterior_converge.rds")
+  saveRDS(bind_rows(ridge, ridge_boot), glue("rds/{iterations}/ridge_posterior_converge.rds"))
 } else {
-  saveRDS(bind_rows(ridge, ridge_boot), "code/rds/{iterations}/ridge_posterior_converge.rds")
+  saveRDS(bind_rows(ridge, ridge_boot), glue("code/rds/{iterations}/ridge_posterior_converge.rds"))
 }
 

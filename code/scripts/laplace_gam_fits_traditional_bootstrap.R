@@ -12,9 +12,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res <- readRDS("rds/{iterations}/laplace_traditional_bootstrap.rds")
+  res <- readRDS(glue("rds/{iterations}/laplace_traditional_bootstrap.rds"))
 } else {
-  res <- readRDS("code/rds/{iterations}/laplace_traditional_bootstrap.rds")
+  res <- readRDS(glue("code/rds/{iterations}/laplace_traditional_bootstrap.rds"))
 }
 
 
@@ -35,7 +35,7 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds")
+  saveRDS(gam_fits, glue("rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds"))
 } else {
-  saveRDS(gam_fits, "code/rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds")
+  saveRDS(gam_fits, glue("code/rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds"))
 }

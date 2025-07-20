@@ -1,9 +1,7 @@
 if (interactive()) {
   source("scripts/setup.R")
-  res <- readRDS("rds/laplace_relaxed_lasso_posterior.rds")
 } else {
   source("code/scripts/setup.R")
-  res <- readRDS("code/rds/laplace_relaxed_lasso_posterior.rds")
 }
 
 ns <- c(50, 100, 400, 1000)
@@ -14,9 +12,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res <- readRDS("rds/{iterations}/laplace_relaxed_lasso_posterior.rds")
+  res <- readRDS(glue("rds/{iterations}/laplace_relaxed_lasso_posterior.rds"))
 } else {
-  res <- readRDS("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds")
+  res <- readRDS(glue("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds"))
 }
 
 gam_fits <- list()
@@ -36,7 +34,7 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/{iterations}/laplace_gam_fits.rds")
+  saveRDS(gam_fits, glue("rds/{iterations}/laplace_gam_fits.rds"))
 } else {
-  saveRDS(gam_fits, "code/rds/{iterations}/laplace_gam_fits.rds")
+  saveRDS(gam_fits, glue("code/rds/{iterations}/laplace_gam_fits.rds"))
 }

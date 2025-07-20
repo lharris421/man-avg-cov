@@ -203,5 +203,5 @@ results <- list(
 if (interactive()) {
   saveRDS(results, glue("rds/{iterations}/bias_decomposition.rds"))
 } else {
-  saveRDS(results, "code/rds/{iterations}/bias_decomposition.rds")
+  saveRDS(results, glue("code/rds/{iterations}/bias_decomposition.rds"))
 }

@@ -1,4 +1,9 @@
-library(optparse)
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source("code/scripts/setup.R")
+}
+
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000)
 )
@@ -6,18 +11,16 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  source("scripts/setup.R")
   res <- list()
-  res[[1]] <- readRDS("rds/{iterations}/laplace_relaxed_lasso_posterior.rds") %>%
+  res[[1]] <- readRDS(glue("rds/{iterations}/laplace_relaxed_lasso_posterior.rds")) %>%
     mutate(rho = 0, method = "relaxed_lasso_posterior")
-  res[[2]] <- readRDS("rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds") %>%
+  res[[2]] <- readRDS(glue("rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds")) %>%
     mutate(method = "relaxed_lasso_posterior")
 } else {
-  source("code/scripts/setup.R")
   res <- list()
-  res[[1]] <- readRDS("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds") %>%
+  res[[1]] <- readRDS(glue("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds")) %>%
     mutate(rho = 0, method = "relaxed_lasso_posterior")
-  res[[2]] <- readRDS("code/rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds") %>%
+  res[[2]] <- readRDS(glue("code/rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds")) %>%
     mutate(method = "relaxed_lasso_posterior")
 }
 

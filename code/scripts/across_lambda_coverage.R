@@ -10,7 +10,8 @@ option_list <- list(
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
-set.seed(opt$seed)
+seed <- opt$seed
+set.seed(seed)
 
 lambda_mins <- numeric(iterations)
 nres <- list()
@@ -42,7 +43,7 @@ for (k in 1:iterations) {
 
     if (!is.na(lambda_seq[i])) {
       set.seed(current_seed)
-      pre_lambda_res[[i]] <- pipe_ncvreg(data$X, data$y, penalty = "lasso", level = 0.8, relaxed = TRUE, sigma = sqrt(sigma2), lambda = lambda_seq[i]) %>%
+      pre_lambda_res[[i]] <- confidence_intervals(cv_fit, level = 0.8, relaxed = TRUE, sigma = sqrt(sigma2), lambda = lambda_seq[i]) %>%
         dplyr::mutate(lambda_ind = i, n = 100, group = k, lambda = lambda_seq[i], lambda_max = lambda_max)
     } else {
       print("Shortened lambda sequence!!")
@@ -68,8 +69,8 @@ for (k in 1:iterations) {
 res_list <- list("res" = bind_rows(nres), "lambdas" = lambda_mins)
 
 if (interactive()) {
-  saveRDS(res_list, "rds/{iterations}/across_lambda_coverage.rds")
+  saveRDS(res_list, glue("rds/{iterations}/across_lambda_coverage.rds"))
 } else {
-  saveRDS(res_list, "code/rds/{iterations}/across_lambda_coverage.rds")
+  saveRDS(res_list, glue("code/rds/{iterations}/across_lambda_coverage.rds"))
 }
 

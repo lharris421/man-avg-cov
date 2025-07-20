@@ -12,9 +12,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  res <- readRDS("rds/{iterations}/laplace_selective_inference.rds")
+  res <- readRDS(glue("rds/{iterations}/laplace_selective_inference.rds"))
 } else {
-  res <- readRDS("code/rds/{iterations}/laplace_selective_inference.rds")
+  res <- readRDS(glue("code/rds/{iterations}/laplace_selective_inference.rds"))
 }
 
 gam_fits <- list()
@@ -34,7 +34,7 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(gam_fits, "rds/{iterations}/laplace_gam_fits_selective_inference.rds")
+  saveRDS(gam_fits, glue("rds/{iterations}/laplace_gam_fits_selective_inference.rds"))
 } else {
-  saveRDS(gam_fits, "code/rds/{iterations}/laplace_gam_fits_selective_inference.rds")
+  saveRDS(gam_fits, glue("code/rds/{iterations}/laplace_gam_fits_selective_inference.rds"))
 }

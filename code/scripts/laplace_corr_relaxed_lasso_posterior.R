@@ -28,7 +28,8 @@ for (k in 1:length(corrs)) {
       data <- gen_data_distribution(n = ns[j], p = 101, distribution = "laplace", sigma = 10, corr = "autoregressive", rho = corrs[k])
       truth <- data.frame(variable = names(data$beta), truth = data$beta)
       t <- system.time({
-        intermediate_res[[i]] <- pipe_ncvreg(data$X, data$y, penalty = "lasso", level = 0.8, relaxed = TRUE)
+        cv_fit <- cv.ncvreg(data$X, data$y, penalty = "lasso")
+        intermediate_res[[i]] <- confidence_intervals(cv_fit, level = 0.8, relaxed = TRUE)
       })
       intermediate_res[[i]] <- intermediate_res[[i]] %>%
         left_join(truth, by = join_by(variable)) %>%
@@ -46,8 +47,8 @@ for (k in 1:length(corrs)) {
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(all_res), "rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds")
+  saveRDS(bind_rows(all_res), glue("rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds"))
 } else {
-  saveRDS(bind_rows(all_res), "code/rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds")
+  saveRDS(bind_rows(all_res), glue("code/rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds"))
 }
 

@@ -25,7 +25,8 @@ for (j in 1:length(ns)) {
     data <- gen_data_distribution(n = ns[j], p = 101, distribution = "sparse 1", sigma = 10)
     truth <- data.frame(variable = names(data$beta), truth = data$beta)
     t <- system.time({
-      intermediate_res[[i]] <- pipe_ncvreg(data$X, data$y, penalty = "MCP", level = 0.8, relaxed = TRUE)
+      cv_fit <- cv.ncvreg(data$X, data$y, penalty = "MCP")
+      intermediate_res[[i]] <- confidence_intervals(cv_fit, level = 0.8, relaxed = TRUE)
     })
     intermediate_res[[i]] <- intermediate_res[[i]] %>%
       left_join(truth, by = join_by(variable)) %>%
@@ -40,8 +41,8 @@ for (j in 1:length(ns)) {
 }
 
 if (interactive()) {
-  saveRDS(bind_rows(res), "rds/sparse1_relaxed_MCP_posterior.rds")
+  saveRDS(bind_rows(res), glue("rds/{iterations}/sparse1_relaxed_MCP_posterior.rds"))
 } else {
-  saveRDS(bind_rows(res), "code/rds/sparse1_relaxed_MCP_posterior.rds")
+  saveRDS(bind_rows(res), glue("code/rds/{iterations}/sparse1_relaxed_MCP_posterior.rds"))
 }
 

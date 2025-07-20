@@ -25,7 +25,8 @@ for (i in 1:iterations) {
   truth <- data.frame(variable = names(data$beta), truth = data$beta)
 
   t <- system.time({
-    rlp[[i]] <- pipe_ncvreg(data$X, data$y, penalty = "lasso", level = 0.8, relaxed = TRUE)
+    cv_fit <- cv.ncvreg(data$X, data$y, penalty = "lasso")
+    rlp[[i]] <- confidence_intervals(cv_fit, level = 0.8, relaxed = TRUE)
   })
   rlp[[i]] <- rlp[[i]] %>%
     left_join(truth, by = join_by(variable)) %>%

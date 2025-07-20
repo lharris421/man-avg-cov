@@ -1,4 +1,9 @@
-library(optparse)
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source("code/scripts/setup.R")
+}
+
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000)
 )
@@ -6,11 +11,9 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 if (interactive()) {
-  source("scripts/setup.R")
-  results <- readRDS("rds/{iterations}/ridge_gam_fits.rds")
+  results <- readRDS(glue("rds/{iterations}/ridge_gam_fits.rds"))
 } else {
-  source("code/scripts/setup.R")
-  results <- readRDS("code/rds/{iterations}/ridge_gam_fits.rds")
+  results <- readRDS(glue("code/rds/{iterations}/ridge_gam_fits.rds"))
 }
 
 lookup <- data.frame(
