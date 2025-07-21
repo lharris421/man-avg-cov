@@ -25,7 +25,7 @@ lambdas <- numeric(iterations)
 for (i in 1:iterations) {
 
   set.seed(seeds[i])
-  data <- gen_data_abn(n = 100, p = 100, a = 1, b = 1, rho = 0.99, beta = 2)
+  data <- gen_data_abn(n = 100, p = 100, a = 1, b = 1, rho = 0.5, beta = 2)
   cv_fit <- cv.ncvreg(data$X, data$y, penalty = "lasso")
   lambdas[i] <- cv_fit$lambda.min
   lambda <- cv_fit$lambda.min / max(cv_fit$fit$lambda)

@@ -5,7 +5,7 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--iterations"), type="integer", default=1000)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
