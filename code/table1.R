@@ -5,33 +5,27 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=100)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  laplace <- readRDS(glue("rds/{iterations}/laplace_relaxed_lasso_posterior.rds"))
-  normal  <- readRDS(glue("rds/{iterations}/normal_relaxed_lasso_posterior.rds"))
-  t       <- readRDS(glue("rds/{iterations}/t_relaxed_lasso_posterior.rds"))
-  uniform <- readRDS(glue("rds/{iterations}/uniform_relaxed_lasso_posterior.rds"))
-  beta    <- readRDS(glue("rds/{iterations}/beta_relaxed_lasso_posterior.rds"))
-  sparse1 <- readRDS(glue("rds/{iterations}/sparse1_relaxed_lasso_posterior.rds"))
-  sparse2 <- readRDS(glue("rds/{iterations}/sparse2_relaxed_lasso_posterior.rds"))
-  sparse3 <- readRDS(glue("rds/{iterations}/sparse3_relaxed_lasso_posterior.rds"))
-} else {
-  laplace <- readRDS(glue("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds"))
-  normal  <- readRDS(glue("code/rds/{iterations}/normal_relaxed_lasso_posterior.rds"))
-  t       <- readRDS(glue("code/rds/{iterations}/t_relaxed_lasso_posterior.rds"))
-  uniform <- readRDS(glue("code/rds/{iterations}/uniform_relaxed_lasso_posterior.rds"))
-  beta    <- readRDS(glue("code/rds/{iterations}/beta_relaxed_lasso_posterior.rds"))
-  sparse1 <- readRDS(glue("code/rds/{iterations}/sparse1_relaxed_lasso_posterior.rds"))
-  sparse2 <- readRDS(glue("code/rds/{iterations}/sparse2_relaxed_lasso_posterior.rds"))
-  sparse3 <- readRDS(glue("code/rds/{iterations}/sparse3_relaxed_lasso_posterior.rds"))
-}
+results_lookup <- expand.grid(
+  n = c(50, 100, 400, 1000),
+  dist = c("laplace", "t", "normal", "uniform", "beta", "sparse3", "sparse2", "sparse1"),
+  method = "rlp"
+)
 
-results <- bind_rows(laplace, normal, t, uniform, beta, sparse1, sparse2, sparse3) %>%
-  mutate(method = "relaxed_lasso_posterior")
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/{iterations}/original/{results_lookup[i,'dist']}_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/{results_lookup[i,'dist']}_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  }
+}
+results <- bind_rows(results) %>%
+  mutate(method = method_labels[method])
 
 ps <- list(
   "laplace" = qlaplace((1:101) / (101 + 1), rate = 1),
@@ -39,9 +33,9 @@ ps <- list(
   "normal" = qnorm((1:101) / (101 + 1), sd = 1),
   "uniform" = qunif((1:101) / (101 + 1), -1, 1),
   "beta" = qbeta((1:101) / (101 + 1),  .1, .1) - .5,
-  "sparse 3" = c(qnorm((1:51) / 52, sd = 1), rep(0, 50)),
-  "sparse 2" = c(qnorm((1:31) / 32, sd = 1), rep(0, 70)),
-  "sparse 1" = c(rep(c(rep(0.5, 3), 1, 2), 2) * c(rep(1, 5), rep(-1, 5)), rep(0, 91)),
+  "sparse3" = c(qnorm((1:51) / 52, sd = 1), rep(0, 50)),
+  "sparse2" = c(qnorm((1:31) / 32, sd = 1), rep(0, 70)),
+  "sparse1" = c(rep(c(rep(0.5, 3), 1, 2), 2) * c(rep(1, 5), rep(-1, 5)), rep(0, 91)),
   " " = c()
 )
 ps <- lapply(ps, function(x) if (!is.null(x)) {x / max(abs(x))})

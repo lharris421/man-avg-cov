@@ -12,26 +12,23 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 desparsified <- opt$desparsified
 
-if (interactive()) {
-  results_rlp <- readRDS(glue("rds/{iterations}/laplace_relaxed_lasso_posterior.rds"))
-  results_si  <- readRDS(glue("rds/{iterations}/laplace_selective_inference.rds"))
-  if (desparsified) results_dl  <- readRDS(glue("rds/{iterations}/laplace_desparsified_lasso.rds"))
-} else {
-  results_rlp <- readRDS(glue("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds"))
-  results_si  <- readRDS(glue("code/rds/{iterations}/laplace_selective_inference.rds"))
-  if (desparsified) results_dl  <- readRDS(glue("code/rds/{iterations}/laplace_desparsified_lasso.rds"))
-}
-
-results <- bind_rows(
-  results_rlp,
-  results_si
+results_lookup <- expand.grid(
+  method = c("rlp", "selectiveinference"),
+  n = c(50, 100, 400)
 )
 
-if (desparsified) results <- results %>% bind_rows(results_dl)
-
-results <- results %>%
-  mutate(method = method_labels[method]) %>%
-  filter(n <= 400)
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  }
+}
+results <- bind_rows(results) %>%
+  mutate(
+    method = method_labels[method]
+  )
 
 results_per_sim <- results %>%
   group_by(method, n, iteration) %>%

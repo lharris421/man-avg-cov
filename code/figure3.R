@@ -5,26 +5,26 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=100)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  res <- list()
-  res[[1]] <- readRDS(glue("rds/{iterations}/laplace_relaxed_lasso_posterior.rds")) %>%
-    mutate(rho = 0, method = "relaxed_lasso_posterior")
-  res[[2]] <- readRDS(glue("rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds")) %>%
-    mutate(method = "relaxed_lasso_posterior")
-} else {
-  res <- list()
-  res[[1]] <- readRDS(glue("code/rds/{iterations}/laplace_relaxed_lasso_posterior.rds")) %>%
-    mutate(rho = 0, method = "relaxed_lasso_posterior")
-  res[[2]] <- readRDS(glue("code/rds/{iterations}/laplace_corr_relaxed_lasso_posterior.rds")) %>%
-    mutate(method = "relaxed_lasso_posterior")
-}
+results_lookup <- expand.grid(
+  n = c(50, 100, 400, 1000),
+  rho = c(0, 50, 80)
+) %>%
+  mutate(method = "rlp")
 
-res <- bind_rows(res) %>%
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/{iterations}/original/laplace_autoregressive_{results_lookup[i,'rho']}_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/laplace_autoregressive_{results_lookup[i,'rho']}_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  }
+}
+res <- bind_rows(results) %>%
   mutate(method = method_labels[method])
 
 # Transform and summarize data
