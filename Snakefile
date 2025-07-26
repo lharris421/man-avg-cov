@@ -46,7 +46,8 @@ rule distribution_results:
         "--distribution {wildcards.distribution} "
         "--corr {wildcards.corr} "
         "--rho {wildcards.rho} " ## As a percent
-        "--method {wildcards.method}"
+        "--method {wildcards.method} "
+        "--loc {LOC}"
         
 rule highcorr_results:
     input:
@@ -57,7 +58,8 @@ rule highcorr_results:
         "Rscript {input.script} "
         "--iterations {ITER} "
         "--seed {SEED} "
-        "--method {wildcards.method}"
+        "--method {wildcards.method} "
+        "--loc {LOC}"
         
 rule data_results:
     input:
@@ -68,7 +70,8 @@ rule data_results:
         "Rscript {input.script} "
         "--seed {SEED} "
         "--method {wildcards.method} "
-        "--data {wildcards.dataset}"
+        "--data {wildcards.dataset} "
+        "--loc {LOC}"
         
 rule fit_gam:
     input:
@@ -87,7 +90,8 @@ rule fit_gam:
         "--distribution {wildcards.distribution} "
         "--corr {wildcards.corr} "
         "--rho {wildcards.rho} "
-        "--method {wildcards.method}"
+        "--method {wildcards.method} "
+        "--loc {LOC}"
         
 rule across_lambda_coverage:
     input:
@@ -95,7 +99,10 @@ rule across_lambda_coverage:
     output:
         f"{LOC}rds/{ITER}/across_lambda_coverage.rds"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--seed {SEED} "
+        "--loc {LOC}"
         
 rule across_lambda_gam:
     input:
@@ -104,7 +111,9 @@ rule across_lambda_gam:
     output:
         f"{LOC}rds/{ITER}/across_lambda_gam.rds"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule bias_decomposition:
     input:
@@ -112,7 +121,10 @@ rule bias_decomposition:
     output:
         f"{LOC}rds/{ITER}/bias_decomposition.rds"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--seed {SEED} "
+        "--loc {LOC}"
         
 rule stability_selection:
     input:
@@ -120,7 +132,10 @@ rule stability_selection:
     output:
         f"{LOC}rds/{ITER}/stability_selection.rds"
     shell:
-        "Rscript {input.script} --iterations {ITER} --seed {SEED}"
+        "Rscript {input.script} " 
+        "--iterations {ITER} "
+        "--seed {SEED} "
+        "--loc {LOC}"
 
 rule figure1:
     input:
@@ -129,7 +144,9 @@ rule figure1:
     output:
         "code/out/figure1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule figure2:
     input:
@@ -142,7 +159,9 @@ rule figure2:
     output:
         "code/out/figure2.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} " 
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule figure3:
     input:
@@ -155,7 +174,9 @@ rule figure3:
     output:
         "code/out/figure3.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} " 
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule figure4:
     input:
@@ -165,7 +186,9 @@ rule figure4:
     output:
         "code/out/figure4.png"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule figure5:
     input:
@@ -223,7 +246,9 @@ rule figure8:
     output:
         "code/out/figure8.pdf"
     shell:
-        f"Rscript {input.script} {'--desparsified' if DESPARSIFIED else ''}"
+        "Rscript {input.script} "
+        "--loc {LOC} "
+        f"{'--desparsified' if DESPARSIFIED else ''}"
         
 rule figure9:
     input:
@@ -235,7 +260,9 @@ rule figure9:
     output:
         "code/out/figure9.pdf"
     shell:
-        f"Rscript {input.script} {'--desparsified' if DESPARSIFIED else ''}"
+        "Rscript {input.script} "
+        "--loc {LOC} "
+        f"{'--desparsified' if DESPARSIFIED else ''}"
 
 rule figureA1:
     input:
@@ -244,7 +271,9 @@ rule figureA1:
     output:
         "code/out/figureA1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule figureC1:
     input: 
@@ -256,7 +285,9 @@ rule figureC1:
     output:
         "code/out/figureC1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule figureF1:
     input:
@@ -265,7 +296,9 @@ rule figureF1:
     output:
         "code/out/figureF1.pdf"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule table1:
     input:
@@ -278,7 +311,9 @@ rule table1:
     output:
         "code/out/table1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule tableD1:
     input: 
@@ -290,7 +325,9 @@ rule tableD1:
     output:
         "code/out/tableD1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule tableE1:
     input: 
@@ -302,7 +339,9 @@ rule tableE1:
     output:
         "code/out/tableE1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
         
 rule tableG1:
     input:
@@ -311,7 +350,9 @@ rule tableG1:
     output:
         "code/out/tableG1.tex"
     shell:
-        "Rscript {input.script} --iterations {ITER}"
+        "Rscript {input.script} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
 
 rule manuscript:
     input:
