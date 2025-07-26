@@ -1,9 +1,33 @@
 .Rproj.user
 .Rhistory
+.Rapp.history
 .RData
+.RDataTmp
 .Ruserdata
-.snakemake/*
+.snakemake/
+.vscode/
+latex/
+
+# local rds (now handled by dat)
 code/rds/*
+!code/rds/.dat
+code/rds/.dat/local
+
+## Output files
+code/out/*
+
 *.pdf
+*.html
+*.out
+*.aux
+*.bbl
+*.log
+*.lot
+*.lof
+*.blg
+*.toc
 *.png
-code/out/*.tex
+*.fdb_latexmk
+*.fls
+*.txt
+*.gz
