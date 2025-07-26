@@ -6,7 +6,8 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--seed"), type="double", default=1234)
+  make_option(c("--seed"), type="double", default=1234),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -68,9 +69,5 @@ for (k in 1:iterations) {
 
 res_list <- list("res" = bind_rows(nres), "lambdas" = lambda_mins)
 
-if (interactive()) {
-  saveRDS(res_list, glue("rds/{iterations}/across_lambda_coverage.rds"))
-} else {
-  saveRDS(res_list, glue("code/rds/{iterations}/across_lambda_coverage.rds"))
-}
+saveRDS(res_list, glue("{opt$loc}rds/{iterations}/across_lambda_coverage.rds"))
 

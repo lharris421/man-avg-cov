@@ -5,7 +5,8 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=100)
+  make_option(c("--iterations"), type="integer", default=100),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -18,11 +19,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  if (interactive()) {
-    results[[i]] <- readRDS(glue("rds/{iterations}/original/laplace_autoregressive_{results_lookup[i,'rho']}_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
-  } else {
-    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/laplace_autoregressive_{results_lookup[i,'rho']}_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
-  }
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/laplace_autoregressive_{results_lookup[i,'rho']}_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
 }
 res <- bind_rows(results) %>%
   mutate(method = method_labels[method])

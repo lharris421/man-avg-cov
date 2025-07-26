@@ -5,16 +5,13 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  res_list <- readRDS(glue("rds/{iterations}/across_lambda_coverage.rds"))
-} else {
-  res_list <- readRDS(glue("code/rds/{iterations}/across_lambda_coverage.rds"))
-}
+res_list <- readRDS(glue("{opt$loc}rds/{iterations}/across_lambda_coverage.rds"))
 
 lambdas <- res_list$lambdas
 res <- res_list$res
@@ -37,8 +34,4 @@ lambda_cov <- pdat %>%
 # Fit a binomial model with the transformed lambda
 model_cov <- gam(covered ~ te(lambda, truth), data = pdat, family = binomial)
 
-if (interactive()) {
-  saveRDS(model_cov, glue("rds/{iterations}/across_lambda_gam.rds"))
-} else {
-  saveRDS(model_cov, glue("code/rds/{iterations}/across_lambda_gam.rds"))
-}
+saveRDS(model_cov, glue("{opt$loc}rds/{iterations}/across_lambda_gam.rds"))

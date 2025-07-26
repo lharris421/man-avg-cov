@@ -6,7 +6,8 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--seed"), type="double", default=1234)
+  make_option(c("--seed"), type="double", default=1234),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -42,8 +43,4 @@ for (i in 1:iterations) {
 
 }
 
-if (interactive()) {
-  saveRDS(list("orig" = orig_sel, "boot" = boot_sel), glue("rds/{iterations}/stability_selection.rds"))
-} else {
-  saveRDS(list("orig" = orig_sel, "boot" = boot_sel), glue("code/rds/{iterations}/stability_selection.rds"))
-}
+saveRDS(list("orig" = orig_sel, "boot" = boot_sel), glue("{opt$loc}rds/{iterations}/stability_selection.rds"))

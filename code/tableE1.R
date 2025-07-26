@@ -1,11 +1,14 @@
 if (interactive()) {
   source("scripts/setup.R")
+  path_pre <- glue("out/")
 } else {
   source("code/scripts/setup.R")
+  path_pre <- glue("code/out/")
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -16,13 +19,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  if (interactive()) {
-    results[[i]] <- readRDS(glue("rds/{iterations}/original/sparse1_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
-    path_pre <- "out/"
-  } else {
-    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/sparse1_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
-    path_pre <- "code/out/"
-  }
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/sparse1_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
 }
 res <- bind_rows(results) %>%
   mutate(

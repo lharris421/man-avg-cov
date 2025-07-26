@@ -5,16 +5,13 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=100)
+  make_option(c("--iterations"), type="integer", default=100),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results <- readRDS(glue("rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"))
-} else {
-  results <- readRDS(glue("code/rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"))
-}
+results <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"))
 
 line_data <- results %>%
   mutate(method = method_labels[method])

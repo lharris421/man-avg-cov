@@ -5,7 +5,8 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 desparsified <- opt$desparsified
@@ -19,11 +20,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  if (interactive()) {
-    results[[i]] <- readRDS(glue("rds/Scheetz2006_{results_lookup[i,'method']}.rds"))
-  } else {
-    results[[i]] <- readRDS(glue("code/rds/Scheetz2006_{results_lookup[i,'method']}.rds"))
-  }
+  results[[i]] <- readRDS(glue("{opt$loc}rds/Scheetz2006_{results_lookup[i,'method']}.rds"))
 }
 
 results <- bind_rows(results) %>%

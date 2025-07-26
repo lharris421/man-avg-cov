@@ -14,7 +14,8 @@ option_list <- list(
   make_option(c("--distribution"), type="character", default="laplace"),
   make_option(c("--method"), type="character", default="rlp"),
   make_option(c("--corr"), type="character", default="exchangeable"),
-  make_option(c("--rho"), type="integer", default=0)
+  make_option(c("--rho"), type="integer", default=0),
+  make_option(c("--loc"), type="character", default="")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -54,9 +55,5 @@ for (i in 1:iterations) {
 res <- bind_rows(res) %>%
   mutate(n = opt$n, distribution = opt$distribution, p = opt$p, corr = opt$corr, rho = opt$rho, sigma = opt$sigma, snr = opt$snr, method = method_name)
 
-if (interactive()) {
-  saveRDS(bind_rows(res), glue("rds/{iterations}/original/{opt$distribution}_{opt$corr}_{opt$rho}_{opt$n}_{opt$p}_{opt$sigma}_{opt$snr}_{method_name}.rds"))
-} else {
-  saveRDS(bind_rows(res), glue("code/rds/{iterations}/original/{opt$distribution}_{opt$corr}_{opt$rho}_{opt$n}_{opt$p}_{opt$sigma}_{opt$snr}_{method_name}.rds"))
-}
+saveRDS(bind_rows(res), glue("{opt$loc}rds/{iterations}/original/{opt$distribution}_{opt$corr}_{opt$rho}_{opt$n}_{opt$p}_{opt$sigma}_{opt$snr}_{method_name}.rds"))
 

@@ -5,17 +5,13 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results <- readRDS(glue("rds/{iterations}/bias_decomposition.rds"))
-} else {
-  results <- readRDS(glue("code/rds/{iterations}/bias_decomposition.rds"))
-}
-
+results <- readRDS(glue("{opt$loc}rds/{iterations}/bias_decomposition.rds"))
 
 plots <- bias_decomp_plots(results, params)
 plots[[1]]  <- plots[[1]]  + coord_cartesian(xlim = c(-0.1, 0.1))

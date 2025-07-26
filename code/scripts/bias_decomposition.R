@@ -6,7 +6,8 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--seed"), type="double", default=1234)
+  make_option(c("--seed"), type="double", default=1234),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -198,10 +199,5 @@ results <- list(
   "true_betas" = true_betas
 )
 
+saveRDS(results, glue("{opt$loc}rds/{iterations}/bias_decomposition.rds"))
 
-
-if (interactive()) {
-  saveRDS(results, glue("rds/{iterations}/bias_decomposition.rds"))
-} else {
-  saveRDS(results, glue("code/rds/{iterations}/bias_decomposition.rds"))
-}

@@ -7,7 +7,8 @@ if (interactive()) {
 option_list <- list(
   make_option(c("--seed"), type="double", default=1234),
   make_option(c("--method"), type="character", default="rlp"),
-  make_option(c("--dataset"), type="character", default="whoari")
+  make_option(c("--dataset"), type="character", default="whoari"),
+  make_option(c("--loc"), type="character", default="")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -38,9 +39,7 @@ res <- res %>%
     method = method_name
   )
 
-if (interactive()) {
-  saveRDS(bind_rows(res), glue("rds/{opt$data}_{method_name}.rds"))
-} else {
-  saveRDS(bind_rows(res), glue("code/rds/{opt$data}_{method_name}.rds"))
-}
+
+saveRDS(bind_rows(res), glue("{opt$loc}rds/{opt$data}_{method_name}.rds"))
+
 

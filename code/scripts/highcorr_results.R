@@ -7,7 +7,8 @@ if (interactive()) {
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--seed"), type="double", default=1234),
-  make_option(c("--method"), type="character", default="rlp")
+  make_option(c("--method"), type="character", default="rlp"),
+  make_option(c("--loc"), type="character", default="")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -45,9 +46,6 @@ for (i in 1:iterations) {
 res <- bind_rows(res) %>%
   mutate(method = method_name)
 
-if (interactive()) {
-  saveRDS(bind_rows(res), glue("rds/{iterations}/original/highcorr_{method_name}.rds"))
-} else {
-  saveRDS(bind_rows(res), glue("code/rds/{iterations}/original/highcorr_{method_name}.rds"))
-}
+saveRDS(bind_rows(res), glue("{opt$loc}rds/{iterations}/original/highcorr_{method_name}.rds"))
+
 
