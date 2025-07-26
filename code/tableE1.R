@@ -10,23 +10,26 @@ option_list <- list(
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results_rlp <- readRDS(glue("rds/{iterations}/sparse1_relaxed_lasso_posterior.rds"))
-  results_rmp  <- readRDS(glue("rds/{iterations}/sparse1_relaxed_MCP_posterior.rds"))
-  path_pre <- "out/"
-} else {
-  results_rlp <- readRDS(glue("code/rds/{iterations}/sparse1_relaxed_lasso_posterior.rds"))
-  results_rmp  <- readRDS(glue("code/rds/{iterations}/sparse1_relaxed_MCP_posterior.rds"))
-  path_pre <- "code/out/"
+results_lookup <- expand.grid(
+  method = c("rlp", "rmp")
+)
+
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/{iterations}/original/sparse1_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
+    path_pre <- "out/"
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/sparse1_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
+    path_pre <- "code/out/"
+  }
 }
+res <- bind_rows(results) %>%
+  mutate(
+    method = method_labels[method]
+  )
 
-results <- bind_rows(
-  results_rlp,
-  results_rmp
-) %>%
-  mutate(method = method_labels[method])
-
-tab <- results %>%
+tab <- res %>%
   mutate(
     abs_truth = abs(truth),
     covered = lower <= truth & upper >= truth

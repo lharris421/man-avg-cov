@@ -1,4 +1,4 @@
-traditional_bootstrap <- function(X, y, b = 1000, penalty = "lasso", level = 0.8) {
+traditional_bootstrap <- function(X, y, b = 1000, penalty = "lasso", alpha = 0.2) {
 
 
   lambda <- cv.ncvreg(X, y, penalty = penalty)$lambda.min
@@ -16,8 +16,8 @@ traditional_bootstrap <- function(X, y, b = 1000, penalty = "lasso", level = 0.8
     samples[i,] <- coef(fit, lambda = lambda)[-1]
   }
 
-  lowers <- apply(samples, 2, function(x) quantile(x, (1 - level) / 2))
-  uppers <- apply(samples, 2, function(x) quantile(x, 0.5 + level / 2))
+  lowers <- apply(samples, 2, function(x) quantile(x, alpha / 2))
+  uppers <- apply(samples, 2, function(x) quantile(x, 1 - (alpha / 2)))
 
   data.frame(variable = colnames(X), lower = lowers, upper = uppers)
 

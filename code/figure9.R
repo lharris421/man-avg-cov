@@ -10,31 +10,30 @@ option_list <- list(
 opt <- parse_args(OptionParser(option_list=option_list))
 desparsified <- opt$desparsified
 
-if (interactive()) {
-  results_rlp <- readRDS(glue("rds/Scheetz2006_relaxed_lasso_posterior.rds"))
-  results_si  <- readRDS(glue("rds/Scheetz2006_selective_inference.rds"))
-  if (desparsified) results_dl  <- readRDS(glue("rds/Scheetz2006_desparsified_lasso.rds"))
-} else {
-  results_rlp <- readRDS(glue("code/rds/Scheetz2006_relaxed_lasso_posterior.rds"))
-  results_si  <- readRDS(glue("code/rds/Scheetz2006_selective_inference.rds"))
-  if (desparsified) results_dl  <- readRDS(glue("code/rds/Scheetz2006_desparsified_lasso.rds"))
-}
+methods <- c("rlp", "selectiveinference")
+if (desparsified) methods <- c(methods, "desparsified")
 
-results <- bind_rows(
-  results_rlp,
-  results_si
+results_lookup <- expand.grid(
+  method = methods
 )
 
-if (desparsified) results <- results %>% bind_rows(results_dl)
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/Scheetz2006_{results_lookup[i,'method']}.rds"))
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/Scheetz2006_{results_lookup[i,'method']}.rds"))
+  }
+}
 
-results <- results %>%
+results <- bind_rows(results) %>%
   mutate(method = method_labels[method],
          estimate = ifelse(method == "Relaxed Lasso Posterior", coef, estimate))
 
 if (interactive()) {
-  pdf("out/figure9.pdf", height = 4, width = 8)
+  pdf("out/figure9.pdf", height = 6.5, width = 8)
 } else {
-  pdf("code/out/figure9.pdf", height = 4, width = 8)
+  pdf("code/out/figure9.pdf", height = 6.5, width = 8)
 }
-plot_ci_comparison(results, nvars = 30, ref = "Relaxed Lasso Posterior")
+plot_ci_comparison(results, nvars = 66, ref = "Relaxed Lasso Posterior")
 dev.off()

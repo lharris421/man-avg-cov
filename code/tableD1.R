@@ -10,13 +10,24 @@ option_list <- list(
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  res <- readRDS(glue("rds/{iterations}/laplace_selective_inference.rds"))
-  path_pre <- "out/"
-} else {
-  res <- readRDS(glue("code/rds/{iterations}/laplace_selective_inference.rds"))
-  path_pre <- "code/out/"
+results_lookup <- expand.grid(
+  n = c(50, 100, 400)
+)
+
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_selectiveinference.rds"))
+    path_pre <- "out/"
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_selectiveinference.rds"))
+    path_pre <- "code/out/"
+  }
 }
+res <- bind_rows(results) %>%
+  mutate(
+    method = method_labels[method]
+  )
 
 # 1) # Simulations Null Selected
 null_sel <- res %>%

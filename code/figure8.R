@@ -8,27 +8,26 @@ option_list <- list(
   make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
+print(opt)
 desparsified <- opt$desparsified
 
-if (interactive()) {
-  results_rlp <- readRDS(glue("rds/whoari_relaxed_lasso_posterior.rds"))
-  results_si  <- readRDS(glue("rds/whoari_selective_inference.rds"))
-  if (desparsified) results_dl  <- readRDS(glue("rds/whoari_desparsified_lasso.rds"))
-} else {
-  results_rlp <- readRDS(glue("code/rds/whoari_relaxed_lasso_posterior.rds"))
-  results_si  <- readRDS(glue("code/rds/whoari_selective_inference.rds"))
-  if (desparsified) results_dl  <- readRDS(glue("code/rds/whoari_desparsified_lasso.rds"))
-}
+methods <- c("rlp", "selectiveinference")
+if (desparsified) methods <- c(methods, "desparsified")
 
-
-results <- bind_rows(
-  results_rlp,
-  results_si
+results_lookup <- expand.grid(
+  method = methods
 )
 
-if (desparsified) results <- results %>% bind_rows(results_dl)
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  if (interactive()) {
+    results[[i]] <- readRDS(glue("rds/whoari_{results_lookup[i,'method']}.rds"))
+  } else {
+    results[[i]] <- readRDS(glue("code/rds/whoari_{results_lookup[i,'method']}.rds"))
+  }
+}
 
-results <- results %>%
+results <- bind_rows(results) %>%
   mutate(method = method_labels[method],
          estimate = ifelse(method == "Relaxed Lasso Posterior", coef, estimate))
 

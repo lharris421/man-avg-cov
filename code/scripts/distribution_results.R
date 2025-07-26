@@ -18,7 +18,6 @@ option_list <- list(
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
-print(opt)
 iterations <- opt$iterations
 set.seed(opt$seed)
 seeds <- round(runif(iterations) * 1e9)

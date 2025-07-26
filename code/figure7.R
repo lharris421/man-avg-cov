@@ -6,24 +6,24 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 desparsified <- opt$desparsified
 
+methods <- c("rlp", "selectiveinference")
+if (desparsified) methods <- c(methods, "desparsified0")
+
 results_lookup <- expand.grid(
-  method = c("rlp", "selectiveinference"),
+  method = methods,
   n = c(50, 100, 400)
 )
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  if (interactive()) {
-    results[[i]] <- readRDS(glue("rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
-  } else {
-    results[[i]] <- readRDS(glue("code/rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
-  }
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
 }
 results <- bind_rows(results) %>%
   mutate(
