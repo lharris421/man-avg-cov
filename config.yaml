@@ -1,4 +1,4 @@
-iterations: 10
+iterations: 100
 seed: 1234
 desparsified: false
-res-loc: "../lasso-confint/"
+res-loc: "code/"
