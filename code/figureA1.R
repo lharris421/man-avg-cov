@@ -1,7 +1,7 @@
 if (interactive()) {
-  source("scripts/setup.R")
+  source("setup.R")
 } else {
-  source("code/scripts/setup.R")
+  source("code/setup.R")
 }
 
 option_list <- list(
@@ -33,9 +33,9 @@ p1 <- ggplot() +
   theme(legend.position = "none")
 
 if (interactive()) {
-  pdf("out/figureA1.pdf", height = 5, width = 7)
+  pdf("out/figureA1.pdf", height = 3.3, width = 4.6)
 } else {
-  pdf("code/out/figureA1.pdf", height = 5, width = 7)
+  pdf("code/out/figureA1.pdf", height = 3.3, width = 4.6)
 }
 p1
 dev.off()

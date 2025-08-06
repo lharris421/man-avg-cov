@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage[left=0.5in,right=0.5in,bottom=0.75in,top=0.75in]{geometry}
 
 % Packages
@@ -23,6 +23,7 @@
 \usepackage{array} %% required by kableExtra if column_spec
 \usepackage[normalem]{ulem}
 \usepackage{appendix}
+\usepackage{url}
 
 % Theorems and algorithms
 \newtheorem{thm}{Theorem}
@@ -75,15 +76,36 @@
 
 \maketitle
 
-\abstract{\input{abstract}}
+\abstract{
+  \input{abstract}
+}
 
 \input{main}
 
 \bibliographystyle{ims-nourl}
 \bibliography{avg-cov}
 
-\newpage
+\clearpage
 
-\input{supp}
+\begin{appendices}
+\renewcommand{\thesection}{Appendix~\Alph{section}}
+\renewcommand{\thefigure}{Figure~\Alph{section}\arabic{figure}}
+\renewcommand{\thetable}{Table~\Alph{section}\arabic{table}}
+\renewcommand{\thealgorithm}{Algorithm~\Alph{section}\arabic{algorithm}}
+
+% Reset counters manually at each new section
+\makeatletter
+\@addtoreset{figure}{section}
+\@addtoreset{table}{section}
+\@addtoreset{algorithm}{section}
+\makeatother
+
+% Remove default float prefixes in captions
+\captionsetup[figure]{name={}}
+\captionsetup[table]{name={}}
+\floatname{algorithm}{} 
+  
+\input{supp}                       
+\end{appendices}
 
 \end{document}

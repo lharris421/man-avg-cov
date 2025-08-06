@@ -1,24 +1,3 @@
-\section*{Supplemental materials}
-
-% \section{Appendices: additional results}
-
-% reset figure/table counters so they start at “1” again
-\setcounter{figure}{0}
-\setcounter{table}{0}
-\setcounter{algorithm}{0}
-\setcounter{section}{0}
-
-% make sections A, B, C, … instead of 1, 2, 3, …
-\renewcommand{\thesection}{\Alph{section}}
-
-% have figures and tables numbered A1, A2, … under Section A;
-% B1, B2, … under Section B; etc.
-\counterwithin{figure}{section}
-\counterwithin{table}{section}
-\counterwithin{algorithm}{section}
-\renewcommand{\thealgorithm}{\thesection\arabic{algorithm}}
-\renewcommand{\thefigure}{\thesection\arabic{figure}}
-\renewcommand{\thetable}{\thesection\arabic{table}}
 \section{Traditional Bootstrap Example}
 \label{sec:boot-fail}
 
@@ -31,7 +10,7 @@ Figure~\ref{Fig:boot-fail} shows the coverage as a function of the value of $\be
   \end{center}
 \end{figure}
 
-\newpage
+\clearpage
 
 \section{Sampling from the Full Conditional Posterior}\label{Sup:A}
 
@@ -118,7 +97,7 @@ Once the respective probability is mapped, one can simply use the inverses of th
 \end{algorithmic}
 \end{algorithm}
 
-\newpage
+\clearpage
 
 \section{Coverage Behavior Under Alternative Sample Sizes}\label{Sup:alt_ns}
 
@@ -126,14 +105,14 @@ Figure~\ref{Fig:coverage_by_n} displays coverage estimates as a smooth function 
 
 \begin{figure}[hbtp]
   \begin{center}
-  \includegraphics[width=0.35\linewidth]{figureC1}
+  \includegraphics[width=0.6\linewidth]{figureC1}
   \caption{\label{Fig:coverage_by_n} The results displayed are from a simulation with the same set up as in Section~\ref{Sec:coverage} but with n set to three different values: 50, 100, 400. The fitted curves are from Binomial GAMs fit with coverage being modeled as a smooth function of $\beta$. The dashed lines represent the average coverages across all 1000 independently generated datasets and the solid black line indicates the 80\% nominal coverage rate.}
   \end{center}
 \end{figure}
 
 For $n = 50$, coverage is overconservative with the characteristic high coverage for values near zero and low coverage for larger values of $\beta$. However, As $n$ is increased to 100 then 400 the characteristic over coverage for small $\beta$ values and under coverage for large $\beta$ values lessens, largely attributable to $\lam_{\CV}$ being smaller.
 
-\newpage
+\clearpage
 
 \section{Selective Inference Intervals}\label{Sup:si_int_info}
 
@@ -147,11 +126,11 @@ For $n = 50$, coverage is overconservative with the characteristic high coverage
 \end{table}
 
 
-Because Selective Inference only provides intervals for the subset of parameters with nonzero coefficients, the results in Figures~\ref{Fig:laplace_comparison}~and~\ref{Fig:laplace_other} are just for this subset. This is in contrast to the results for de-sparsified lasso and RL-P which are over all parameters. The first two columns of Table~\ref{Tab:selective_inference} provide more details on the size of the lasso models selected by cross validation, and hence, on the number of intervals constructed. The first column indicates how many simulations (out of 1000) the intercept-only model was selected, in which case no intervals are produced. The second column gives the average number of selected parameters (inclusive of when none were selected). It is the subset of parameters represented by column 2 that are the results in Figures~\ref{Fig:laplace_comparison}~and~\ref{Fig:laplace_other} are from.
+Because Selective Inference only provides intervals for the subset of parameters with nonzero coefficients, the results in Figures~\ref{Fig:laplace_comparison} are just for this subset. This is in contrast to the results for de-sparsified lasso and RL-P which are over all parameters. The first two columns of Table~\ref{Tab:selective_inference} provide more details on the size of the lasso models selected by cross validation, and hence, on the number of intervals constructed. The first column indicates how many simulations (out of 1000) the intercept-only model was selected, in which case no intervals are produced. The second column gives the average number of selected parameters (inclusive of when none were selected). It is the subset of parameters represented by column 2 that are the results in Figures~\ref{Fig:laplace_comparison} are from.
 
-For the intervals that were constructed, the third and fourth columns provide the number of simulations that had a infinite median width or any interval with an infinite width, respectively, features that were not evident in Figure~\ref{Fig:laplace_other}. Note that simulations where the null model was chosen by definition can not have intervals of infinite width.
+For the intervals that were constructed, the third and fourth columns provide the number of simulations that had a infinite median width or any interval with an infinite width, respectively, features that were not evident in the right side of Figure~\ref{Fig:laplace_comparison}. Note that simulations where the null model was chosen by definition can not have intervals of infinite width.
 
-\newpage
+\clearpage
 
 
 \section{MCP Example}\label{Sup:MCP}
@@ -164,11 +143,18 @@ For the intervals that were constructed, the third and fourth columns provide th
 
 The results here provide an example of a version of the RL-P method but with an approximation to the MCP penalty to obtain intervals. The MCP penalty closely resembles that of the lasso near zero but eventually levels out to a constant penalty for larger values of $\beta$ unlike the lasso which applies a penalty proportional to the magnitude of $\beta$. Note that although $\beta$s with intermediate magnitudes are still under covered (albeit with coverage notably higher than RL-P lasso), that the largest $\beta$s have coverage at nearly 70\%, over doubling the coverage of the RL-P lasso.
 
-\newpage
+\clearpage
 
 \section{Additional Details on Bootstrap Bias}\label{Sup:proof}
 
-We start with a simple proof of the additional bias introduced by bootstrapping in one and two dimensional settings starting first with Ridge regression and then the lasso. After these simple proofs, we provide a simulation that helps generalize this issue to high dimensional settings. Note that here the goal is to provide an intuitive understanding of the issue. Others have already proved this issue more generally \citep{karoui2016, clarté2024}, however, we feel that the lack of straight forward examples may be in part why the bootstrap is still a tool used for penalized regression in general.
+\begin{figure}[htb!]
+  \begin{center}
+    \includegraphics[width=0.7\linewidth]{figureF1}
+    \caption{\label{Fig:ridge_converge} Average coverages across p parameters (dashed lines) and estimated coverages as functions of $\beta$ (solid curves) for intervals constructed using a pairs bootstrap (Ridge Bootstrap) and a Bayesian posterior (Ridge Posterior). Full details of the simulation set up can be found in Section~\ref{Sec:boot-bias}.}
+  \end{center}
+\end{figure}
+
+We continue with a simple proof of the additional bias introduced by bootstrapping in one and two dimensional settings starting first with Ridge regression and then the lasso. After these simple proofs, we provide a simulation that helps generalize this issue to high dimensional settings. Note that here the goal is to provide an intuitive understanding of the issue. Others have already proved this issue more generally \citep{karoui2016, clarté2024}, however, we feel that the lack of straight forward examples may be in part why the bootstrap is still a tool used for penalized regression in general.
 
 Let $\frac{1}{n}x_1^Tx_1 = s_{11}$, and $s_{11}^*$ be the bootstrapped version of $s_{11}$. Furthermore more that $E_{boot}[s_{11}^*] = s_{11}$.
 
@@ -356,14 +342,14 @@ Note, the bias for $\bh_j \neq 0$ is $\frac{1}{n}\x_j^T \epsilon + \frac{1}{n}\x
 
 \begin{figure}[hbtp]
     \begin{center}
-    \includegraphics[width=\linewidth]{figureF1}
+    \includegraphics[width=\linewidth]{figureF2}
     \caption{\label{Fig:bias_decomp_single_B} n = p = 100, $\beta_A = 2$, $\beta_B = 0$, $\rho_{A,B} = 0.5$.  All other $\beta$s = 0 and  generated under independence}
     \end{center}
 \end{figure}
 
 While the derivation above suggests that increasing correlation is the main contributor to increased bootstrap bias, we see that it is actually the cumulative effect of the 98 N variables that drives the bias rather than the correlation with variable $B$. This has important implications in that even when overall correlations are low, that the sparsity in high dimensional settings is going to lead to a significant bootstrap bias. It is important to differentiate this bias and the bias inherent in the motivation for Section~\ref{Sec:IAC}. The framework put forth in Section~\ref{Sec:IAC} allows for the bias introduced by penalization which we are arguing is permissible in this newly suggested coverage framework, however, the additional bootstrap bias here is what inherently leads to the breakdown of the bootstrap even for average coverage.
 
-\newpage
+\clearpage
 \section{A note about stability selection}
 \label{sec:stability}
 

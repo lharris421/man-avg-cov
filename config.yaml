@@ -1,4 +1,4 @@
-iterations: 100
+iterations: 1000
 seed: 1234
 desparsified: false
-res-loc: "code/"
+res-loc: false

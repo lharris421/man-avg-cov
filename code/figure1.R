@@ -1,7 +1,7 @@
 if (interactive()) {
-  source("scripts/setup.R")
+  source("setup.R")
 } else {
-  source("code/scripts/setup.R")
+  source("code/setup.R")
 }
 
 option_list <- list(
@@ -93,9 +93,9 @@ p2 <- ggplot(data, aes(x = theta_values)) +
   theme_minimal()  # Minimal theme for clarity
 
 if (interactive()) {
-  pdf("out/figure1.pdf", height = 4, width = 8)
+  pdf("out/figure1.pdf", height = 2.6, width = 5.2)
 } else {
-  pdf("code/out/figure1.pdf", height = 4, width = 8)
+  pdf("code/out/figure1.pdf", height = 2.6, width = 5.2)
 }
 p2 + p1 + patchwork::plot_layout(axes = "collect")
 dev.off()

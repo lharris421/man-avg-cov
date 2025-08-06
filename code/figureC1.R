@@ -1,7 +1,7 @@
 if (interactive()) {
-  source("scripts/setup.R")
+  source("setup.R")
 } else {
-  source("code/scripts/setup.R")
+  source("code/setup.R")
 }
 
 option_list <- list(
@@ -41,9 +41,9 @@ p1 <- ggplot() +
   scale_color_manual(name = "Sample Size", values = colors)
 
 if (interactive()) {
-  pdf("out/figureC1.pdf", height = 5, width = 7)
+  pdf("out/figureC1.pdf", height = 2.9, width = 3.9)
 } else {
-  pdf("code/out/figureC1.pdf", height = 5, width = 7)
+  pdf("code/out/figureC1.pdf", height = 2.9, width = 3.9)
 }
 p1
 dev.off()

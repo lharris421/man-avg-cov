@@ -1,8 +1,8 @@
 if (interactive()) {
-  source("scripts/setup.R")
+  source("setup.R")
   path_pre <- glue("out/")
 } else {
-  source("code/scripts/setup.R")
+  source("code/setup.R")
   path_pre <- glue("code/out/")
 }
 
