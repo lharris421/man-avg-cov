@@ -5,18 +5,14 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  res_list <- readRDS(glue("rds/{iterations}/across_lambda_coverage.rds"))
-  model_cov <- readRDS(glue("rds/{iterations}/across_lambda_gam.rds"))
-} else {
-  res_list <- readRDS(glue("code/rds/{iterations}/across_lambda_coverage.rds"))
-  model_cov <- readRDS(glue("code/rds/{iterations}/across_lambda_gam.rds"))
-}
+res_list <- readRDS(glue("{opt$loc}rds/{iterations}/across_lambda_coverage.rds"))
+model_cov <- readRDS(glue("{opt$loc}rds/{iterations}/across_lambda_gam.rds"))
 
 lambdas <- res_list$lambdas
 res <- res_list$res

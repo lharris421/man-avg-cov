@@ -1,22 +1,19 @@
 if (interactive()) {
   source("scripts/setup.R")
+  path_pre <- glue("out/")
 } else {
   source("code/scripts/setup.R")
+  path_pre <- glue("code/out/")
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  res <- readRDS(glue("rds/{iterations}/stability_selection.rds"))
-  path_pre <- "out/"
-} else {
-  res <- readRDS(glue("code/rds/{iterations}/stability_selection.rds"))
-  path_pre <- "code/out/"
-}
+res <- readRDS(glue("{opt$loc}rds/{iterations}/stability_selection.rds"))
 
 orig_prob <- colMeans(res[["orig"]])
 boot_prob <- colMeans(res[["boot"]])

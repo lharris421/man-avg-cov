@@ -5,32 +5,33 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=100),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results <- readRDS(glue("rds/{iterations}/ridge_gam_fits.rds"))
-} else {
-  results <- readRDS(glue("code/rds/{iterations}/ridge_gam_fits.rds"))
-}
-
-lookup <- data.frame(
+tmp <- data.frame(
   p = c(20, 100, 200),
-  SNR = c(0.188649, 1.15345, 2.387699)
+  SNR = c(19, 115, 239)
+)
+results_lookup <- bind_rows(
+  tmp %>% mutate(method = "ridgeT"),
+  tmp %>% mutate(method = "ridgebootT")
 )
 
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/normal_autoregressive_0_200_{results_lookup[i,'p']}_10_{results_lookup[i,'SNR']}_{results_lookup[i,'method']}.rds"))
+}
+results <- bind_rows(results) %>%
+  mutate(method = method_labels[method])
+
 plots <- list()
-for (j in 1:nrow(lookup)) {
+for (j in 1:length(unique(results$p))) {
 
-  which_p <- as.character(lookup[j,"p"])
-  ridge <- results$ridge[[which_p]]
-  ridge_boot <- results$ridge_boot[[which_p]]
-
-  line_data_avg <- bind_rows(ridge$line_data_avg, ridge_boot$line_data_avg) %>% mutate(method = method_labels[method])
-  line_data <- bind_rows(ridge$line_data, ridge_boot$line_data) %>% mutate(method = method_labels[method])
-
+  which_p <- unique(results$p)[j]
+  line_data <- results %>% filter(p == which_p)
 
   sd <- sqrt(1 / 0.8)
   cutoff <- sd * 3
@@ -42,7 +43,7 @@ for (j in 1:nrow(lookup)) {
 
   plots[[j]] <- ggplot() +
     geom_line(data = line_data , aes(x = x, y = y, color = method)) +
-    geom_hline(data = line_data_avg, aes(yintercept = avg, color = method), linetype = 2) +
+    geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
     geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5, inherit.aes = FALSE) +
     theme_minimal() +
     xlab(expression(beta)) +
@@ -50,7 +51,7 @@ for (j in 1:nrow(lookup)) {
     coord_cartesian(ylim = c(0, 1), xlim = c(-cutoff, cutoff)) +
     scale_color_manual(name = "Method", values = colors) +
     geom_hline(yintercept = 0.8) +
-    ggtitle(glue("p = {lookup[j,'p']}"))
+    ggtitle(glue("p = {which_p}"))
 
 }
 

@@ -5,19 +5,15 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=100),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results <- readRDS(glue("rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds"))[["100"]]
-} else {
-  results <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits_traditional_bootstrap.rds"))[["100"]]
-}
+results <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"))
 
-line_data_avg <- data.frame(avg = results$line_data_avg, method = method_labels["traditional_bootstrap"])
-line_data <- results$line_data %>%
+line_data <- results %>%
   mutate(method = method_labels[method])
 
 cutoff <- max(line_data$x)
@@ -26,7 +22,7 @@ density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414
 
 p1 <- ggplot() +
   geom_line(data = line_data, aes(x = x, y = y, color = method)) +
-  geom_hline(data = line_data_avg, aes(yintercept = avg, color = method), linetype = 2) +
+  geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
   geom_hline(aes(yintercept = 0.8), linetype = 1, alpha = .5) +
   geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
   theme_minimal() +

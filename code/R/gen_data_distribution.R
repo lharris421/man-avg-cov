@@ -17,11 +17,11 @@ gen_data_distribution <- function(n = 100, p = 100,
     betas <- qunif((1:p) / (p + 1), -1, 1)
   } else if (distribution == "beta") {
     betas <- qbeta((1:p) / (p + 1),  .1, .1) - .5
-  } else if (distribution == "sparse 1") {
+  } else if (distribution == "sparse1") {
     betas <- c(rep(c(rep(0.5, 3), 1, 2), 2) * c(rep(1, 5), rep(-1, 5)), rep(0, 91))
-  } else if (distribution == "sparse 2") {
+  } else if (distribution == "sparse2") {
     betas <- c(qnorm((1:31) / 32, sd = 1), rep(0, 70))
-  } else if (distribution == "sparse 3") {
+  } else if (distribution == "sparse3") {
     betas <- c(qnorm((1:51) / 52, sd = 1), rep(0, 50))
   }
 

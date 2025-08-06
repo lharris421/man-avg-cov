@@ -5,26 +5,33 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=100),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results <- readRDS(glue("rds/{iterations}/highcorr.rds"))
-} else {
-  results <- readRDS(glue("code/rds/{iterations}/highcorr.rds"))
-}
+results_lookup <- expand.grid(
+  method = c("rlp", "ridge")
+)
 
-results <- results %>%
-  mutate(estimate = ifelse(method == "relaxed_lasso_posterior", coef, estimate))
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/highcorr_{results_lookup[i,'method']}.rds"))
+}
+results <- bind_rows(results) %>%
+  mutate(
+    estimate = ifelse(method == "rlp", coef, estimate),
+    method = method_labels[method]
+  )
 
 plots <- list()
-methods <- c("relaxed_lasso_posterior", "ridge")
+methods <- unique(results_lookup$method)
 set.seed(1234)
 selected_example <- sample(1:iterations, 1)
-for (i in 1:length(methods)) {
-  curr_method <- methods[i]
+for (i in 1:length(unique(results$method))) {
+
+  curr_method <- unique(results$method)[i]
 
   tmp_results <- results %>%
     filter(method == curr_method) %>%
@@ -67,7 +74,7 @@ for (i in 1:length(methods)) {
     ) +
     ylab(NULL) +
     xlab(NULL) +
-    ggtitle(method_labels[as.character(curr_method)]) +
+    ggtitle(curr_method) +
     facet_grid(~ variable) +
     geom_text(
       data = coverage_labels,

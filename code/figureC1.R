@@ -5,33 +5,25 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000)
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-if (interactive()) {
-  results50 <- readRDS(glue("rds/{iterations}/laplace_gam_fits.rds"))[["50"]]
-  results100 <- readRDS(glue("rds/{iterations}/laplace_gam_fits.rds"))[["100"]]
-  results400 <- readRDS(glue("rds/{iterations}/laplace_gam_fits.rds"))[["400"]]
-} else {
-  results50 <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits.rds"))[["50"]]
-  results100 <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits.rds"))[["100"]]
-  results400 <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits.rds"))[["400"]]
-}
-
-line_data_avg <- data.frame(
-  avg = c(results50$line_data_avg, results100$line_data_avg, results400$line_data_avg),
+results_lookup <- expand.grid(
   n = c(50, 100, 400)
-) %>%
-  mutate(n = factor(n, levels = c(50, 100, 400)))
-line_data <- bind_rows(
-  results50$line_data %>% mutate(n = 50),
-  results100$line_data %>% mutate(n = 100),
-  results400$line_data %>% mutate(n = 400)
-  ) %>%
-  mutate(method = method_labels[method],
-         n = factor(n, levels = c(50, 100, 400)))
+)
+
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_rlp.rds"))
+}
+line_data <- bind_rows(results) %>%
+  mutate(
+    method = method_labels[method],
+    n = factor(n, levels = c(50, 100, 400))
+  )
 
 cutoff <- max(line_data$x)
 xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
@@ -39,7 +31,7 @@ density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414
 
 p1 <- ggplot() +
   geom_line(data = line_data, aes(x = x, y = y, color = n)) +
-  geom_hline(data = line_data_avg, aes(yintercept = avg, color = n), linetype = 2) +
+  geom_hline(data = line_data, aes(yintercept = average_coverage, color = n), linetype = 2) +
   geom_hline(aes(yintercept = 0.8), linetype = 1, alpha = .5) +
   geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
   theme_minimal() +

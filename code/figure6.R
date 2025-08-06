@@ -6,37 +6,29 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
+  make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 desparsified <- opt$desparsified
 
-if (interactive()) {
-  results_rlp <- readRDS(glue("rds/{iterations}/laplace_gam_fits.rds"))[["100"]]
-  results_si  <- readRDS(glue("rds/{iterations}/laplace_gam_fits_selective_inference.rds"))[["100"]]
-  if (desparsified) results_dl  <- readRDS(glue("rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds"))[["100"]]
-} else {
-  results_rlp <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits.rds"))[["100"]]
-  results_si  <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits_selective_inference.rds"))[["100"]]
-  if (desparsified) results_dl  <- readRDS(glue("code/rds/{iterations}/laplace_gam_fits_desparsified_lasso.rds"))[["100"]]
-}
 
-line_data_avg <- bind_rows(
-  data.frame(avg = results_rlp$line_data_avg, method = method_labels["relaxed_lasso_posterior"]),
-  data.frame(avg = results_si$line_data_avg, method = method_labels["selective_inference"])
+methods <- c("rlp", "selectiveinference")
+if (desparsified) methods <- c(methods, "desparsified0")
+
+results_lookup <- expand.grid(
+  method = methods
 )
-line_data <- bind_rows(
-  results_rlp$line_data,
-  results_si$line_data
-  )
 
-if (desparsified) {
-  line_data_avg <- line_data_avg %>% bind_rows(data.frame(avg = results_dl$line_data_avg, method = method_labels["desparsified_lasso"]))
-  line_data <- line_data %>% bind_rows(results_dl$line_data)
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
 }
-line_data <- line_data %>%
-  mutate(method = method_labels[method])
+line_data <- bind_rows(results) %>%
+  mutate(
+    method = method_labels[method]
+  )
 
 cutoff <- max(line_data$x)
 xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
@@ -44,7 +36,7 @@ density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414
 
 p1 <- ggplot() +
   geom_line(data = line_data, aes(x = x, y = y, color = method)) +
-  geom_hline(data = line_data_avg, aes(yintercept = avg, color = method), linetype = 2) +
+  geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
   geom_hline(aes(yintercept = 0.8), linetype = 1, alpha = .5) +
   geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
   theme_minimal() +
