@@ -12,11 +12,10 @@ quietlyLoadPackage <- function(package) {
 }
 lapply(packages, quietlyLoadPackage)
 
-if (interactive()) {
-  devtools::load_all(quiet = TRUE)
-} else {
-  devtools::load_all(path = "code", quiet = TRUE)
-}
+res_dir <- switch(Sys.info()['user'],
+                  'pbreheny' = '~/res/lasso-confint',
+                  'loganharris' = '~/github/lasso-confint')
+devtools::load_all(res_dir, quiet = TRUE)
 
 method_labels <- c(
   "selectiveinference" = "Selective Inference",

@@ -1,10 +1,24 @@
 import os
+import getpass
 
 configfile: "config.yaml"
 ITER         = config["iterations"]
 SEED         = config["seed"]
-LOC          = config["res-loc"]
 DESPARSIFIED = config.get("desparsified", False)
+
+if not config.get("res-loc", False):
+    user = getpass.getuser()
+
+    LOC = {
+        "pbreheny": "~/res/lasso-confint/",
+        "loganharris": "~/github/lasso-confint/"
+    }.get(user, "~/res/lasso-confint/")  # fallback
+
+    # Expand tilde (~) to full path
+    LOC = os.path.expanduser(LOC)
+else:
+    LOC = config["res-loc"]
+    
 os.makedirs(f"{LOC}rds/{ITER}", exist_ok=True)
 
 wildcard_constraints:
@@ -32,7 +46,7 @@ rule all:
 
 rule distribution_results:
     input:
-        script = "code/scripts/distribution_results.R"
+        script = f"{LOC}scripts/distribution_results.R"
     output:
         f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
     shell:
@@ -51,7 +65,7 @@ rule distribution_results:
         
 rule highcorr_results:
     input:
-        script = "code/scripts/highcorr_results.R"
+        script = f"{LOC}scripts/highcorr_results.R"
     output:
         f"{LOC}rds/{ITER}/original/highcorr_{{method}}.rds"
     shell:
@@ -63,7 +77,7 @@ rule highcorr_results:
         
 rule data_results:
     input:
-        script = "code/scripts/data_results.R"
+        script = f"{LOC}scripts/data_results.R"
     output:
         f"{LOC}rds/{{dataset}}_{{method}}.rds"
     shell:
@@ -75,10 +89,10 @@ rule data_results:
         
 rule fit_gam:
     input:
-        script = "code/scripts/fit_gam.R",
+        script = f"{LOC}scripts/fit_gam.R",
         rds    = f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
     output:
-        f"{LOC}rds/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
+        rds_out = f"{LOC}rds/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
     shell:
         "Rscript {input.script} "
         "--iterations {ITER} "
@@ -95,7 +109,7 @@ rule fit_gam:
         
 rule across_lambda_coverage:
     input:
-        script = "code/scripts/across_lambda_coverage.R"
+        script = f"{LOC}scripts/across_lambda_coverage.R"
     output:
         f"{LOC}rds/{ITER}/across_lambda_coverage.rds"
     shell:
@@ -106,7 +120,7 @@ rule across_lambda_coverage:
         
 rule across_lambda_gam:
     input:
-        script = "code/scripts/across_lambda_gam.R",
+        script = f"{LOC}scripts/across_lambda_gam.R",
         rds    = f"{LOC}rds/{ITER}/across_lambda_coverage.rds"
     output:
         f"{LOC}rds/{ITER}/across_lambda_gam.rds"
@@ -117,9 +131,9 @@ rule across_lambda_gam:
         
 rule bias_decomposition:
     input:
-        script = "code/scripts/bias_decomposition.R",
+        script = f"{LOC}scripts/bias_decomposition.R",
     output:
-        f"{LOC}rds/{ITER}/bias_decomposition.rds"
+        rds_out = f"{LOC}rds/{ITER}/bias_decomposition.rds"
     shell:
         "Rscript {input.script} "
         "--iterations {ITER} "
@@ -128,7 +142,7 @@ rule bias_decomposition:
         
 rule stability_selection:
     input:
-        script = "code/scripts/stability_selection.R",
+        script = f"{LOC}scripts/stability_selection.R",
     output:
         f"{LOC}rds/{ITER}/stability_selection.rds"
     shell:

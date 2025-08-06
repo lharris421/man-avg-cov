@@ -1,7 +1,7 @@
 if (interactive()) {
-  source("scripts/setup.R")
+  source("setup.R")
 } else {
-  source("code/scripts/setup.R")
+  source("code/setup.R")
 }
 
 option_list <- list(
