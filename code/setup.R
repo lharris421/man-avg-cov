@@ -5,7 +5,7 @@ packages <- c(
   "ncvreg", "hdrm", "hdi", "selectiveInference", "glmnet",
   "dplyr", "tidyr", "purrr", "stringr", "ggplot2", "glue",
   "kableExtra", "patchwork", "mgcv", "progress", "optparse",
-  "grid"
+  "grid", "scales"
 )
 quietlyLoadPackage <- function(package) {
   suppressPackageStartupMessages(library(package, character.only = TRUE))

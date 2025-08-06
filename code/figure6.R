@@ -5,17 +5,15 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
   make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
-iterations <- opt$iterations
+print(opt)
 desparsified <- opt$desparsified
 
-
 methods <- c("rlp", "selectiveinference")
-if (desparsified) methods <- c(methods, "desparsified0")
+if (desparsified) methods <- c(methods, "desparsified")
 
 results_lookup <- expand.grid(
   method = methods
@@ -23,32 +21,18 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/whoari_{results_lookup[i,'method']}.rds"))
 }
-line_data <- bind_rows(results) %>%
-  mutate(
-    method = method_labels[method]
-  )
 
-cutoff <- max(line_data$x)
-xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
-density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414))
 
-p1 <- ggplot() +
-  geom_line(data = line_data, aes(x = x, y = y, color = method)) +
-  geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
-  geom_hline(aes(yintercept = 0.8), linetype = 1, alpha = .5) +
-  geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
-  theme_minimal() +
-  xlab(expression(beta)) +
-  ylab("Estimated Coverage") +
-  coord_cartesian(ylim = c(0, 1)) +
-  scale_color_manual(name = "Method", values = colors)
+results <- bind_rows(results) %>%
+  mutate(method = method_labels[method],
+         estimate = ifelse(method == "Relaxed Lasso Posterior", coef, estimate))
 
 if (interactive()) {
-  pdf("out/figure6.pdf", height = 4, width = 5)
+  pdf("out/figure6.pdf", height = 6.2, width = 5.9)
 } else {
-  pdf("code/out/figure6.pdf", height = 4, width = 5)
+  pdf("code/out/figure6.pdf", height = 6.2, width = 5.9)
 }
-p1
+plot_ci_comparison(results, nvars = 66, ref = "Relaxed Lasso Posterior")
 dev.off()

@@ -5,16 +5,30 @@ if (interactive()) {
 }
 
 option_list <- list(
-  make_option(c("--iterations"), type="integer", default=100),
+  make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
   make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+desparsified <- opt$desparsified
 
-results <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"))
 
-line_data <- results %>%
-  mutate(method = method_labels[method])
+methods <- c("rlp", "selectiveinference")
+if (desparsified) methods <- c(methods, "desparsified0")
+
+results_lookup <- expand.grid(
+  method = methods
+)
+
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_{results_lookup[i,'method']}.rds"))
+}
+line_data <- bind_rows(results) %>%
+  mutate(
+    method = method_labels[method]
+  )
 
 cutoff <- max(line_data$x)
 xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
@@ -30,12 +44,22 @@ p1 <- ggplot() +
   ylab("Estimated Coverage") +
   coord_cartesian(ylim = c(0, 1)) +
   scale_color_manual(name = "Method", values = colors) +
-  theme(legend.position = "none")
+  guides(
+    colour = guide_legend(
+      title = "Method",
+      nrow = 3,
+      position = "top",
+      theme(
+        legend.title.position = "top",
+        legend.key.height = unit(0, "in")
+      )
+    ),
+  )
 
 if (interactive()) {
-  pdf("out/figureA1.pdf", height = 3.3, width = 4.6)
+  pdf("out/figure5L.pdf", height = 3.1, width = 2.2)
 } else {
-  pdf("code/out/figureA1.pdf", height = 3.3, width = 4.6)
+  pdf("code/out/figure5L.pdf", height = 3.1, width = 2.2)
 }
 p1
 dev.off()

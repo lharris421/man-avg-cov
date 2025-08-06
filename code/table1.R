@@ -43,7 +43,7 @@ table_results <- results %>%
   group_by(Distribution, method, n) %>%
   summarise(coverage = mean(covered)) %>%
   ungroup() %>%
-  mutate(coverage = glue::glue("{round(coverage, 3) * 100}%")) %>%
+  mutate(coverage = sprintf("%.1f%%", coverage * 100)) %>%
   pivot_wider(names_from = n, values_from = coverage) %>%
   mutate(
     ` ` = "",
