@@ -1,6 +1,20 @@
 # Clear enviornment
 rm(list=ls())
 
+if (interactive()) {
+  vendor_lib <- file.path("github", "lib")
+} else {
+  vendor_lib <- file.path("code", "github", "lib")
+}
+if (dir.exists(vendor_lib))
+  .libPaths(c(normalizePath(vendor_lib), .libPaths()))
+
+if (interactive()) {
+  devtools::load_all(quiet = TRUE)
+} else {
+  devtools::load_all(path = "code", quiet = TRUE)
+}
+
 packages <- c(
   "ncvreg", "hdrm", "hdi", "selectiveInference", "glmnet",
   "dplyr", "tidyr", "purrr", "stringr", "ggplot2", "glue",
@@ -11,12 +25,6 @@ quietlyLoadPackage <- function(package) {
   suppressPackageStartupMessages(library(package, character.only = TRUE))
 }
 lapply(packages, quietlyLoadPackage)
-
-if (interactive()) {
-  devtools::load_all(quiet = TRUE)
-} else {
-  devtools::load_all(path = "code", quiet = TRUE)
-}
 
 method_labels <- c(
   "selectiveinference" = "Selective Inference",

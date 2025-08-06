@@ -1,15 +1,3 @@
-#' Title
-#'
-#' @param dat
-#' @param alpha
-#' @param estimate_sigma
-#' @param sigma
-#' @param lambda
-#'
-#' @return
-#' @export
-#'
-#' @examples
 selective_inference <- function(X, y, alpha = .2, estimate_sigma = FALSE, sigma = NULL, lambda = NULL) {
 
   X <- ncvreg::std(X)
