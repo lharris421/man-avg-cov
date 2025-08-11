@@ -374,6 +374,7 @@ rule manuscript:
         "avg-cov.tex",
         "main.tex",
         "supp.tex",
+        "config.yaml",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
         "code/out/figure3.png",
