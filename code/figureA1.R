@@ -11,7 +11,7 @@ option_list <- list(
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
-results <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"))
+results <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_traditional.rds"))
 
 line_data <- results %>%
   mutate(method = method_labels[method])

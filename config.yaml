@@ -1,4 +1,4 @@
-iterations: 1000
+iterations: 10
 seed: 1234
 desparsified: false
 res-loc: false

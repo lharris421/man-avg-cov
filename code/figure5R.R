@@ -23,7 +23,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_10_100_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_{results_lookup[i,'method']}.rds"))
 }
 results <- bind_rows(results) %>%
   mutate(

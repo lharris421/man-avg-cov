@@ -48,14 +48,14 @@ rule distribution_results:
     input:
         script = f"{LOC}scripts/distribution_results.R"
     output:
-        f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
+        f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
     shell:
         "Rscript {input.script} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--n {wildcards.n} "
         "--p {wildcards.p} "
-        "--sigma {wildcards.sigma} "
+        "--family {wildcards.family} "
         "--snr {wildcards.snr} " ## Signal as a percent of noise
         "--distribution {wildcards.distribution} "
         "--corr {wildcards.corr} "
@@ -90,16 +90,16 @@ rule data_results:
 rule fit_gam:
     input:
         script = f"{LOC}scripts/fit_gam.R",
-        rds    = f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
+        rds    = f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
     output:
-        rds_out = f"{LOC}rds/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{sigma}}_{{snr}}_{{method}}.rds"
+        rds_out = f"{LOC}rds/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
     shell:
         "Rscript {input.script} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--n {wildcards.n} "
         "--p {wildcards.p} "
-        "--sigma {wildcards.sigma} "
+        "--family {wildcards.family} "
         "--snr {wildcards.snr} " ## Signal as a percent of noise
         "--distribution {wildcards.distribution} "
         "--corr {wildcards.corr} "
@@ -154,7 +154,7 @@ rule stability_selection:
 rule figure1:
     input:
         script = "code/figure1.R",
-        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_10_100_rlp.rds"
+        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_rlp.rds"
     output:
         "code/out/figure1.pdf"
     shell:
@@ -166,7 +166,7 @@ rule figure2:
     input:
         script = "code/figure2.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_10_100_rlp.rds",
+            f"{LOC}rds/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_rlp.rds",
             rho = [0, 50, 80],               
             n = [50, 100, 400, 1000]
         )
@@ -207,7 +207,7 @@ rule figure5L:
     input: 
       script = "code/figure5L.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_10_100_{{method}}.rds",
+            f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
             method = ["rlp", "selectiveinference"] + (["desparsified0"] if DESPARSIFIED else [])
         )
     output:
@@ -222,7 +222,7 @@ rule figure5R:
     input: 
       script = "code/figure5R.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_10_100_{{method}}.rds",
+          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_{{method}}.rds",
           method = ["rlp", "selectiveinference"] + (["desparsified0"] if DESPARSIFIED else []),
           n = [50, 100, 400]
       )
@@ -266,7 +266,7 @@ rule figure7:
 rule figureA1:
     input:
         script = "code/figureA1.R",
-        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_10_100_traditional.rds"
+        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_traditional.rds"
     output:
         "code/out/figureA1.pdf"
     shell:
@@ -278,7 +278,7 @@ rule figureC1:
     input: 
       script = "code/figureC1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_{{n}}_101_10_100_rlp.rds",
+          f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_{{n}}_101_gaussian_100_rlp.rds",
           n = [50, 100, 400]
       )
     output:
@@ -292,8 +292,8 @@ rule figureF1:
     input:
         script = "code/figureF1.R",
         rds    = expand(
-            f"{LOC}rds/{ITER}/gam/normal_autoregressive_0_200_{{p_sigma_snr}}_{{method}}.rds",
-            p_sigma_snr  = ["20_10_19", "100_10_115", "200_10_239"],
+            f"{LOC}rds/{ITER}/gam/normal_autoregressive_0_200_{{p_family_snr}}_{{method}}.rds",
+            p_family_snr  = ["20_gaussian_19", "100_gaussian_115", "200_gaussian_239"],
             method = ["ridgeT", "ridgebootT"]
         )
     output:
@@ -318,7 +318,7 @@ rule table1:
     input:
         script = "code/table1.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/{{dist}}_autoregressive_0_{{n}}_101_10_100_rlp.rds",
+            f"{LOC}rds/{ITER}/original/{{dist}}_autoregressive_0_{{n}}_101_gaussian_100_rlp.rds",
             dist = ["laplace", "t", "normal", "uniform", "beta", "sparse3", "sparse2", "sparse1"],
             n = [50, 100, 400, 1000]
         )
@@ -333,7 +333,7 @@ rule tableD1:
     input: 
       script = "code/tableD1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_10_100_selectiveinference.rds",
+          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinference.rds",
           n = [50, 100, 400]
       )
     output:
@@ -347,7 +347,7 @@ rule tableE1:
     input: 
       script = "code/tableE1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/sparse1_autoregressive_0_100_101_10_100_{{method}}.rds",
+          f"{LOC}rds/{ITER}/original/sparse1_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
           method = ["rlp", "rmp"]
       )
     output:

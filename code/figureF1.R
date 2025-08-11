@@ -22,7 +22,7 @@ results_lookup <- bind_rows(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/normal_autoregressive_0_200_{results_lookup[i,'p']}_10_{results_lookup[i,'SNR']}_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/gam/normal_autoregressive_0_200_{results_lookup[i,'p']}_gaussian_{results_lookup[i,'SNR']}_{results_lookup[i,'method']}.rds"))
 }
 results <- bind_rows(results) %>%
   mutate(method = method_labels[method])
