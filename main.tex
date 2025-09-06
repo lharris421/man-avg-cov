@@ -46,17 +46,17 @@ In Section~\ref{Sec:methods}, we propose a new method and in Section~\ref{Sec:re
 \end{thm}
 
 \begin{proof}
-  By definition, a $100(1-\alpha)\%$ credible region for $\theta_j$ is any set $\cA_j(\y)$ such that $\int I\{\theta_j \in \cA_j(\y)\} p(\bt|\y)\,d\bt = 1 - \alpha$. The coverage probability, meanwhile, is defined as $\int I\{\theta_j \in \cA_j(\y)\} p(\y | \bt)d\y$. The average coverage, integrated with respect to the prior $p(\bt)$, is therefore
+By definition, a $100(1-\alpha)\%$ credible region for $\theta_j$ is any set $\cA_j(\y)$ such that $\int I\{\theta_j \in \cA_j(\y)\} p(\bt|\y)\,d\bt = 1 - \alpha$. The coverage probability, meanwhile, is defined as $\int I\{\theta_j \in \cA_j(\y)\} p(\y | \bt)d\y$. The average coverage, integrated with respect to the prior $p(\bt)$, is therefore
 
-  \as{
-  \int \int I\{\theta_j \in \cA_j(\y)\} p(\y | \bt) p(\bt) d\y d\bt
-  &=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt | \y) p(\y) d\y d\bt \\
-  &=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt | \y) d\bt p(\y) d\y \\
-  &=  \int  (1 - \alpha) p(\y) d\y \\
-  &=  1 - \alpha,
-  }
+\as{
+\int \int I\{\theta_j \in \cA_j(\y)\} p(\y | \bt) p(\bt) d\y d\bt
+&=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt | \y) p(\y) d\y d\bt \\
+&=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt | \y) d\bt p(\y) d\y \\
+&=  \int  (1 - \alpha) p(\y) d\y \\
+&=  1 - \alpha,
+}
 
-  \noindent and as a result the average coverage is equal to the nominal coverage.
+\noindent and as a result the average coverage is equal to the nominal coverage.
 \end{proof}
 
 The above theorem concerns a single parameter of interest $\theta_j$ and its credible interval. An immediate corollary of this result is that the average coverage of $p$ such intervals will also be equal to $1-\alpha$.
@@ -88,13 +88,11 @@ For the lasso, the corresponding prior is a Laplace distribution, also referred 
 \as{p(\bb) = \prod_{j = 1}^{p} \frac{\gamma}{2}\exp(-\gamma \abs{\beta_j}), \gamma > 0.}
 
 Let $\hat{S} = \lbrace k: \hat{\beta}_k \neq  0 \rbrace$ denote the set of selected features. Then, let $\hat{S}_j$ denote the set of selected features that excludes feature $j$, so that $\hat{S}_j = \hat{S} \text{ if } j \notin \hat{S}$ and $\hat{S}_j = \hat{S} - \lbrace j \rbrace \text{ if } j \in \hat{S}$. Define $\Q_{\hat{S}_j}$ as $\I - \X_{\hat{S}_j}(\X_{\hat{S}_j} \Tr \X_{\hat{S}_j})^{-1} \X_{\hat{S}_j} \Tr$, the projection matrix onto the features selected by the lasso. The likelihood for $\beta_j$ conditional on the selected features is:
-
 \as{L(\beta_j|\hat{S}_j) \propto \exp(-\frac{\x_j \Tr \Q_{\hat{S}_j} \x_j}{2\sigma^2}(\beta_{j} - \tilde{\beta}_{j})^2)}
 
 \noindent where $\tilde{\beta}_j = (\x_j \Tr \Q_{\hat{S}_j} \x_j)^{-1} \x_j \Tr \Q_{\hat{S}_j} \y$.  This can be seen as a mild extension of the relaxed lasso. It is equivalent to the relaxed lasso for features in $\hat{S}$ but also is capable of providing intervals for features in $\hat{S}^C$.
 
 A normal likelihood and Laplace prior are not conjugate. However, the distribution of $\beta_j$ conditional on $\hat{S}_j $ can be shown to be a composition of right and left truncated normals where the truncation occurs at zero for right and left tails respectively. In this manuscript, we assume that $\X$ has been standardized s.t. $\x_j \Tr\x_j = n$ and that $\y$ has been centered. Then for $\beta_j$ (see \ref{Sup:A} for details),
-
 \al{eq:fcp}{
 p(\beta_j | \hat{S}_j) &\propto
 \begin{cases}
@@ -107,7 +105,6 @@ where $\tilde{n} = \x_j \Tr \Q_{\hat{S}_j} \x_j$, $C_{-} = \exp(\tilde{\beta}_j 
 This formulation is attractive because it allows efficient computation of quantiles. This consists of first determining which normal distribution (left or right tail) the probability corresponds to, then calculating the quantile from the corresponding normal distribution. Again, full details are provided in \ref{Sup:A}.
 
 This solution corresponds to a particular value of $\lam$ and $\hat{\sigma}^2$. Throughout, we select the value of $\lam$ that minimizes cross validation error (CVE), and we estimate $\sigma^2$ as recommended by \citep{Reid2016}:
-
 $$
 \hat{\sigma}^2 = \frac{1}{n - |\hat{S}_{\CV}|} ||\y - \X\bbh({\lambda_{\CV}})||_2^2,
 $$
