@@ -17,7 +17,7 @@ Figure~\ref{fig:A1} shows the coverage as a function of the value of $\beta$ (so
 Here we assume $\X$ has been standardized s.t. $\x_j^T\x_j = n$. Define $\Q_{\hat{S}_j}$ as $\I - \X_{\hat{S}_j}(\X_{\hat{S}_j}^T \X_{\hat{S}_j})^{-1} \X_{\hat{S}_j}^T$, the projection matrix onto the features selected by the lasso. For $\beta_j$ conditional on the selected features
 \as{
   \begin{aligned}
-  L(\beta_j|\hat{S}_j) &\propto \exp(-\frac{\tilde{n}}{2\sigma^2}(\beta_{j}^2 - 2\tilde{\beta}_{j}\beta_{j})), \\
+  L(\beta_j|\hat{S}_j) &\propto \exp(-\tfrac{\tilde{n}}{2\sigma^2}(\beta_{j}^2 - 2\tilde{\beta}_{j}\beta_{j})), \\
   \end{aligned}
 }
 
@@ -27,9 +27,9 @@ The lasso can be formulated as a Bayesian regression model with a laplace (doubl
 
 With this the form of the full conditional posterior can be worked out as follows:
 \as{
-p(\beta_j | \hat{S}_j) &\propto \exp(-\frac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2\tilde{\beta}_j\beta_j)) \exp(-\frac{\tilde{n} \lambda} {\sigma^2} \abs{\beta_j}) \\
-&= \exp(-\frac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2 \tilde{\beta}_{j}\beta_j +  2 \lambda \abs{\beta_j})) \\
-&= \exp(-\frac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2(\tilde{\beta}_{j}\beta_j - \lambda \abs{\beta_j}))) \\
+p(\beta_j | \hat{S}_j) &\propto \exp(-\tfrac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2\tilde{\beta}_j\beta_j)) \exp(-\tfrac{\tilde{n} \lambda} {\sigma^2} \abs{\beta_j}) \\
+&= \exp(-\tfrac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2 \tilde{\beta}_{j}\beta_j +  2 \lambda \abs{\beta_j})) \\
+&= \exp(-\tfrac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2(\tilde{\beta}_{j}\beta_j - \lambda \abs{\beta_j}))) \\
 &=
 \begin{cases}
 \exp(-\frac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2(\tilde{\beta}_{j} + \lambda)\beta_j)), \text{ if } \beta_j < 0, \\
@@ -50,7 +50,7 @@ p(\beta_j | \hat{S}_j)  & \propto
 C_{-} Pr_{-}, \text{ if } \beta_j < 0, \\
 C_{+} Pr_{+}, \text{ if } \beta_j \geq 0\\
 \end{cases}
-} which implies that $Post_- = \frac{C_{-} Pr_{-}}{C_{-} Pr_{-} + C_{+} Pr_{+}}$ and similarly for $Post_+$. To avoid numerical instability, or rather to handle it properly when it is unavoidable, we will work on the $\log$ scale. This works well for most of the problem, but computation of $Post_-$ and $Post_+$ need something a bit more since, for example, $\log(Post_-) = \log(C_{-}Pr_{-}) - \log(C_{-} Pr_{-} + C_{+} Pr_{+})$. That is, the denominator still must be computed then the $\log$ taken which does not allow operating on the $\log$ scale to fully address potential numerical instability. Instead, let $\ell_{-} := \log C_{-} + \log Pr_{-}, \ell_{+} := \log C_{+} + \log Pr_{+}$, and $\Delta := \ell_{-} - \ell_{+}$, then $\log(Post_-)$ can be computed with $\Delta - \log\bigl(1 + \exp(\Delta)\bigr)$. This still doesn't completely address the issue, however, if $\exp(\Delta)$ is infinite then $C_-Pr_- >> C_+Pr_+$ and $\log(Post_-) \approx 0$ which means $Post_- \approx 1$ (equivalently $Post_+ \approx 0$).
+} which implies that $Post_- = (C_{-} Pr_{-})/(C_{-} Pr_{-} + C_{+} Pr_{+})$ and similarly for $Post_+$. To avoid numerical instability, or rather to handle it properly when it is unavoidable, we will work on the $\log$ scale. This works well for most of the problem, but computation of $Post_-$ and $Post_+$ need something a bit more since, for example, $\log(Post_-) = \log(C_{-}Pr_{-}) - \log(C_{-} Pr_{-} + C_{+} Pr_{+})$. That is, the denominator still must be computed then the $\log$ taken which does not allow operating on the $\log$ scale to fully address potential numerical instability. Instead, let $\ell_{-} := \log C_{-} + \log Pr_{-}, \ell_{+} := \log C_{+} + \log Pr_{+}$, and $\Delta := \ell_{-} - \ell_{+}$, then $\log(Post_-)$ can be computed with $\Delta - \log\bigl(1 + \exp(\Delta)\bigr)$. This still doesn't completely address the issue, however, if $\exp(\Delta)$ is infinite then $C_-Pr_- >> C_+Pr_+$ and $\log(Post_-) \approx 0$ which means $Post_- \approx 1$ (equivalently $Post_+ \approx 0$).
 
 With these values, we can compute the quantile by mapping the corresponding probability $p$ for the posterior onto the probability $p^*$ for the corresponding normals. Which normal the quantile of interest ultimately comes from is determined based on $Post_{\pm}$. If $p \leq Post_{-}$, then $p$ would be mapped onto the negative normal. If $p > Post_{-}$, then $p$ would be mapped onto the positive normal.  For example, if $Post_{+} = 0.98$ and $p = 0.1$ then $p$ would be mapped onto the positive normal. The transformation to map a given probability from the posterior depends on which tail the quantile resides in on the posterior (equivalently which normal it is being mapped to, the positive or negative). This map is simply:
 \as{
@@ -154,7 +154,7 @@ The results here provide an example of a version of the RL-P method but with an 
 
 We continue with a simple proof of the additional bias introduced by bootstrapping in one and two dimensional settings starting first with Ridge regression and then the lasso. After these simple proofs, we provide a simulation that helps generalize this issue to high dimensional settings. Note that here the goal is to provide an intuitive understanding of the issue. Others have already proved this issue more generally \citep{karoui2016, clarté2024}, however, we feel that the lack of straight forward examples may be in part why the bootstrap is still a tool used for penalized regression in general.
 
-Let $\frac{1}{n}x_1^Tx_1 = s_{11}$, and $s_{11}^*$ be the bootstrapped version of $s_{11}$. Furthermore note more that $E_{boot}[s_{11}^*] = s_{11}$. For Ridge, it can be shown that $E(\bh_1) = \frac{s_{11}}{s_{11} + \lam}\beta_1$, letting $g(s_{11}) = \frac{s_{11}}{s_{11} + \lam}$ note that:
+Let $\frac{1}{n}\x_1^T\x_1 = s_{11}$, and $s_{11}^*$ be the bootstrapped version of $s_{11}$. Furthermore note more that $E_{boot}[s_{11}^*] = s_{11}$. For Ridge, it can be shown that $E(\bh_1) = (\beta_1s_{11})/(s_{11} + \lam)$, letting $g(s_{11}) = (s_{11})/(s_{11} + \lam)$ note that:
 $$
 \begin{aligned}
 g'(s_{11}) &= \lambda (s_{11} + \lam)^{-2} \\
@@ -215,24 +215,24 @@ $$
 A similar argument can be made with the lasso, however, the mathematical details become more involved. Whereas with ridge we started off assuming the true values, with lasso it is easier to work with assumed conditions on the lasso estimates themselves as they directly affect the KKT conditions. Starting with a single parameter set up, assume that $\bh_1 > 0$. Then,
 $$
 \begin{aligned}
-&\frac{1}{n}\x_1^T(\y - \x_1 \bh_1) = \lambda \\
-&\Rightarrow \bh_1 = \frac{1}{ns_{11}}\x_1^T\y - \frac{\lambda}{s_{11}} \\
-&\Rightarrow E[\bh_1] = \beta_1 - \frac{\lambda}{s_{11}} \\
+&\tfrac{1}{n}\x_1^T(\y - \x_1 \bh_1) = \lambda \\
+&\Rightarrow \bh_1 = \tfrac{1}{ns_{11}}\x_1^T\y - \tfrac{\lambda}{s_{11}} \\
+&\Rightarrow E[\bh_1] = \beta_1 - \tfrac{\lambda}{s_{11}} \\
 \end{aligned}
 $$
 
-\noindent Let $h(s_{11}) = - \frac{\lambda}{s_{11}}$, then
+\noindent Let $h(s_{11}) = -\lambda / s_{11}$, then
 $$
 \begin{aligned}
-h'(s_{11}) &= \frac{\lambda}{s_{11}^2}, \\
-h''(s_{11}) &= \frac{-2\lambda}{s_{11}^3}  < 0,\\
+h'(s_{11}) &= \tfrac{\lambda}{s_{11}^2}, \\
+h''(s_{11}) &= \tfrac{-2\lambda}{s_{11}^3}  < 0,\\
 \end{aligned}
 $$
 
 \noindent and $h(s_{11})$ is therefore concave. So by Jensen's inequality
 $$
 \begin{aligned}
-E_{boot}[h(s_{11}^*)] \leq h(E_{booot}[s_{11}^*]) = h(s_11).
+E_{boot}[h(s_{11}^*)] \leq h(E_{booot}[s_{11}^*]) = h(s_{11}).
 \end{aligned}
 $$
 
@@ -246,7 +246,7 @@ $$
 Now consider a two parameter setting. If we assume $\hat{\beta}_1 > 0$ and $\hat{\beta}_2 = 0$, bias can only be guaranteed when $\beta_2 = 0$. This boils down to the same details as the single parameter case we just considered. If both $\hat{\beta}_1$ and $\hat{\beta}_2$ are assumed positive, we arrive at the following KKT conditions:
 $$
 \begin{aligned}
-\frac{1}{n}\boldsymbol{X}^T\boldsymbol{X} \hat{\boldsymbol{\beta}} &= \frac{1}{n}\boldsymbol{X}^Ty - \lambda 1_2 \\
+\tfrac{1}{n}\boldsymbol{X}^T\boldsymbol{X} \hat{\boldsymbol{\beta}} &= \tfrac{1}{n}\boldsymbol{X}^Ty - \lambda 1_2 \\
 \end{aligned}
 $$
 
@@ -342,12 +342,12 @@ Consider the following set up. $n = 50$, $p = 500$, 4 $\beta$s contain signal: $
             \bigl[\hat\beta^{\!*}(\lambda_{\text{CV}})\neq 0\bigr]$
   \EndFor
   \State $\mathbf A^{\!*}_{i,\cdot}\gets
-         \dfrac1B\sum_{b=1}^{B}\mathbf B^{\!*}_{b,\cdot}$
+         \tfrac1B\sum_{b=1}^{B}\mathbf B^{\!*}_{b,\cdot}$
 \EndFor
 \end{algorithmic}
 \end{algorithm}
 
-After we computed $\bar{\mathbf A}\gets\dfrac1R\sum_{i=1}^{R}\mathbf A_{i,\cdot}$,  \; $\bar{\mathbf A}^{\!*}\gets\dfrac1R\sum_{i=1}^{R}\mathbf A^{\!*}_{i,\cdot}$ and then compare $\bar{\mathbf A}$ (prob.\ of being selected in the original fit) with $\bar{\mathbf A}^{\!*}$ (expected bootstrap stability) to evaluate how well the inclusion probabilities mirror single-$\lambda$ selection behavior. The results are presented in Table~\ref{tab:G1}.
+After we computed $\bar{\mathbf A}\gets\tfrac1R\sum_{i=1}^{R}\mathbf A_{i,\cdot}$,  \; $\bar{\mathbf A}^{\!*}\gets\tfrac1R\sum_{i=1}^{R}\mathbf A^{\!*}_{i,\cdot}$ and then compare $\bar{\mathbf A}$ (prob.\ of being selected in the original fit) with $\bar{\mathbf A}^{\!*}$ (expected bootstrap stability) to evaluate how well the inclusion probabilities mirror single-$\lambda$ selection behavior. The results are presented in Table~\ref{tab:G1}.
 
 \begin{table}[hbtp]
   \centering

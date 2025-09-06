@@ -88,7 +88,7 @@ For the lasso, the corresponding prior is a Laplace distribution, also referred 
 \as{p(\bb) = \prod_{j = 1}^{p} \frac{\gamma}{2}\exp(-\gamma \abs{\beta_j}), \gamma > 0.}
 
 Let $\hat{S} = \lbrace k: \hat{\beta}_k \neq  0 \rbrace$ denote the set of selected features. Then, let $\hat{S}_j$ denote the set of selected features that excludes feature $j$, so that $\hat{S}_j = \hat{S} \text{ if } j \notin \hat{S}$ and $\hat{S}_j = \hat{S} - \lbrace j \rbrace \text{ if } j \in \hat{S}$. Define $\Q_{\hat{S}_j}$ as $\I - \X_{\hat{S}_j}(\X_{\hat{S}_j} \Tr \X_{\hat{S}_j})^{-1} \X_{\hat{S}_j} \Tr$, the projection matrix onto the features selected by the lasso. The likelihood for $\beta_j$ conditional on the selected features is:
-\as{L(\beta_j|\hat{S}_j) \propto \exp(-\frac{\x_j \Tr \Q_{\hat{S}_j} \x_j}{2\sigma^2}(\beta_{j} - \tilde{\beta}_{j})^2)}
+\as{L(\beta_j|\hat{S}_j) \propto \exp\left(-\frac{\x_j \Tr \Q_{\hat{S}_j} \x_j}{2\sigma^2}(\beta_{j} - \tilde{\beta}_{j})^2\right)}
 
 \noindent where $\tilde{\beta}_j = (\x_j \Tr \Q_{\hat{S}_j} \x_j)^{-1} \x_j \Tr \Q_{\hat{S}_j} \y$.  This can be seen as a mild extension of the relaxed lasso. It is equivalent to the relaxed lasso for features in $\hat{S}$ but also is capable of providing intervals for features in $\hat{S}^C$.
 
