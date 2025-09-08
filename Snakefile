@@ -26,7 +26,7 @@ wildcard_constraints:
 
 rule all:
     input:
-        "avg-cov.pdf",
+        "build/avg-cov.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
         "code/out/figure3.png",
@@ -392,6 +392,10 @@ rule manuscript:
         "code/out/tableE1.tex",
         "code/out/tableG1.tex"
     output:
-        "avg-cov.pdf"
+        "build/avg-cov.pdf"
     shell:
-        "cleantex -btq avg-cov.tex"
+        r"""
+        latexmk -pdf -outdir=build -silent avg-cov.tex
+        texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
+        """
+        # "cleantex -btq avg-cov.tex"

@@ -8,6 +8,7 @@
 .vscode/
 latex/
 code/github
+build/
 
 # local rds (now handled by dat)
 code/rds/*
@@ -32,3 +33,4 @@ code/out/*
 *.fls
 *.txt
 *.gz
+
