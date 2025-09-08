@@ -5,6 +5,7 @@ configfile: "config.yaml"
 ITER         = config["iterations"]
 SEED         = config["seed"]
 DESPARSIFIED = config.get("desparsified", False)
+SUPP_PAGE = config["supp_page"]
 
 if not config.get("res-loc", False):
     user = getpass.getuser()
@@ -398,4 +399,100 @@ rule manuscript:
         latexmk -pdf -outdir=build -silent avg-cov.tex
         texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
         """
-        # "cleantex -btq avg-cov.tex"
+
+rule arxiv:
+    input:
+        "abstract.tex",
+        "avg-cov.tex",
+        "main.tex",
+        "supp.tex",
+        "config.yaml",
+        "code/out/figure1.pdf",
+        "code/out/figure2.pdf",
+        "code/out/figure3.png",
+        "code/out/figure4.pdf",
+        "code/out/figure5L.pdf",
+        "code/out/figure5R.pdf",
+        "code/out/figure6.pdf",
+        "code/out/figure7.pdf",
+        "code/out/figureA1.pdf",
+        "code/out/figureC1.pdf",
+        "code/out/figureF1.pdf",
+        "code/out/figureF2.pdf",
+        "code/out/table1.tex",
+        "code/out/tableD1.tex",
+        "code/out/tableE1.tex",
+        "code/out/tableG1.tex"
+    output:
+        f"sub/arxiv/avg-cov.pdf"
+    shell:
+        f"""
+        latexmk -pdf -outdir=build -silent avg-cov.tex
+        texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
+        mkdir -p sub/arxiv
+        touch sub/arxiv/avg-cov.pdf
+        singletex avg-cov.tex sub/arxiv/avg-cov.tex
+        cd sub/arxiv
+        latexmk -pdf -outdir=build -silent avg-cov.tex
+        texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
+        """
+
+rule biometrics_s1:
+    input:
+        "abstract.tex",
+        "avg-cov.tex",
+        "main.tex",
+        "supp.tex",
+        "config.yaml",
+        "code/out/figure1.pdf",
+        "code/out/figure2.pdf",
+        "code/out/figure3.png",
+        "code/out/figure4.pdf",
+        "code/out/figure5L.pdf",
+        "code/out/figure5R.pdf",
+        "code/out/figure6.pdf",
+        "code/out/figure7.pdf",
+        "code/out/figureA1.pdf",
+        "code/out/figureC1.pdf",
+        "code/out/figureF1.pdf",
+        "code/out/figureF2.pdf",
+        "code/out/table1.tex",
+        "code/out/tableD1.tex",
+        "code/out/tableE1.tex",
+        "code/out/tableG1.tex"
+    output:
+        f"sub/biometrics/build/avg-cov.pdf"
+    shell:
+        f"""
+        mkdir -p sub/biometrics/code/out
+        cp code/out/* sub/biometrics/code/out
+        cp main.tex sub/biometrics/main.tex
+        cp supp.tex sub/biometrics/supp.tex
+        cp ims-nourl.bst sub/biometrics/ims-nourl.bst
+        cp avg-cov.bib sub/biometrics/avg-cov.bib
+        cd sub/biometrics
+        ./strip_ref_prefix.py
+        latexmk -pdf -outdir=build -silent avg-cov.tex
+        texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
+        """
+
+rule biometrics:
+    input:
+        pdf = f"sub/biometrics/build/avg-cov.pdf"
+    output:
+        main = f"sub/biometrics/build/main.pdf",
+        supp = f"sub/biometrics/build/supp.pdf"
+    shell:
+        r"""
+        total_pages=$(qpdf --show-npages {input.pdf})
+
+        if [ {SUPP_PAGE} -le 1 ] || [ {SUPP_PAGE} -gt $total_pages ]; then
+            echo "Invalid supplement start page: {SUPP_PAGE}" >&2
+            exit 1
+        fi
+
+        main_end=$(( {SUPP_PAGE} - 1 ))
+
+        qpdf {input.pdf} --pages . 1-$main_end -- {output.main}
+        qpdf {input.pdf} --pages . {SUPP_PAGE}-$total_pages -- {output.supp}
+        """
