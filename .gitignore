@@ -8,6 +8,13 @@
 .vscode/
 latex/
 code/github
+build/
+sub/arxiv
+sub/biometrics/*.bib
+sub/biometrics/*.bst
+sub/biometrics/main.tex
+sub/biometrics/supp.tex
+supp.tex.bak
 
 # local rds (now handled by dat)
 code/rds/*
@@ -16,6 +23,7 @@ code/rds/.dat/local
 
 ## Output files
 code/out/*
+sub/biometrics/code/out/*
 
 *.pdf
 *.html
