@@ -55,8 +55,6 @@ github_install_latest <- function(pkgs, lib_dir = file.path("github", "lib")) {
 pkgs_to_install <- list(
   ncvreg = list(repo = "pbreheny/ncvreg", ref = "pipe"),   # branch/tag/SHA
   hdi    = list(repo = "lharris421/hdi",   ref = "master") # or "HEAD"
-  # Example with pinned version (skips if exact match already installed):
-  # somepkg = list(repo = "owner/somepkg", ref = "v1.2.3", version = "1.2.3")
 )
 
 # Run
