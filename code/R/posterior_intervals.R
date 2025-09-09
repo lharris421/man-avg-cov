@@ -12,7 +12,7 @@ posterior_intervals <- function(
     fit <- cv.ncvreg(X = X, y = y, family = family, penalty = penalty,
                      gamma = gamma, alpha = enet_alpha)
   }
-  res <- confidence_intervals(
+  res <- ncvreg::intervals(
     fit, lambda = lambda, sigma = sigma,
     level = 1 - alpha,
     posterior = posterior, relaxed = relaxed,

@@ -5,7 +5,6 @@ configfile: "config.yaml"
 ITER         = config["iterations"]
 SEED         = config["seed"]
 DESPARSIFIED = config.get("desparsified", False)
-SUPP_PAGE = config["supp_page"]
 
 if not config.get("res-loc", False):
     user = getpass.getuser()
