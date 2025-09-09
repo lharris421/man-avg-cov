@@ -80,7 +80,7 @@ In recent years, \cite{Nie2022} proposed the Bayesian Bootstrap for Spike and Sl
 
 \section{Relaxed Lasso Posterior intervals}\label{Sec:methods}
 
-While the bootstrap is not a viable option as outlined in Section~\ref{Sec:boot-bias}, this section and the discourse around Theorem~\ref{Thm:bcc} suggest that if intervals are constructed from a distribution resembling a Bayesian posterior that they should have correct average coverage. We propose the \textbf{Relaxed Lasso Posterior} (RL-P), which constructs intervals from the distribution of $\beta_j$ conditional on the selected features, viewed as a Bayesian posterior. The remainder of this section presents its specific application to lasso-penalized linear regression. Specifically, we define and derive the conditional distributions needed for the interval construction. In this section, we provide a high level derivation of the conditional posterior distributions for lasso-penalized regression. Complete details, including how to calculate quantiles, are provided in \ref{Sup:A}.
+While the bootstrap is not a viable option as outlined in Section~\ref{Sec:boot-bias}, this section and the discourse around Theorem~\ref{Thm:bcc} suggest that if intervals are constructed from a distribution resembling a Bayesian posterior that they should have correct average coverage. We propose the \textbf{Relaxed Lasso Posterior} (RL-P), which constructs intervals from the distribution of $\beta_j$ conditional on the selected features, viewed as a Bayesian posterior. The use of ``Posterior'' here is a nod to the construction, rather than suggesting the resulting intervals are credible intervals. The remainder of this section presents its specific application to lasso-penalized linear regression. Specifically, we define and derive the conditional distributions needed for the interval construction. In this section, we provide a high level derivation of the conditional posterior distributions for lasso-penalized regression. Complete details, including how to calculate quantiles, are provided in \ref{Sup:A}.
 
 As with other penalized regression approaches, the lasso can be formulated as a Bayesian regression model by setting an appropriate prior. This was initially noted by \cite{Tibshirani1996} and explored more extensively by \cite{Park2008}.  For Ridge regression, the prior is a Normal distribution which leads to conjugacy allowing for straightforward interval construction. As seen in both the left side of Figure~\ref{fig:1} and the Ridge Posterior results in \ref{fig:F1}, these intervals achieve correct average coverage in ideal settings. Here, for lasso, we derive the conditional distribution of $\bh_j(\lam)$ in attempts to provide intervals analogous to those produced by Ridge.
 
@@ -111,7 +111,7 @@ $$
 
 \noindent where $|\hat{S}_{\CV}|$ = $\sum \left( \bbh({\lambda_{\CV}}) \neq 0 \right)$.
 
-The relaxed lasso posterior intervals are available through intervals(fit) in the current version of the R package \texttt{ncvreg} (3.16.0).
+The Relaxed Lasso Posterior intervals are available through \texttt{intervals(fit)} in the current version of the R package \texttt{ncvreg} (3.16.0) where \texttt{fit} is an \texttt{ncvreg} or \texttt{cv.ncvreg} object.
 
 \section{Results}
 \label{Sec:results}

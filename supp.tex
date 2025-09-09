@@ -64,7 +64,7 @@ Once the respective probability is mapped, one can simply use the inverses of th
   \State $Pr_{-} \gets \Phi\bigl(0;\,\tilde{\beta}_j + \lambda,\;\tfrac{\sigma^2}{\tilde{n}}\bigr)$
   \State $Pr_{+} \gets 1 - \Phi\bigl(0;\,\tilde{\beta}_j - \lambda,\;\tfrac{\sigma^2}{\tilde{n}}\bigr)$
   \Statex
-  \State // 2. Compute posterior weights $Post_{-},\,Post_{+}$ with log‐scale stabilization
+  \State // 2. Compute weights $Post_{-},\,Post_{+}$ on log scale
   \State $\ell_{-} \gets \log C_{-} + \log Pr_{-}$
   \State $\ell_{+} \gets \log C_{+} + \log Pr_{+}$
   \State $\Delta \gets \ell_{-} - \ell_{+}$
