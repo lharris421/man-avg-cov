@@ -4,10 +4,9 @@ A minimal reproducible repository.
 
 # Packages
 
-Before continuing, ensure you have th following packages installed:
+Before continuing, ensure you have the following packages installed:
 
-- ncvreg (3.16.0)
-- hdrm   (remotes::install_github("pbreheny/hdrm"))
+- hdrm (remotes::install_github("pbreheny/hdrm"))
 - selectiveInference
 - glmnet
 - dplyr
@@ -15,6 +14,11 @@ Before continuing, ensure you have th following packages installed:
 - mgcv
 - progress
 - optparse
+
+The following need to be installed from github branches instead of CRAN which can be easily done by running the script `install_github_pkgs.R`:
+
+- ncvreg (3.16.0)
+= hdi
 
 Additionally to create all the plots / tables you will need:
 
@@ -43,5 +47,5 @@ There are a few options that should be consider before building as running the s
 These can be adjusted in `config.yaml`.
 
 1. The number of iterations in the original manuscript is 1000 for each simulation, but leaving this at 100 will greatly reduce computational costs. 
-2. Running the desparsified lasso is slow in general and applying it to the Scheetz2006 dataset takes hours. The default here is to not produce these results. If you do wish to, you will also need the version of `hdi` that was updated for this manuscript which can be found here: https://github.com/lharris421/hdi
+2. Running the desparsified lasso is slow in general and applying it to the Scheetz2006 dataset takes hours. The default here is to not produce these results. If you do wish to, you will also need the version of `hdi` that was updated for this manuscript which can be found here: https://github.com/lharris421/hdi (see above)
 

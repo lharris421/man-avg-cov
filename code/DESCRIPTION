@@ -1,9 +1,9 @@
 Package: code
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Code for simulations in "A New Perspective on High-Dimensional Intervals"
+Version: 1.0.0
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
+    person("Logan", "Harris", , "logan-harris@uiowa.edu", role = c("aut", "cre"))
+Description: Reproduces the simulation and manuscripts for "A New Perspective on High-Dimensional Intervals"
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
