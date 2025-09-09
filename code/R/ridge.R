@@ -168,3 +168,82 @@ ridge_bootstrap_ci <- function(X, y,
     row.names = NULL
   )
 }
+ridge_wlb <- function(X, y, lambda, B = 1000, alpha = 0.2) {
+  n  <- nrow(X);  p <- ncol(X)
+  vnames <- colnames(X)
+
+  # standardize X (your std()) and center y; store scales for back-transform
+  X <- std(X)
+  rescale_factorX <- attr(X, "scale")
+  y <- y - mean(y)
+
+  beta_draws <- matrix(NA_real_, B, p)
+
+  for (r in seq_len(B)) {
+    # Dirichlet(1,...,1) weights via Exp(1); scale to sum to n
+    w <- rexp(n)
+    w <- (w / sum(w)) * n
+
+    # Normal equations: (1/n) X'WX + lambda I  and  (1/n) X'W y
+    XtWX <- crossprod(X * w, X) / n
+    XtWy <- crossprod(X * w, y) / n
+
+    # Cholesky solve (stable); tiny jitter if needed
+    G <- XtWX + lambda * diag(p)
+    ok <- TRUE
+    Rch <- tryCatch(chol(G), error = function(e) { ok <<- FALSE; NULL })
+    if (!ok) {
+      jig <- 1e-8
+      Rch <- chol(G + jig * diag(p))
+    }
+    beta_draws[r, ] <- backsolve(Rch, forwardsolve(t(Rch), XtWy))
+  }
+
+  colnames(beta_draws) <- vnames
+
+  lowers <- apply(beta_draws, 2, quantile, probs = alpha / 2,     na.rm = TRUE)
+  uppers <- apply(beta_draws, 2, quantile, probs = 1 - alpha / 2, na.rm = TRUE)
+
+  data.frame(
+    variable = vnames %||% colnames(X),
+    lower    = lowers / rescale_factorX,
+    upper    = uppers / rescale_factorX,
+    lambda   = lambda,
+    row.names = NULL
+  )
+}
+library(matrixStats)
+
+ridge_bayes_boot <- function(X, y, lambda, B = 1000, alpha = 0.2) {
+
+  n  <- nrow(X);  p <- ncol(X)
+  beta_draws <- matrix(NA_real_, B, p)      # storage
+  X <- std(X); rescale_factorX <- attr(X, "scale")
+  y <- y - mean(y)
+
+  for (r in seq_len(B)) {
+    ## 1. Dirichlet weights: Rubin (1981)
+    w <- rgamma(n, 1, 1)
+    w <- w / sum(w)
+    w <- w * n           # treat as counts
+
+    ## 2. Fit *one* weighted ridge model with glmnet
+    beta_draws[r, ] <- backsolve(
+      R <- chol(crossprod(X * w, X) / n + lambda * diag(p)),
+      forwardsolve(t(R), crossprod(X * w, y) / n)
+    )
+    # beta_draws[r, ] <- solve((1/n) * t(X) %*% diag(w) %*% X + lambda * diag(p)) %*% ((1/n) * t(X) %*% diag(w) %*% y)
+  }
+  colnames(beta_draws) <- colnames(X)
+  lowers <- apply(beta_draws, 2, function(x) quantile(x, alpha / 2))
+  uppers <- apply(beta_draws, 2, function(x) quantile(x, 1 - alpha / 2))
+
+  data.frame(
+    variable = colnames(X),
+    lower = lowers / rescale_factorX,
+    upper = uppers / rescale_factorX,
+    lambda = lambda,
+    row.names = NULL
+  )
+
+}
