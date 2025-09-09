@@ -396,5 +396,5 @@ rule manuscript:
     shell:
         r"""
         latexmk -pdf -outdir=build -silent avg-cov.tex
-        texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
+        ./texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
         """
