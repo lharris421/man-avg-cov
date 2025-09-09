@@ -1,9 +1,4 @@
-if (interactive()) {
-  source("scripts/setup.R")
-} else {
-  source("code/scripts/setup.R")
-}
-
+library(optparse)
 option_list <- list(
   make_option(c("--seed"), type="double", default=1234),
   make_option(c("--method"), type="character", default="rlp"),
@@ -13,10 +8,17 @@ option_list <- list(
 
 opt <- parse_args(OptionParser(option_list=option_list))
 
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source(glue::glue("{opt$loc}scripts/setup.R"))
+}
+
 method_name <- opt$method
 method <- methods[[method_name]]
 
 set.seed(opt$seed)
+seeds <- round(runif(1) * 1e9)
 if (opt$dataset == "whoari") {
   data <- read_data("whoari")
   data$X <- ncvreg::std(data$X)
@@ -24,7 +26,8 @@ if (opt$dataset == "whoari") {
   data <- read_data("Scheetz2006")
 }
 
-lambda <- cv.ncvreg(data$X, data$y, penalty = "lasso")$lambda.min
+set.seed(seeds[1])
+lambda <- cv.glmnet(data$X, data$y)$lambda.min
 
 suppressMessages({
   run_time <- system.time({

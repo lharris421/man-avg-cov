@@ -1,9 +1,4 @@
-if (interactive()) {
-  source("scripts/setup.R")
-} else {
-  source("code/scripts/setup.R")
-}
-
+library(optparse)
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--seed"), type="double", default=1234),
@@ -16,6 +11,13 @@ print(opt)
 iterations <- opt$iterations
 set.seed(opt$seed)
 seeds <- round(runif(iterations) * 1e9)
+
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source(glue::glue("{opt$loc}scripts/setup.R"))
+}
+
 method_name <- opt$method
 method <- methods[[method_name]]
 

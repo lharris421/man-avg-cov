@@ -1,15 +1,16 @@
-if (interactive()) {
-  source("scripts/setup.R")
-} else {
-  source("code/scripts/setup.R")
-}
-
+library(optparse)
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--loc"), type="character", default="")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source(glue::glue("{opt$loc}scripts/setup.R"))
+}
 
 res_list <- readRDS(glue("{opt$loc}rds/{iterations}/across_lambda_coverage.rds"))
 

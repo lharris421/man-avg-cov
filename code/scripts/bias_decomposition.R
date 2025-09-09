@@ -1,9 +1,4 @@
-if (interactive()) {
-  source("scripts/setup.R")
-} else {
-  source("code/scripts/setup.R")
-}
-
+library(optparse)
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--seed"), type="double", default=1234),
@@ -12,6 +7,13 @@ option_list <- list(
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 set.seed(opt$seed)
+
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source(glue::glue("{opt$loc}scripts/setup.R"))
+}
+
 bootstrap_samples <- 1000
 res <- list()
 

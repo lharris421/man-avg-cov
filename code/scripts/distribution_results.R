@@ -1,15 +1,10 @@
-if (interactive()) {
-  source("scripts/setup.R")
-} else {
-  source("code/scripts/setup.R")
-}
-
+library(optparse)
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--seed"), type="double", default=1234),
   make_option(c("--n"), type="integer", default=50),
   make_option(c("--p"), type="integer", default=101),
-  make_option(c("--sigma"), type="integer", default=10),
+  make_option(c("--family"), type="character", default="gaussian"),
   make_option(c("--snr"), type="integer", default=100),
   make_option(c("--distribution"), type="character", default="laplace"),
   make_option(c("--method"), type="character", default="rlp"),
@@ -22,6 +17,13 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 set.seed(opt$seed)
 seeds <- round(runif(iterations) * 1e9)
+
+if (interactive()) {
+  source("scripts/setup.R")
+} else {
+  source(glue::glue("{opt$loc}scripts/setup.R"))
+}
+
 method_name <- opt$method
 method <- methods[[method_name]]
 
@@ -35,7 +37,8 @@ for (i in 1:iterations) {
   set.seed(seeds[i])
   data <- gen_data_distribution(
     n = opt$n, p = opt$p, distribution = opt$distribution, corr = opt$corr,
-    sigma = 10, rho = opt$rho / 100, SNR = opt$snr / 100
+    sigma = 10, rho = opt$rho / 100, SNR = opt$snr / 100,
+    family = opt$family
   )
   truth <- data.frame(variable = names(data$beta), truth = data$beta)
 
@@ -55,5 +58,5 @@ for (i in 1:iterations) {
 res <- bind_rows(res) %>%
   mutate(n = opt$n, distribution = opt$distribution, p = opt$p, corr = opt$corr, rho = opt$rho, sigma = opt$sigma, snr = opt$snr, method = method_name)
 
-saveRDS(bind_rows(res), glue("{opt$loc}rds/{iterations}/original/{opt$distribution}_{opt$corr}_{opt$rho}_{opt$n}_{opt$p}_{opt$sigma}_{opt$snr}_{method_name}.rds"))
+saveRDS(bind_rows(res), glue("{opt$loc}rds/{iterations}/original/{opt$distribution}_{opt$corr}_{opt$rho}_{opt$n}_{opt$p}_{opt$family}_{opt$snr}_{method_name}.rds"))
 
