@@ -18,7 +18,7 @@ Before continuing, ensure you have the following packages installed:
 The following need to be installed from github branches instead of CRAN which can be easily done by running the script `install_github_pkgs.R`:
 
 - ncvreg (3.16.0)
-= hdi
+- hdi
 
 Additionally to create all the plots / tables you will need:
 
