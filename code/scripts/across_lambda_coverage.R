@@ -46,7 +46,7 @@ for (k in 1:iterations) {
 
     if (!is.na(lambda_seq[i])) {
       set.seed(current_seed)
-      pre_lambda_res[[i]] <- confidence_intervals(cv_fit, level = 0.8, relaxed = TRUE, sigma = sqrt(sigma2), lambda = lambda_seq[i]) %>%
+      pre_lambda_res[[i]] <- ncvreg::intervals(cv_fit, level = 0.8, relaxed = TRUE, sigma = sqrt(sigma2), lambda = lambda_seq[i]) %>%
         dplyr::mutate(lambda_ind = i, n = 100, group = k, lambda = lambda_seq[i], lambda_max = lambda_max)
     } else {
       print("Shortened lambda sequence!!")

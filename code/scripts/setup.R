@@ -9,9 +9,7 @@ quietlyLoadPackage <- function(package) {
 }
 lapply(packages, quietlyLoadPackage)
 
-res_dir <- switch(Sys.info()['user'],
-                  'pbreheny' = '~/res/lasso-confint',
-                  'loganharris' = '~/github/lasso-confint')
+res_dir <- "code/"
 devtools::load_all(res_dir, quiet = TRUE)
 
 method_labels <- c(
