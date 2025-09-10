@@ -58,7 +58,7 @@ Once the respective probability is mapped, one can simply use the inverses of th
 \label{alg:quantile}
 \begin{algorithmic}[1]
   \Require
-    $\tilde{\beta}_j,\;\sigma^2,\;\tilde{n};\lambda,\;p$ \Comment{mean, variance, sample size, penalty, target significance level}
+    $\tilde{\beta}_j,\;\sigma^2,\;\tilde{n};\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, penalty of interest}
   \Statex
   \State // 1. Compute prior mass for negative and positive regions (on log‐scale)
   \State $\log Pr_{-} \gets \log \left(\Phi\bigl(0;\,\tilde{\beta}_j + \lambda,\;\tfrac{\sigma^2}{\tilde{n}}\bigr)\right)$
