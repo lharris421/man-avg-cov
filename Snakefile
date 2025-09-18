@@ -433,8 +433,8 @@ rule arxiv:
         touch sub/arxiv/avg-cov.pdf
         singletex avg-cov.tex sub/arxiv/avg-cov.tex
         cd sub/arxiv
-        latexmk -pdf -outdir=build -silent avg-cov.tex
-        texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
+        latexmk -pdf -silent avg-cov.tex
+        texfot lualatex -interaction=nonstopmode avg-cov.tex
         """
 
 rule biometrics_s1:
