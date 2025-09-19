@@ -92,9 +92,9 @@ All datasets used are available in the R package \texttt{hdrm} (version 0.17.1) 
 
 \begin{appendices}
 \renewcommand{\thesection}{Supplement~\Alph{section}}
-\renewcommand{\thefigure}{Figure~\Alph{section}\arabic{figure}}
-\renewcommand{\thetable}{Table~\Alph{section}\arabic{table}}
-\renewcommand{\thealgorithm}{Algorithm~\Alph{section}\arabic{algorithm}}
+\renewcommand{\thefigure}{\Alph{section}\arabic{figure}}
+\renewcommand{\thetable}{\Alph{section}\arabic{table}}
+\renewcommand{\thealgorithm}{\Alph{section}\arabic{algorithm}}
 
 % Reset counters manually at each new section
 \makeatletter
@@ -104,9 +104,9 @@ All datasets used are available in the R package \texttt{hdrm} (version 0.17.1) 
 \makeatother
 
 % Remove default float prefixes in captions
-\captionsetup[figure]{name={}}
-\captionsetup[table]{name={}}
-\floatname{algorithm}{}
+% \captionsetup[figure]{name={}}
+% \captionsetup[table]{name={}}
+% \floatname{algorithm}{}
 
 \input{supp}
 \end{appendices}
