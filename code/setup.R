@@ -5,7 +5,7 @@ packages <- c(
   "ncvreg", "hdrm", "hdi", "selectiveInference", "glmnet",
   "dplyr", "tidyr", "purrr", "stringr", "ggplot2", "glue",
   "kableExtra", "patchwork", "mgcv", "progress", "optparse",
-  "grid", "scales"
+  "grid", "scales", "ggstance"
 )
 quietlyLoadPackage <- function(package) {
   suppressPackageStartupMessages(library(package, character.only = TRUE))
@@ -36,7 +36,10 @@ method_labels <- c(
   "lqap"               = "LQA Posterior",
   "lqapmcp"            = "LQA Posterior (MCP)",
   "lqapscad"           = "LQA Posterior (SCAD)",
-  "rl"                 = "Relaxed Lasso"
+  "rl"                 = "Relaxed Lasso",
+  "lqapbinom"          = "LQA Posterior",
+  "lqapbinommcp"       = "LQA Posterior (MCP)",
+  "lqapbinomsnet"      = "LQA Posterior (SNET)"
 )
 
 ## Plot colors
