@@ -76,7 +76,7 @@ To provide an example, we turn to ridge regression for two reasons. First, we do
 
 Even when dimensionality is low, the bootstrap does not entirely agree with the posterior, and the departure increases as we move from $p=20$ to $p=200$. We find that this issue is even worse for the lasso, potentially due to the additional issue of repeatedly drawing exact zeros when bootstrapping; see Supplement~\ref{sup:boot-fail}. For further explanations for the breakdown, we refer the reader to Supplement~\ref{sup:proof}. Supplement~\ref{sup:proof} starts with a simple proof in the 1 and 2 predictor setting for both ridge and lasso showing that while this issue increases with dimensionality, that it is present even in low dimensions. Additionally, these proofs indicate that this bias is heavily dependent on the size of the penalty ($\lam$). This is followed by a simulation that decomposes the source of the bootstrap bias in a high dimensional setting for lasso.
 
-In recent years, \cite{Nie2022} proposed the Bayesian Bootstrap for Spike and Slab Lasso (BBSSL). The BBSSL builds on the Weighted Likelihood Bootstrap of \cite{Newton1994} which is an extension of Rubin's Bayesian Bootstrap from non-parametric to parametric models. While the BBSSL is distinct from the Lasso, it would be interesting to assess the coverage behavior of BBSSL under the average coverage paradigm.
+In recent years, \cite{Nie2022} proposed the Bayesian Bootstrap for Spike and Slab Lasso (BBSSL). The BBSSL builds on the Weighted Likelihood Bootstrap of \cite{Newton1994} which is an extension of Rubin's Bayesian Bootstrap from non-parametric to parametric models. While the BBSSL is distinct from the lasso, it would be interesting to assess the coverage behavior of BBSSL under the average coverage paradigm.
 
 \section{Relaxed Lasso Posterior intervals}\label{Sec:methods}
 
@@ -111,7 +111,7 @@ $$
 
 \noindent where $|\hat{S}_{\CV}|$ = $\sum \left( \bbh({\lambda_{\CV}}) \neq 0 \right)$.
 
-The Relaxed Lasso Posterior intervals are available through \texttt{intervals(fit)} in the current version of the R package \texttt{ncvreg} (3.16.0) where \texttt{fit} is an \texttt{ncvreg} or \texttt{cv.ncvreg} object.
+The Relaxed Lasso Posterior intervals are available through \texttt{intervals(fit, relaxed = TRUE)} in the current version of the R package \texttt{ncvreg} (3.16.0) where \texttt{fit} is an \texttt{ncvreg} or \texttt{cv.ncvreg} object.
 
 \section{Results}
 \label{Sec:results}
@@ -130,7 +130,7 @@ The RL-P method has average coverage nearly exactly equal to the nominal 80\%. R
 
 Low coverage for large values of $\beta$ arises from the bias introduced by the lasso penalty. However, as $n$ increases, the value of $\lambda_{\CV}$ decreases, reducing the bias. Consequently, coverage becomes flatter and closer to the nominal level across the range of $\beta$, as shown in Supplement~\ref{sup:alt_ns}.
 
-Bias can also be reduced by choosing an alternative penalty. For example, the method described in Section~\ref{Sec:methods} can be extended to the Minimax Concave Penalty (MCP) to construct Relaxed MCP Posterior (RM-P) intervals. These intervals exhibit coverage that remains much closer to the nominal level across the range of $\beta$ compared to the RL-P intervals (Supplement~\ref{sup:MCP}). This demonstrates that the phenomenon of uneven coverage across $\beta$ is not inherent to the proposed interval method, but rather, reflects properties of the penalty used in estimation.
+Bias can also be reduced by choosing an alternative penalty. For example, the method described in Section~\ref{Sec:methods} can be extended to the Minimax Concave Penalty (MCP) to construct Relaxed MCP Posterior (RM-P) intervals. These intervals exhibit coverage that remains closer to the nominal level for larger values of $\beta$ compared to the RL-P intervals (Supplement~\ref{sup:MCP}). This demonstrates that the phenomenon of uneven coverage across $\beta$ is not inherent to the proposed interval method, but rather, reflects properties of the penalty used in estimation.
 
 \subsection{Robustness for Average Coverage}
 \label{Sec:robustness}
@@ -140,7 +140,7 @@ We will now shift our attention to the robustness of the RL-P method under alter
 \subsubsection{Correlation}
 \label{Sec:correlation}
 
-Figure~\ref{fig:2} illustrates the coverage of the RL-P intervals as the level of correlation $\rho = \cor(\x_i, \x_j)$ for $\abs{i-j} = 1$ increases. Otherwise, the simulation design is the same as in Section~\ref{Sec:results}; in fact, the design is exactly the same for $\rho = 0$. The violin plots provide the distributions of average coverages across 1000 simulated data sets for four values of $n$ and three values of $\rho$. For each $n$, the amount of correlation is increased from $\rho = 0$ to $0.5$ to $0.8$.
+Figure~\ref{fig:2} illustrates the coverage of the RL-P intervals as the level of correlation, $\cor(\x_i, \x_j) = \rho^{\abs{i-j}}$, increases. Otherwise, the simulation design is the same as in Section~\ref{Sec:results}; in fact, the design is exactly the same for $\rho = 0$. The violin plots provide the distributions of average coverages across 1000 simulated data sets for four values of $n$ and three values of $\rho$. For each $n$, the amount of correlation is increased from $\rho = 0$ to $0.5$ to $0.8$.
 
 When $\rho = 0$, RL-P is slightly conservative for $n = 50$ and $n = 100$, but average coverage converges to nominal as $n$ increases. Coverage exceeds the nominal value at smaller $n$ due to the fact that $\sigma^2$ tends to be overestimated at these sample sizes; this phenomenon diminishes as $n$ increases.
 
@@ -149,7 +149,7 @@ Across all sample sizes, RL-P intervals become increasingly conservative as the 
 \begin{figure}[htb!]
   \begin{center}
     \includegraphics[width=0.8\linewidth]{figure2.pdf}
-    \caption{\label{fig:2} This figure presents results for the simulation described in Section~\ref{Sec:correlation}. The violin plots are the distribution of average coverages across 1000 simulated datasets for the RL-P method and across three different levels of autoregressive correlation among the covariates, $\rho = 0 \text{ (no correlation)}, 0.5, 0.8$. For this simulation, p = 100, and the results for each level of correlation are presented for four different sample sizes, $n = p/2, p, 4p, 10p$. The horizontal black line provides reference for the 80\% nominal coverage rate.}
+    \caption{\label{fig:2} Presents results for the simulation described in Section~\ref{Sec:correlation}. The violin plots are the distribution of average coverages across 1000 simulated datasets for the RL-P method and across three different levels of autoregressive correlation among the covariates, $\rho = 0 \text{ (no correlation)}, 0.5, 0.8$. For this simulation, p = 101, and the results for each level of correlation are presented for four different sample sizes, $n = 50, 100, 400, 1000$. The horizontal black line provides reference for the 80\% nominal coverage rate.}
   \end{center}
 \end{figure}
 
@@ -186,20 +186,20 @@ As shown in Figure~\ref{fig:2}, the average coverage of the proposed RL-P method
 
 In this simulation, we have $n = p = 100$. However, only one $\beta_j$ is non-zero: $\beta_{A} = 1$ and $\beta_{B}, \beta_{N1}, \ldots, \beta_{N98} = 0$. Additionally, the data are simulated such that $\cor(\x_{A}, \x_{B}) = .99$ but all of the N (noise) variables are uncorrelated with $A$, $B$, and each other. The distribution of $\X$ and $\y$ is unchanged from Section~\ref{Sec:coverage}, although here $\sigma^2 = 1$.
 
-Figure~\ref{fig:4} depicts the results from $1,000$ simulated data sets. On top, 1000 intervals are shown for for 3 features: $A$, $B$, and $N1$; the intervals are colored black if they contain the true parameter value and red if they do not. On bottom, intervals for the first 20 variables for a randomly selected example data set are displayed.
+Figure~\ref{fig:4} depicts the results from $1000$ simulated data sets. On top, $1000$ intervals are shown for for 3 features: $A$, $B$, and $N1$; the intervals are colored black if they contain the true parameter value and red if they do not. On bottom, intervals for the first 20 variables for a randomly selected example data set are displayed.
 
 \begin{figure}[htb!]
   \begin{center}
     \includegraphics[width=0.8\linewidth]{figure4}
     \caption{\label{fig:4}
-      Provides results for simulation described in Section~\ref{Sec:Ridge}. The bottom plots show a single example of a intervals produced by Ridge (left) and RL-P (right) from one (randomly selected) of the 1000 datasets for the first 20 variables. The top plot summarizes the resulting intervals for the variables $A$, $B$, and $N1$ across the 1000 simulations. All 1000 intervals are plotted, sorted by their midpoint, with those colored red that did not contain the true coefficient value (indicated by the horizontal dashed gold line).
+      Provides results for simulation described in Section~\ref{Sec:Ridge}. The bottom plots show a single example of intervals produced by Ridge (left) and RL-P (right) from one (randomly selected) of the 1000 datasets for the first 20 variables. The top plot summarizes the resulting intervals for the variables $A$, $B$, and $N1$ across the 1000 simulations. All 1000 intervals are plotted, sorted by their midpoint, with those colored red that did not contain the true coefficient value (indicated by the horizontal dashed gold line).
     }
   \end{center}
 \end{figure}
 
-Although only feature $A$ truly carries the signal, its high correlation with feature $B$ makes it unclear whether the signal originates solely from $A$ or from both $A$ and $B$. Ridge and Lasso resolve this ambiguity in different ways. Ridge regression makes a fairly strong assumption here that it is much more likely for the signal to be divided equally between $A$ and $B$ than for either $A$ or $B$ to have all the signal. This results in intervals that are very similar for $A$ and $B$. As a result, the correlation between $A$ and $B$ does not introduce much uncertainty -- the intervals for $\beta_A$ and $\beta_B$ are no wider than that of the noise features.
+Although only feature $A$ truly carries the signal, its high correlation with feature $B$ makes it unclear whether the signal originates solely from $A$ or from both $A$ and $B$. Ridge and lasso resolve this ambiguity in different ways. Ridge regression makes a fairly strong assumption here that it is much more likely for the signal to be divided equally between $A$ and $B$ than for either $A$ or $B$ to have all the signal. This results in intervals that are very similar for $A$ and $B$. As a result, the correlation between $A$ and $B$ does not introduce much uncertainty -- the intervals for $\beta_A$ and $\beta_B$ are no wider than that of the noise features.
 
-With the Lasso on the other hand, the following scenarios are all equally penalized: $A$ has all the signal, $B$ has all the signal, and the signal is shared between $A$ and $B$. As a result, Lasso estimates are very sensitive to correlation and accordingly, the RL-P HDIs for $A$ and $B$ are typically much wider than those for the noise features. Furthermore, although the width of the intervals are similar, the RL-P intervals for $A$ tend to be shifted towards higher values compared to those for $B$, indicating that even with very high correlation, the Lasso typically attributes more of the signal to the causal feature $A$; this is not the case with the Ridge penalty. Lastly, note that the width of the RL-P intervals is bimodal: either narrow or very wide. This can be seen from the construction in Section~\ref{Sec:methods}: the variance of the conditional distribution is largely determined by how much information in $\x_j$ is orthogonal to $\X_{\hat{S}_j}$. When variable $A$ is selected, the interval for variable $B$ will be wide and vice versa.
+With the lasso on the other hand, the following scenarios are all equally penalized: $A$ has all the signal, $B$ has all the signal, and the signal is shared between $A$ and $B$. As a result, lasso estimates are very sensitive to correlation and accordingly, the RL-P HDIs for $A$ and $B$ are typically much wider than those for the noise features. Furthermore, although the width of the intervals are similar, the RL-P intervals for $A$ tend to be shifted towards higher values compared to those for $B$, indicating that even with very high correlation, the lasso typically attributes more of the signal to the causal feature $A$; this is not the case with the Ridge penalty. Lastly, note that the width of the RL-P intervals is bimodal: either narrow or very wide. This can be seen from the construction in Section~\ref{Sec:methods}: the variance of the conditional distribution is largely determined by how much information in $\x_j$ is orthogonal to $\X_{\hat{S}_j}$. When variable $A$ is selected, the interval for variable $B$ will be wide and vice versa.
 
 \subsection{Comparison to other methods} \label{Sec:Comparison}
 
@@ -218,7 +218,7 @@ Selective Inference, de-sparsified lasso, and RL-P are based on different princi
       \centering
       \includegraphics[width=\linewidth]{figure5R}
     \end{minipage}
-    \caption{\label{fig:5} Results are from the simulation described in Section~\ref{Sec:Comparison}. On the left, the fitted curves are from Binomial GAMs fit with coverage being modeled as a smooth function of $\beta$. The dashed lines represent the average coverage for each method across all 1000 independently generated datasets and the solid black line indicates the nominal coverage rate. The shaded background is the distribution of $\beta$ (Laplace). On the right, each plot provides corresponding results for each of de-sparsified lasso, RL-P, and Selective Inference all three different sample sizes. The top provides violin plots of average coverages, the middle is a bar plot of the the median interval widths, and the bottom is a bar plot of the average run times, across all 1000 simulated datasets. The y limits have been truncated for the median width from 150 to 20.}
+    \caption{\label{fig:5} Results are from the simulation described in Section~\ref{Sec:Comparison}. On the left, the fitted curves are from Binomial GAMs fit with coverage being modeled as a smooth function of $\beta$. The dashed lines represent the average coverage for each method across all 1000 independently generated datasets and the solid black line indicates the nominal coverage rate. The shaded background is the distribution of $\beta$ (Laplace). On the right, each plot provides corresponding results for each of de-sparsified lasso, RL-P, and Selective Inference across all three different sample sizes. The top provides violin plots of average coverages, the middle is a bar plot of the the median interval widths, and the bottom is a bar plot of the average run times, across all 1000 simulated datasets. The y limits have been truncated for the median width from 150 to 20.}
   \end{center}
 \end{figure}
 
