@@ -113,16 +113,16 @@ $$
 
 The Relaxed Lasso Posterior intervals are available through \texttt{intervals(fit, relaxed = TRUE)} in the current version of the R package \texttt{ncvreg} (3.16.0) where \texttt{fit} is an \texttt{ncvreg} or \texttt{cv.ncvreg} object.
 
-% The shape of a Laplace-Normal distribution varies considerably based on the relative size of $\mu$ and $\lam$ which has direct implications on the resulting intervals. Intervals arising from Laplace-Normal distributions are often skewed away from zero unless $\mu$ is small or large relative to $\lam$, in which cases the intervals are more symmetric. Below is a simple setting where $s^2 = 1$, $\lam = 0.4$, and $\mu$ is set to be $0.1, 0.5$, and $1$ in the left, middle, and right panels respectively.
+The shape of a Laplace-Normal distribution varies considerably based on the relative size of $\mu$ and $\lam$ which has direct implications on the resulting intervals. Intervals arising from Laplace-Normal distributions are often skewed away from zero unless $\mu$ is small or large relative to $\lam$, in which cases the intervals are more symmetric. Figure~\ref{fig:0} gives examples of the densities for 4 Laplace-Normal distributions with increasing values of $\mu$ = 0.1, 0.3, 0.6 and 1. For this figure, $\lam = 0.5$ and $s^2 = 1$. This figures highlights that the distribution is made up of two scaled truncated Normal distributions. The solid portion of each scaled Normal density is what is ``used'' in the whereas the dotted portion is the ``unused'' portion.
 
-% \begin{figure}[hbt!]
-%     \begin{center}
-%     \includegraphics[width=0.6\linewidth]{figure2-man3}
-%     \caption{\label{fig:2-man3} Examples of three Laplace-Normal distributions with varying likelihood means ($\mu$ = 0.1, 0.5, 1) and fixed values of $s^2 = 1$ and $\lambda = 0.4$.}
-%     \end{center}
-% \end{figure}
+\begin{figure}[hbt!]
+    \begin{center}
+    \includegraphics[width=0.6\linewidth]{figure0}
+    \caption{\label{fig:0} Examples of four Laplace-Normal distributions with increasing likelihood means ($\mu$ = 0.1, 0.3, 0.6, 1) and fixed values of $s^2 = 1$ and $\lambda = 0.5$.}
+    \end{center}
+\end{figure}
 
-% In all three panels, the density is continuous but non-differentiable at zero. When $\mu < \lam$, the distribution has a sharp spike at zero for the mode. The larger $\mu$ is relative to $\lam$, the more the distribution resembles that of a Normal distribution. In fact, if $\mu$ is large enough relative to $\lam$, the distribution is \emph{essentially} a Normal distribution. 
+In all three panels, the density is continuous but non-differentiable at zero. When $\mu < \lam$, the distribution has a sharp spike at zero for the mode. The larger $\mu$ is relative to $\lam$, the more the distribution resembles that of a Normal distribution. In fact, if $\mu$ is large enough relative to $\lam$, the distribution is \emph{essentially} a Normal distribution. 
 
 \section{Results}
 \label{Sec:results}
