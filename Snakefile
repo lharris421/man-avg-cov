@@ -28,6 +28,7 @@ wildcard_constraints:
 rule all:
     input:
         "build/avg-cov.pdf",
+        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
         "code/out/figure3.png",
@@ -150,6 +151,15 @@ rule stability_selection:
         "Rscript {input.script} " 
         "--iterations {ITER} "
         "--seed {SEED} "
+        "--loc {LOC}"
+
+rule figure0:
+    input:
+        script = "code/figure0.R",
+    output:
+        "code/out/figure0.pdf"
+    shell:
+        "Rscript {input.script} "
         "--loc {LOC}"
 
 rule figure1:
@@ -376,6 +386,7 @@ rule manuscript:
         "main.tex",
         "supp.tex",
         "config.yaml",
+        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
         "code/out/figure3.png",
@@ -407,6 +418,7 @@ rule arxiv:
         "main.tex",
         "supp.tex",
         "config.yaml",
+        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
         "code/out/figure3.png",
@@ -444,6 +456,7 @@ rule biometrics_s1:
         "main.tex",
         "supp.tex",
         "config.yaml",
+        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
         "code/out/figure3.png",
