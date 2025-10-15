@@ -2,7 +2,7 @@
 
 The objective function for lasso-penalized linear regression \citep{Tibshirani1996} is
 $$Q(\bb|\X,\y,\lambda) = \tfrac{1}{2n}\norm{\y - \X\bb}_2^2 + \lambda\norm{\bb}_1,$$
-where $\y$ is a length $n$ vector of independent outcomes, $\X$ is an $n \times p$ matrix of features, $\bb$ is a length $p$ vector of regression coefficients, and $\lambda$ is a regularization parameter controlling the amount of penalization. Note that the objective function involves the addition of the $L_1$ penalty, $\lambda\norm{\bb}_1 = \lambda \sum_{j = 1}^p |\beta_j|$, to the squared error loss. This typically results in sparse estimates for some of the regression coefficients (i.e., $\bh_j = 0$) depending on the choice of the regularization parameter $\lambda$. Its ability to carry out both variable selection and estimation is particularly attractive, especially in scenarios where both predictive accuracy and interpretability are important. The lasso performs particularly well in cases where the number of features is large and the underlying model is sparse \citep{HTF2009}, but has become popular in a wide variety of settings.
+where $\y$ is a length $n$ vector of independent outcomes, $\X$ is an $n \times p$ matrix of features, $\bb$ is a length $p$ vector of regression coefficients, and $\lambda$ is a regularization parameter controlling the amount of penalization. Note that the objective function involves the addition of the $L_1$ penalty, $\lambda\norm{\bb}_1 = \lambda \sum_{j = 1}^p |\beta_j|$, to the squared error loss. This typically results in sparse estimates for some of the regression coefficients (i.e., $\bh_j = 0$) depending on the choice of the regularization parameter $\lambda$. The ability to use the lasso for both variable selection and estimation is particularly attractive, especially in scenarios where both predictive accuracy and interpretability are important. The lasso is particularly effective in cases where the number of features is large and the underlying model is sparse \citep{HTF2009}, but it has been applied in a wide variety of settings.
 
 Nevertheless, inference for the lasso has proven challenging. By introducing both sparsity and shrinkage, the $L_1$ penalty greatly complicates the sampling distribution of the estimators. This complexity has given rise to a wide variety of inferential approaches. The majority of these approaches have focused on controlling the false discovery rate (FDR) of the selected features. Examples include the Covariance test \citep{Lockhart2014}, the Knockoff Filter \citep{Candes2015,Candes2018}, the marginal FDR \citep{Breheny2019}, and the Gaussian mirror \citep{Xing2023}.
 
@@ -30,7 +30,7 @@ For example, consider the credible intervals for $\theta$ in a $\Norm(\theta, \s
   \begin{center}
     \includegraphics[width=0.8\linewidth]{figure1}
     \caption{\label{fig:1}
-      Coverage probabilities of ridge credible intervals and lasso (RL-P) high-dimensional intervals. Solid black lines indicates nominal coverage and dashed lines represent average coverage. Left: Exact coverage probabilities across a range of $\theta$ values (see Section~\ref{Sec:difficulties}). Shaded background indicates the normal prior. Right: Empirical coverage probabilities from the simulation in Section~\ref{Sec:coverage} (the curved line is a smooth fit using a binomial GAM). Shaded background shows the Laplace distribution.}
+      \textbf{Both:} The solid black line indicates the 80\% nominal coverage rate. \textbf{Left:} Exact coverage probabilities across a range of $\theta$ values for credible intervals constructed with a $\Norm(\theta, 1)$ likelihood and a $\Norm(0, 1)$ prior (shaded distribution). The dashed line indicates the average coverage with respect to the prior distribution. \textbf{Right:} Empirical coverage probabilities from the lasso HDI method (RL-P) introduced in Section~\ref{Sec:methods}, computed using the simulation described in Section~\ref{Sec:coverage} with $n = 100$, $p = 101$, and coefficients $\boldsymbol{\beta}$ set to equally spaced quantiles of a Laplace distribution (shaded distribution). The curved line represents a smooth fit of the empirical coverage obtained using a binomial GAM. The dashed line is the coverage rate for all intervals constructed on the $1000$ simulated data sets.}
   \end{center}
 \end{figure}
 
@@ -38,7 +38,7 @@ In high dimensional problems, there is yet another quantity we can consider: the
 
 Our goal in this paper is not to argue that one of these perspectives is correct and the other is wrong, but rather that the average coverage perspective is reasonable and worthy of consideration. It should not be taken for granted that classical ideas developed for single parameter inference are the best way to approach simultaneous inference for large numbers of parameters. Furthermore, the Bayesian perspective seems to make sense in the context of penalized regression, since penalized regression is intentionally imposing shrinkage towards a prior notion of which parameter values are more likely.
 
-In Section~\ref{Sec:methods}, we propose a new method and in Section~\ref{Sec:results} we see that the resulting intervals, while they do not satisfy classical coverage requirements, perform quite well with respect to the average coverage criterion. We end this section with a short theorem making the explicit connection between Bayesian credible intervals and average coverage.
+In Section~\ref{Sec:methods}, we propose a new method, and in Section~\ref{Sec:results} we demonstrate that the resulting intervals, although not satisfying classical coverage requirements, attain strong empirical performance with respect to the average coverage criterion. We end this section with a short theorem making the explicit connection between Bayesian credible intervals and average coverage.
 
 \begin{thm}
   \label{Thm:bcc}
@@ -92,7 +92,7 @@ Let $\hat{S} = \lbrace k: \bh_k \neq  0 \rbrace$ denote the set of selected feat
 
 \noindent where $\tilde{\beta}_j = (\x_j \Tr \Q_{\hat{S}_j} \x_j)^{-1} \x_j \Tr \Q_{\hat{S}_j} \y$.  This can be seen as a mild extension of the relaxed lasso. It is equivalent to the relaxed lasso for features in $\hat{S}$ but also is capable of providing intervals for features in $\hat{S}^C$.
 
-A normal likelihood and Laplace prior are not conjugate. However, the distribution of $\beta_j$ conditional on $\hat{S}_j $ can be shown to be a composition of two scaled truncated normals. In this manuscript, we assume that $\X$ has been standardized s.t. $\x_j \Tr\x_j = n$ and that $\y$ has been centered. Then for $\beta_j$ (see Supplement~\ref{sup:A} for details),
+A Normal likelihood and Laplace prior are not conjugate. However, the distribution of $\beta_j$ conditional on $\hat{S}_j $ can be shown to be a composition of two scaled truncated Normals. In this manuscript, we assume that $\X$ has been standardized s.t. $\x_j \Tr\x_j = n$ and that $\y$ has been centered. Then for $\beta_j$ (see Supplement~\ref{sup:A} for details),
 \al{eq:fcp}{
 p(\beta_j | \hat{S}_j) &\propto
 \begin{cases}
@@ -102,7 +102,7 @@ p(\beta_j | \hat{S}_j) &\propto
 }
 where $\tilde{n} = \x_j \Tr \Q_{\hat{S}_j} \x_j$, $C_{1} = \exp(\tilde{\beta}_j \lambda \tilde{n}/\sigma^2)$ and $C_{2} = \exp(-\tilde{\beta}_j \lambda \tilde{n}/\sigma^2)$. $\tilde{n}$ can be interpreted as the effective sample size.
 
-This formulation is attractive because it allows efficient computation of quantiles. This consists of first determining which side of the Laplace-Normal (left or right) the probability corresponds to, then calculating the quantile from the corresponding unscaled normal distribution. Again, full details are provided in Supplement~\ref{sup:A}.
+This formulation is attractive because it allows efficient computation of quantiles. This consists of first determining which side of the Laplace-Normal (left or right) the probability corresponds to, then calculating the quantile from the corresponding unscaled Normal distribution. Again, full details are provided in Supplement~\ref{sup:A}.
 
 This solution corresponds to a particular value of $\lam$ and $\hat{\sigma}^2$. Throughout, we select the value of $\lam$ that minimizes cross validation error (CVE), and we estimate $\sigma^2$ as recommended by \cite{Reid2016}:
 $$
@@ -118,7 +118,7 @@ The shape of a Laplace-Normal distribution varies considerably based on the rela
 \begin{figure}[hbt!]
     \begin{center}
     \includegraphics[width=0.6\linewidth]{figure0}
-    \caption{\label{fig:0} Examples of four Laplace-Normal distributions with increasing likelihood means ($\mu$ = 0.1, 0.3, 0.6, 1) and fixed values of $\hat{\sigma}^2 / \tilde{n} = 1$ and $\lambda = 0.5$.}
+    \caption{\label{fig:0} Examples of four Laplace-Normal distributions with increasing likelihood means ($\mu$ = 0.1, 0.3, 0.6, 1) and fixed values for the likelihood variance $\hat{\sigma}^2 / \tilde{n} = 1$ and regularization parameter $\lambda = 0.5.$ The rate parameter for the Laplace prior is  $\tilde{n}\lam / \hat{\sigma}^2 = 0.5.$ The depiction shows that the Laplace-Normal can be represented piecewise by two scaled truncated Normal distributions.}
     \end{center}
 \end{figure}
 
@@ -144,7 +144,7 @@ Bias can also be reduced by choosing an alternative penalty. For example, the me
 \subsection{Robustness for Average Coverage}
 \label{Sec:robustness}
 
-We will now shift our attention to the robustness of the RL-P method under alternative scenarios. We begin by assessing coverage when there is correlation among the predictors. Next, we consider how RL-P performs under various distributions of $\beta$. Finally, we look at how the coverage changes across the range of $\lambda$ values.
+We will now shift our attention to the robustness of the RL-P method under alternative scenarios. We begin by assessing coverage when there is correlation among the predictors. Next, we examine the behavior of RL-P under various distributions of $\beta$. Finally, we look at how the coverage changes across the range of $\lambda$ values.
 
 \subsubsection{Correlation}
 \label{Sec:correlation}
@@ -158,7 +158,7 @@ Across all sample sizes, RL-P intervals become increasingly conservative as the 
 \begin{figure}[htb!]
   \begin{center}
     \includegraphics[width=0.8\linewidth]{figure2.pdf}
-    \caption{\label{fig:2} Presents results for the simulation described in Section~\ref{Sec:correlation}. The violin plots are the distribution of average coverages across 1000 simulated datasets for the RL-P method and across three different levels of autoregressive correlation among the covariates, $\rho = 0 \text{ (no correlation)}, 0.5, 0.8$. For this simulation, p = 101, and the results for each level of correlation are presented for four different sample sizes, $n = 50, 100, 400, 1000$. The horizontal black line provides reference for the 80\% nominal coverage rate.}
+    \caption{\label{fig:2} Results for the simulation described in Section~\ref{Sec:correlation}. The violin plots display the distribution of average coverages across 1000 simulated datasets for the RL-P method and across three different levels of autoregressive correlation among the covariates, $\rho = 0 \text{ (no correlation)}, 0.5, 0.8$. For this simulation, $\bb$ is set to $p = 101$ equally spaced quantiles of a Laplace distribution. The horizontal black line provides reference for the 80\% nominal coverage rate.}
   \end{center}
 \end{figure}
 
@@ -166,12 +166,12 @@ Across all sample sizes, RL-P intervals become increasingly conservative as the 
 
 Given the results in Section~\ref{Sec:coverage} that the coverage depends on the magnitude of $\beta$, one might expect that the average coverage is sensitive to the distribution of $\bb$. Table~\ref{tab:1} shows the results of $\bb$ distributed as a Laplace as well as 7 alternative distributions. Otherwise, the setup is the same as described in Section~\ref{Sec:results}. Results are shown for 4 sample sizes, $n$ = 50, 100, 400, and 1000. As before, to maintain the specified SNR of 1, $\bb$ is normalized. Prior to normalization, Sparse 1 had $\bb_{1-10} = \pm(0.5, 0.5, 0.5, 1, 2)$ with the rest equal to zero, Sparse 2 had $\bb_{1-31}$ set to 31 evenly distributed quantiles from $N(0, 1)$ with the rest equal to zero, and Sparse 3 had $\bb_{1-51}$ set to 51 evenly distributed quantiles from $N(0, 1)$ with the rest equal to zero. For the T distribution, df was set to 3 and the Beta distribution quantiles were computed from Beta(0.1, 0.1) - 0.5, prior to normalization. The first column of the table provides a visual depiction of these distributions.
 
-The results shown in Table~\ref{tab:1} align with what one might expect from Theorem~\ref{Thm:bcc}. First, note that under $\bb$ generated from a Laplace, the average coverage of the RL-P method is slightly conservative for $n=50$ but converges to the nominal rate for the other sample sizes. Distributions that are similar to the Laplace follow this same pattern. For example, when $\bb$ is generated from a T distribution, the coverage rates are nearly identical to the Laplace. When the density / mass is more concentrated near zero, such as with Sparse 1 and 2, the average coverage is above the nominal level. When there is more density away from zero, such as with the normal, the coverage is somewhat below nominal. The worst average coverage occurs when $\beta$ is generated from a Beta(0.1, 0.1) - 0.5 distribution; this is not surprising since the lasso is a poor choice of penalty in this scenario. Even so, the coverage only drops to 69\%, and still converges to the nominal rate as $n$ increases.
+The results shown in Table~\ref{tab:1} align with what one might expect from Theorem~\ref{Thm:bcc}. First, note that under $\bb$ generated from a Laplace, the average coverage of the RL-P method is slightly conservative for $n=50$ but converges to the nominal rate for the other sample sizes. Distributions that are similar to the Laplace follow this same pattern. For example, when $\bb$ is generated from a T distribution, the coverage rates are nearly identical to the Laplace. When the density / mass is more concentrated near zero, such as with Sparse 1 and 2, the average coverage is above the nominal level. When there is more density away from zero, such as with the Normal, the coverage is somewhat below nominal. The worst average coverage occurs when $\beta$ is generated from a Beta(0.1, 0.1) - 0.5 distribution; this is not surprising since the lasso is a poor choice of penalty in this scenario. Even so, the coverage only drops to 69\%, and still converges to the nominal rate as $n$ increases.
 
 \begin{table}[htb!]
   \centering
   \input{code/out/table1}
-  \caption{\label{tab:1} Results are from the simulation described in Section~\ref{Sec:distribution}. The nominal coverage rate is 80\%.}
+  \caption{\label{tab:1} Average coverages from the simulation described in Section~\ref{Sec:distribution} which examines the coverage behavior of RL-P intervals under various distributions for $\bb$. For each respective distribution, $\bb$ is set to $p = 101$ equally spaced quantiles. The nominal coverage rate is 80\%.}
 \end{table}
 
 \subsubsection{Selection of \texorpdfstring{$\lambda$}{lambda}} \label{Sec:lambda}
@@ -181,7 +181,7 @@ Throughout the manuscript, $\lam$ is set to the value that minimizes CV error; h
 \begin{figure}[htb!]
   \begin{center}
     \includegraphics[width=0.6\linewidth]{figure3.png}
-    \caption{\label{fig:3} The heatmap displays relative coverage for RL-P across a range of $\lambda$s per the simulation described in Section~\ref{Sec:lambda}. A Binomial GAM was used to estimate coverage as a smooth function of the $|\beta|$ and $\lam$. The x-axis for $\lambda$ is presented relative to $\lam_{\max}$ and the solid black lines indicate the center 75\% of $\lam_{\CV}$s over the 1000 simulations. The dashed black line indicates the median $\lambda_{\CV}$ and the blue line represents the value of $\lambda$ which provided coverage closest to that of nominal.}
+    \caption{\label{fig:3} Displays relative coverage (estimated coverage minus 80\% nominal coverage) for RL-P intervals across a range of $\lambda$s per the simulation described in Section~\ref{Sec:lambda}. A Binomial GAM was used to estimate coverage as a smooth function of the $|\beta|$ and $\lam$. A total of 1000 datasets were simulated with $n = 100$ and $\bb$ set to be $p = 101$ equally spaced quantiles of a Laplace distribution. The solid black lines indicate the center 75\% of $\lam_{\CV}$s selected on the 1000 simulated datasets. The dashed black line indicates the median $\lambda_{\CV}$ and the blue line represents the value of $\lambda$ which provided coverage closest to that of nominal.}
   \end{center}
 \end{figure}
 
@@ -193,7 +193,7 @@ However, clearly the value of $\lam$ does matter, again supporting the idea pres
 
 As shown in Figure~\ref{fig:2}, the average coverage of the proposed RL-P method is robust to increasing correlation. However, this does not mean that the intervals themselves are unaffected by correlation. In this section, we illustrate the effect of correlation between features on the intervals themselves and contrast the intervals produced by lasso with those produced by ridge regression.
 
-In this simulation, we have $n = p = 100$. However, only one $\beta_j$ is non-zero: $\beta_{A} = 1$ and $\beta_{B}, \beta_{N1}, \ldots, \beta_{N98} = 0$. Additionally, the data are simulated such that $\cor(\x_{A}, \x_{B}) = .99$ but all of the N (noise) variables are uncorrelated with $A$, $B$, and each other. The distribution of $\X$ and $\y$ is unchanged from Section~\ref{Sec:coverage}, although here $\sigma^2 = 1$.
+In this simulation, we have $n = p = 100$. However, only one $\beta_j$ is non-zero: $\beta_{A} = 1$ and $\beta_{B}, \beta_{N1}, \ldots, \beta_{N98} = 0$. Additionally, the data are simulated such that $\cor(\x_{A}, \x_{B}) = .99$ but all of the $N$ (noise) variables are uncorrelated with $A$, $B$, and each other. The distribution of $\X$ and $\y$ is unchanged from Section~\ref{Sec:coverage}, although here $\sigma^2 = 1$.
 
 Figure~\ref{fig:4} depicts the results from $1000$ simulated data sets. On top, $1000$ intervals are shown for for 3 features: $A$, $B$, and $N1$; the intervals are colored black if they contain the true parameter value and red if they do not. On bottom, intervals for the first 20 variables for a randomly selected example data set are displayed.
 
@@ -201,7 +201,7 @@ Figure~\ref{fig:4} depicts the results from $1000$ simulated data sets. On top, 
   \begin{center}
     \includegraphics[width=0.8\linewidth]{figure4}
     \caption{\label{fig:4}
-      Provides results for simulation described in Section~\ref{Sec:Ridge}. The bottom plots show a single example of intervals produced by Ridge (left) and RL-P (right) from one (randomly selected) of the 1000 datasets for the first 20 variables. The top plot summarizes the resulting intervals for the variables $A$, $B$, and $N1$ across the 1000 simulations. All 1000 intervals are plotted, sorted by their midpoint, with those colored red that did not contain the true coefficient value (indicated by the horizontal dashed gold line).
+      Results for Ridge Posterior intervals (left) and RL-P intervals (right) for the simulation described in Section~\ref{Sec:Ridge} where 1000 datasets were generated with $p = 100$, 1 signal variable $\beta_{A} = 1$, and $\cor(\x_{A}, \x_{B}) = .99$ but all of the $N$ (noise) variables uncorrelated with $A$, $B$, and each other. \textbf{Top:} All 1000 intervals are plotted for variables $A$, $B$, and $N1$ across the 1000 simulations, sorted by their midpoint, with those colored red that did not contain the true coefficient value (indicated by the horizontal dashed gold line). \textbf{Bottom:} Shows a single example of intervals for one (randomly selected) dataset for the first 20 variables. 
     }
   \end{center}
 \end{figure}
@@ -227,11 +227,11 @@ Selective Inference, de-sparsified lasso, and RL-P are based on different princi
       \centering
       \includegraphics[width=\linewidth]{figure5R}
     \end{minipage}
-    \caption{\label{fig:5} Results are from the simulation described in Section~\ref{Sec:Comparison}. On the left, the fitted curves are from Binomial GAMs fit with coverage being modeled as a smooth function of $\beta$. The dashed lines represent the average coverage for each method across all 1000 independently generated datasets and the solid black line indicates the nominal coverage rate. The shaded background is the distribution of $\beta$ (Laplace). On the right, each plot provides corresponding results for each of de-sparsified lasso, RL-P, and Selective Inference across all three different sample sizes. The top provides violin plots of average coverages, the middle is a bar plot of the the median interval widths, and the bottom is a bar plot of the average run times, across all 1000 simulated datasets. The y limits have been truncated for the median width from 150 to 20.}
+    \caption{\label{fig:5} Results from the simulation described in Section~\ref{Sec:Comparison} where 1000 datasets were generated with $\bb$ set to be $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution in left plot) for 3 different sample sizes, $n = 50, 100, 400$. \textbf{Left:} Results for $n = 100$ with coverage modeled as a smooth function of $\beta$ using Binomial GAMs. The dashed lines represent the average coverage for each method across all 1000 datasets and the solid black line indicates the nominal coverage rate. \textbf{Right:} The top provides violin plots of average coverages, the middle is a bar plot of the the median interval widths, and the bottom is a bar plot of the average run times, across all 1000 simulated datasets for each sample size. The y limits have been truncated for the median width from 150 to 20.}
   \end{center}
 \end{figure}
 
-We conducted a simulation study to compare these three methods; the setup is identical to that described in Section~\ref{Sec:coverage}. For each software package, their default options were used. Notably, this means that for de-sparsified lasso's implementation in the \texttt{hdi} package, $\lam$ is set using the 1SE rule from cross-validation, whereas for Selective Inference and RL-P, $\lam$ was set at the value which minimizes CV error.
+We conducted a simulation study to compare these three methods; the setup is identical to that described in Section~\ref{Sec:coverage}. For each software package, their default options were used. Notably, this means that for de-sparsified lasso's implementation in the \texttt{hdi} package, $\lam$ is set using the 1SE rule from cross-validation, whereas for Selective Inference and RL-P, $\lam$ was set at the value which minimizes CV error. \logan{Additionally, for Selective Inference, the default \texttt{sigma = NULL} is used --- see Supplement~\ref{supp:sel-inf-add} for results estimating $\sigma$ with \texttt{estimateSigma}}
 
 Selective Inference and de-sparsified lasso adopt a more classical frequentist perspective than RL-P, which is evident in the left side of Figure~\ref{fig:5}. While all three methods have reasonable average coverage, they achieve this in different ways. As demonstrated in Section~\ref{Sec:IAC}, methods for constructing intervals can either achieve consistent coverage across all values of the target parameter, or they can reflect the shrinkage imposed by the penalty --- they cannot achieve both. Intervals which reflect the shrinkage imposed by the penalty result in uneven coverage across $\beta$. As shown in left left side of Figure~\ref{fig:5}, Selective Inference and de-sparsified lasso provide the first kind of interval. Either directly or indirectly, the shrinkage imposed by the lasso has been undone by intervals they provide and the result is flat coverage across values of $\beta$. This is unlike RL-P, which reflects the shrinkage of the lasso and results in higher coverage where the prior density (implied by the penalty) is higher.
 
@@ -245,7 +245,7 @@ The bottom panel of the right side of Figure~\ref{fig:5} provides the average ru
 
 \section{Applications to Real Data}\label{Sec:RDA}
 
-In this section, we apply the RL-P method to two real datasets: a study of acute respiratory illness conducted by the World Health Organization, and a study of gene expression in the mammalian eye \citep{Scheetz2006}. These two datasets sit on opposite ends of the spectrum in terms of dimensionality. The WHO study contains 816 observations and 66 features, while the gene expression study has just 120 observations and 18,975 features. In this section, we also consider the intervals produced by de-sparsified lasso and Selective Inference, comparing the intervals both to each other and to the point estimates provided by the lasso at $\lam_{\CV}$.
+In this section, we apply the RL-P method to two real datasets: a study of acute respiratory illness conducted by the World Health Organization, and a study of gene expression in the mammalian eye \citep{Scheetz2006}. These two datasets sit on opposite ends of the spectrum in terms of dimensionality. The WHO study contains 816 observations and 66 features, while the gene expression study has just 120 observations and 18,975 features. In this section, we also consider the intervals produced by de-sparsified lasso and Selective Inference, comparing the intervals both to each other and to the point estimates provided by the lasso at $\lam_{\CV}$. \logan{See Supplement~\ref{supp:sel-inf-add} for Selective Inference results setting $\sigma$ using \texttt{estimateSigma}.}
 
 \subsection{World Health Organization study on acute respiratory illnesses}\label{Sec:WHO-ARI}
 
@@ -267,7 +267,7 @@ Figure~\ref{fig:6} provides the intervals from each of the three methods along w
 \begin{figure}[htb!]
   \begin{center}
     \includegraphics[width=0.9\linewidth]{figure7}
-    \caption{\label{fig:7} Intervals produced by three different methods for the 30 variables with the largest absolute point estimates in the Scheetz2006 dataset described in Section~\ref{Sec:Scheetz2006}.}
+    \caption{\label{fig:7} Intervals produced by three different methods for the 30 genes with the largest absolute point estimates in the gene expression dataset described in Section~\ref{Sec:Scheetz2006}.}
   \end{center}
 \end{figure}
 

@@ -19,6 +19,7 @@ devtools::load_all(res_dir, quiet = TRUE)
 
 method_labels <- c(
   "selectiveinference" = "Selective Inference",
+  "selectiveinferenceS" = "Selective Inference",
   "desparsified"       = "Desparsified Lasso",
   "desparsified0"      = "Desparsified Lasso",
   "ridge"              = "Ridge Posterior",
