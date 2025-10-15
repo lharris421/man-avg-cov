@@ -381,7 +381,7 @@ After running the simulation, we computed $\bar{\mathbf A}\gets\tfrac1R\sum_{i=1
 \begin{table}[hbtp]
   \centering
   \input{code/out/tableG1}
-  \caption{\label{tab:G1} Results for simulation described in Supplement~\ref{sup:stability} showing that stability selection also suffers from bootstrap bias. Original selection provides the empirical selection probabilities for the 4 parameters while Bootstrap stability gives the bootstrap estimate for selection.}
+  \caption{\label{tab:G1} Results for simulation described in Supplement~\ref{sup:stability} where 1000 datasets were generated with $n = 50$, $p = 500$, $\beta_{1-4} = (0.25, 0.5, 1, 2)$ and the rest are zero. Original selection provides the empirical selection probabilities for the 4 parameters while Bootstrap stability gives the bootstrap estimate for selection.}
 \end{table}
 
 Clearly, there is a fundamental bias for stability selection. That said, further exploration is necessary to understand if this contradicts the claims of \cite{Meinshausen2010} as they primarily focus on FDR control for finite sample problems like the one considered here.
