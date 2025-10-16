@@ -219,7 +219,7 @@ rule figure5L:
       script = "code/figure5L.R",
         rds = expand(
             f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
-            method = ["rlp", "selectiveinferenceS"] + (["desparsified0"] if DESPARSIFIED else [])
+            method = ["rlp", "selectiveinference"] + (["desparsified0"] if DESPARSIFIED else [])
         )
     output:
         "code/out/figure5L.pdf"
@@ -234,7 +234,7 @@ rule figure5R:
       script = "code/figure5R.R",
       rds = expand(
           f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_{{method}}.rds",
-          method = ["rlp", "selectiveinferenceS"] + (["desparsified0"] if DESPARSIFIED else []),
+          method = ["rlp", "selectiveinference"] + (["desparsified0"] if DESPARSIFIED else []),
           n = [50, 100, 400]
       )
     output:

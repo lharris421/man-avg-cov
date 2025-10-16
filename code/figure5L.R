@@ -14,7 +14,7 @@ iterations <- opt$iterations
 desparsified <- opt$desparsified
 
 
-methods <- c("rlp", "selectiveinferenceS")
+methods <- c("rlp", "selectiveinference")
 if (desparsified) methods <- c(methods, "desparsified0")
 
 results_lookup <- expand.grid(
