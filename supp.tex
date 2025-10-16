@@ -6,7 +6,7 @@ Figure~\ref{fig:A1} shows the coverage as a function of the value of $\beta$ (so
 \begin{figure}[hbtp]
   \begin{center}
   \includegraphics[width=0.7\linewidth]{figureA1}
-  \caption{\label{fig:A1} Empirical coverage probabilities from a pairs bootstrap with equal tailed quantile intervals, computed using the simulation described in Section~\ref{Sec:coverage} with $n = 100$, $p = 101$, and coefficients $\boldsymbol{\beta}$ set to equally spaced quantiles of a Laplace distribution (shaded distribution). The curved line represents a smooth fit of the empirical coverage obtained using a binomial GAM. The dashed line is the coverage rate for all intervals constructed on the $1000$ simulated data sets. The solid black line indicates the 80\% nominal coverage rate. Compare to the right side of Figure~\ref{fig:1}.}
+  \caption{\label{fig:A1} Coverage for intervals constructed using a pairs bootstrap with equal tailed quantile intervals, computed using the simulation in Section~\ref{Sec:coverage} where 1000 datasets were generated with $n = 100$, $p = 101$, and coefficients $\boldsymbol{\beta}$ set to equally spaced quantiles of a Laplace distribution (shaded distribution). The curved line represents a smooth fit of the empirical coverage obtained using a binomial GAM. The dashed line is the coverage rate for all intervals constructed on the $1000$ data sets. The solid black line indicates the 80\% nominal coverage rate. Compare to the right side of Figure~\ref{fig:1}.}
   \end{center}
 \end{figure}
 
@@ -104,7 +104,7 @@ Figure~\ref{fig:C1} displays coverage estimates as a smooth function of $\beta$ 
 \begin{figure}[hbtp]
   \begin{center}
   \includegraphics[width=0.6\linewidth]{figureC1}
-  \caption{\label{fig:C1} Empirical coverage probabilities for RL-P, computed using the simulation described in Section~\ref{Sec:coverage} where for each sample size, 1000 datasets were generated with coefficients $\boldsymbol{\beta}$ set to $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution). The curved lines represent smoothed fits of the empirical coverages obtained using binomial GAMs. The dashed lines are the average coverage rates for all intervals constructed on the $1000$ simulated data sets. The solid black line indicates the 80\% nominal coverage rate.}
+  \caption{\label{fig:C1} Coverage for RL-P intervals by sample size, computed using the simulation in Section~\ref{Sec:coverage} where for each sample size, 1000 datasets were generated with coefficients $\boldsymbol{\beta}$ set to $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution). The curved lines represent smoothed fits of the empirical coverages obtained using binomial GAMs. The dashed lines are the average coverage rates for all intervals constructed on the $1000$ data sets. The solid black line indicates the 80\% nominal coverage rate.}
   \end{center}
 \end{figure}
 
@@ -123,39 +123,37 @@ For the intervals that were constructed, the third and fourth columns provide th
   \singlespace
   \centering
   \input{code/out/tableD1}
-  \caption{Additional information on the results for Selective Inference in the simulation described in Section~\ref{Sec:Comparison} where for each sample size, 1000 datasets were generated.}
+  \caption{Additional details about the number and width of intervals constructed by Selective Inference for the simulation in Section~\ref{Sec:Comparison} where, for each sample size, 1000 datasets were generated. Note, Selective Inference only constructs intervals for selected features.}
   \label{tab:D1}
 \end{table}
 
 
-The default implementation for Selective Inference estimates $\sigma$ by default using the mean squared residuals of the least squares fit (when $n \ge 2p$) and the standard derivation of $y$ when $n < 2p$. However their documentation notes that when $n < 2p$ the user should use \texttt{estimateSigma} for a more accurate estimate. The results using this suggestion are supplied below.
+% The default implementation for Selective Inference estimates $\sigma$ by default using the mean squared residuals of the least squares fit (when $n \ge 2p$) and the standard derivation of $y$ when $n < 2p$. However their documentation notes that when $n < 2p$ the user should use \texttt{estimateSigma} for a more accurate estimate. The results using this suggestion are supplied below.
 
-\begin{figure}[htb!]
-  \begin{center}
-      \includegraphics[width=0.8\linewidth]{figureD1}
-    \caption{\label{fig:D1} Results for Selective Inference with $\sigma$ estimated using \texttt{estimateSigma} on the simulation described in Section~\ref{Sec:Comparison} where 1000 datasets were generated with $\bb$ set to be $p = 101$ equally spaced quantiles of a Laplace distribution. Left is violin plots of average coverages, right is a bar plot of the the median interval widths. Compare to right side of Figure~\ref{fig:5}}
-  \end{center}
-\end{figure}
+% \begin{figure}[htb!]
+%   \begin{center}
+%       \includegraphics[width=0.8\linewidth]{figureD1}
+%     \caption{\label{fig:D1} Results for Selective Inference with $\sigma$ estimated using \texttt{estimateSigma} on the simulation described in Section~\ref{Sec:Comparison} where 1000 datasets were generated with $\bb$ set to be $p = 101$ equally spaced quantiles of a Laplace distribution. Left is violin plots of average coverages, right is a bar plot of the the median interval widths. Compare to right side of Figure~\ref{fig:5}}
+%   \end{center}
+% \end{figure}
 
-While the median interval width is 
+% \begin{figure}[htb!]
+%   \begin{center}
+%       \includegraphics[width=0.8\linewidth]{figureD2}
+%     \caption{\label{fig:D2} Intervals produced by Selective Inference with $\sigma$ estimated using \texttt{estimateSigma} for all 66 variables in the WHO/ARI dataset described in Section~\ref{Sec:WHO-ARI}.}
+%   \end{center}
+% \end{figure}
 
-\begin{figure}[htb!]
-  \begin{center}
-      \includegraphics[width=0.8\linewidth]{figureD2}
-    \caption{\label{fig:D2} Intervals produced by Selective Inference with $\sigma$ estimated using \texttt{estimateSigma} for all 66 variables in the WHO/ARI dataset described in Section~\ref{Sec:WHO-ARI}.}
-  \end{center}
-\end{figure}
+% Very similar estimates result using the default estimate for $\sigma$ and using \texttt{estimateSigma} for the WHO / ARI dataset making the results nearly indistinguishable. For the Scheetz dataset, the estimates are considerably different, however, the only effect is that the non-infinite bounds are about a third of their original magnitude, which is still large in comparison to the lasso estimates. 
 
-Very similar estimates result using the default estimate for $\sigma$ and using \texttt{estimateSigma} for the WHO / ARI dataset making the results nearly indistinguishable. For the Scheetz dataset, the estimates are considerably different, however, the only effect is that the non-infinite bounds are about a third of their original magnitude, which is still large in comparison to the lasso estimates. 
+% \begin{figure}[htb!]
+%   \begin{center}
+%       \includegraphics[width=0.8\linewidth]{figureD3}
+%     \caption{\label{fig:D3} Intervals produced by Selective Inference with $\sigma$ estimated using \texttt{estimateSigma} for the 30 genes with the largest absolute point estimates in the gene expression dataset described in Section~\ref{Sec:Scheetz2006}.}
+%   \end{center}
+% \end{figure}
 
-\begin{figure}[htb!]
-  \begin{center}
-      \includegraphics[width=0.8\linewidth]{figureD3}
-    \caption{\label{fig:D3} Intervals produced by Selective Inference with $\sigma$ estimated using \texttt{estimateSigma} for the 30 genes with the largest absolute point estimates in the gene expression dataset described in Section~\ref{Sec:Scheetz2006}.}
-  \end{center}
-\end{figure}
-
-In general, interval widths are more reasonable when estimating $\sigma$ with \texttt{estimateSigma}, however, the general behavior remains much the same.
+% In general, interval widths are more reasonable when estimating $\sigma$ with \texttt{estimateSigma}, however, the general behavior remains much the same.
 
 \clearpage
 
@@ -165,7 +163,7 @@ In general, interval widths are more reasonable when estimating $\sigma$ with \t
 \begin{table}[hbtp]
   \centering
   \input{code/out/tableE1}
-  \caption{\label{tab:E1} Coverage rates by magnitude of $\beta$ for RL-P using both the lasso and the MCP penalty applied to 1000 datasets generated under the Sparse 1 scenario (described in Section~\ref{Sec:distribution}) with $n = 100$ and $p = 101$. Prior to normalizing so that $SNR = 1$, Sparse 1 had $\bb_{1-10} = \pm(0.5, 0.5, 0.5, 1, 2)$ with the rest equal to zero. The nominal coverage rate is 80\%. }
+  \caption{\label{tab:E1} Coverage rates by magnitude of $\beta$ for RL-P intervals using both the lasso and the MCP penalty applied to 1000 datasets generated under the Sparse 1 scenario (described in Section~\ref{Sec:distribution}) with $n = 100$ and $p = 101$. Prior to normalizing so that $SNR = 1$, Sparse 1 has $\bb_{1-10} = \pm(0.5, 0.5, 0.5, 1, 2)$ with the rest of the parameters set equal to zero. The nominal coverage rate is 80\%. }
 \end{table}
 
 The results here provide an example of a version of the RL-P method but using an MCP penalty instead of a lasso penalty to obtain intervals. The MCP penalty closely resembles that of the lasso near zero but eventually levels out to a constant penalty for larger values of $\beta$, unlike the lasso which applies a penalty proportional to the magnitude of $\beta$. Note that although $\beta$s with intermediate magnitudes are still under covered, that the largest $\beta$s have coverage over 60\%, almost doubling the coverage of the RL-P.
@@ -177,7 +175,7 @@ The results here provide an example of a version of the RL-P method but using an
 \begin{figure}[htb!]
   \begin{center}
     \includegraphics[width=0.7\linewidth]{figureF1}
-    \caption{\label{fig:F1} Results for pairs bootstrap (Ridge Bootstrap) and Bayesian posterior (Ridge Posterior) intervals for the simulation described in Section~\ref{Sec:boot-bias} where 1000 datasets were generated for each value of $p$ with $n = 200$ and $\bb$ set the $p$ equally spaced quantiles of a Normal distribution. A fixed values of $\lam$ was used so that the penalty/prior matched the generative distribution for $\bb$. Dashed lines give the average coverages across $p$ parameters and the solid curves are estimated coverages as functions of $\beta$.}
+    \caption{\label{fig:F1} Coverage for pairs bootstrap (Ridge Bootstrap) and Bayesian posterior (Ridge Posterior) intervals for the simulation in Section~\ref{Sec:boot-bias} where 1000 datasets were generated for each value of $p$ with $n = 200$ and $\bb$ set the $p$ equally spaced quantiles of a Normal distribution. A fixed value of $\lam$ was set so that the penalty/prior matched the generative distribution for $\bb$. Dashed lines give the average coverages across all intervals constructed on the 1000 data sets and the solid curves are estimated coverages as functions of $\beta$.}
   \end{center}
 \end{figure}
 
@@ -331,7 +329,7 @@ Note, the bias for $\bh_j \neq 0$ is $\frac{1}{n}\x_j\Tr \epsilon + \frac{1}{n}\
 \begin{figure}[hbtp]
     \begin{center}
     \includegraphics[width=\linewidth]{figureF2}
-    \caption{\label{fig:F2} A decomposition of pairs bootstrap bias for the lasso on using a simulation using the simulation setup described in Supplement~\ref{sup:proof} where 1000 datasets were generate with $n = p = 100$, $\beta_A = 2$, $\beta_B = \beta_{N_1, \ldots, N_{98}} = 0$, $\cor(\x_A,\x_B) = 0.5$, and all $N$ variables are uncorrelated with $A$, $B$, and each other.}
+    \caption{\label{fig:F2} A decomposition of the additional bias introduced by the pairs bootstrap for the lasso using the simulation setup in Supplement~\ref{sup:proof} where 1000 datasets were generated with $n = p = 100$, $\beta_A = 2$, $\beta_B = \beta_{N_1, \ldots, N_{98}} = 0$, $\cor(\x_A,\x_B) = 0.5$ and with all $N$ variables uncorrelated with $A$, $B$, and each other.}
     \end{center}
 \end{figure}
 
@@ -381,7 +379,7 @@ After running the simulation, we computed $\bar{\mathbf A}\gets\tfrac1R\sum_{i=1
 \begin{table}[hbtp]
   \centering
   \input{code/out/tableG1}
-  \caption{\label{tab:G1} Results for simulation described in Supplement~\ref{sup:stability} where 1000 datasets were generated with $n = 50$, $p = 500$, $\beta_{1-4} = (0.25, 0.5, 1, 2)$ and the rest are zero. Original selection provides the empirical selection probabilities for the 4 parameters while Bootstrap stability gives the bootstrap estimate for selection.}
+  \caption{\label{tab:G1} Compares empirical and stability selection inclusion probabilities for the simulation described in Supplement~\ref{sup:stability} where 1000 datasets were generated with $n = 50$, $p = 500$, $\beta_{1-4} = (0.25, 0.5, 1, 2)$, and the rest of the parameters set equal to zero. ``Original'' provides the empirical selection probabilities for the 4 parameters while ``Bootstrap'' gives the bootstrap estimate for the selection probabilities.}
 \end{table}
 
 Clearly, there is a fundamental bias for stability selection. That said, further exploration is necessary to understand if this contradicts the claims of \cite{Meinshausen2010} as they primarily focus on FDR control for finite sample problems like the one considered here.
