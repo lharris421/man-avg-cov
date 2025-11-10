@@ -78,14 +78,12 @@ col_names <- c(
   "# Simulations Any Inf Width"
 )
 
-# 7) Render only the tabular (no table env), write to file
 kbl(
   tab_sel_inf,
   format     = "latex",
   booktabs   = TRUE,
-  align     = c("c", rep("p{3cm}", 4)),
-  # digits     = c(0, 0, 1, 0, 0),
-  digits = 3,
+  align      = c("c", rep(">{\\raggedright\\arraybackslash}p{3cm}", 4)),
+  digits     = 3,
   col.names  = col_names,
   table.envir= NULL,
   linesep    = ""

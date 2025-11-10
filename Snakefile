@@ -344,7 +344,7 @@ rule tableD1:
     input: 
       script = "code/tableD1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinferenceS.rds",
+          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinference.rds",
           n = [50, 100, 400]
       )
     output:
