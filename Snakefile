@@ -12,7 +12,8 @@ if not config.get("res-loc", False):
 
     LOC = {
         "pbreheny": "~/res/lasso-confint/",
-        "loganharris": "~/github/lasso-confint/"
+        "loganharris": "~/github/lasso-confint/",
+        "hlogan": "~/repos/lasso-confint/"
     }.get(user, "~/res/lasso-confint/")  # fallback
 
     # Expand tilde (~) to full path
