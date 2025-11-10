@@ -40,4 +40,4 @@ sub/biometrics/code/out/*
 *.fls
 *.txt
 *.gz
-
+*DS_Store
