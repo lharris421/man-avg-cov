@@ -12,7 +12,7 @@ opt <- parse_args(OptionParser(option_list=option_list))
 print(opt)
 desparsified <- opt$desparsified
 
-methods <- c("rlp", "selectiveinference")
+methods <- c("pipep", "selectiveinferenceS")
 if (desparsified) methods <- c(methods, "desparsified")
 
 results_lookup <- expand.grid(
@@ -27,12 +27,12 @@ for (i in 1:nrow(results_lookup)) {
 
 results <- bind_rows(results) %>%
   mutate(method = method_labels[method],
-         estimate = ifelse(method == "RL Posterior", coef, estimate))
+         estimate = ifelse(method == "PIPE Posterior", coef, estimate))
 
 if (interactive()) {
   pdf("out/figure6.pdf", height = 6.2, width = 5.9)
 } else {
   pdf("code/out/figure6.pdf", height = 6.2, width = 5.9)
 }
-plot_ci_comparison(results, nvars = 66, ref = "RL Posterior")
+plot_ci_comparison(results, nvars = 66, ref = "PIPE Posterior")
 dev.off()

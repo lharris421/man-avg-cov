@@ -16,7 +16,7 @@ if not config.get("res-loc", False):
         "hlogan": "~/repos/lasso-confint/"
     }.get(user, "~/res/lasso-confint/")  # fallback
 
-    # Expand tilde (~) to full path
+    # Expand tilde to full path
     LOC = os.path.expanduser(LOC)
 else:
     LOC = config["res-loc"]
@@ -38,10 +38,7 @@ rule all:
         "code/out/figure5R.pdf",
         "code/out/figure6.pdf",
         "code/out/figure7.pdf",
-        "code/out/figureA1.pdf",
         "code/out/figureC1.pdf",
-        "code/out/figureF1.pdf",
-        "code/out/figureF2.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
         "code/out/tableE1.tex",
@@ -166,7 +163,7 @@ rule figure0:
 rule figure1:
     input:
         script = "code/figure1.R",
-        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_rlp.rds"
+        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"
     output:
         "code/out/figure1.pdf"
     shell:
@@ -178,7 +175,7 @@ rule figure2:
     input:
         script = "code/figure2.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_rlp.rds",
+            f"{LOC}rds/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_pipep.rds",
             rho = [0, 50, 80],               
             n = [50, 100, 400, 1000]
         )
@@ -206,7 +203,7 @@ rule figure4:
         script = "code/figure4.R",
         rds = expand(
             f"{LOC}rds/{ITER}/original/highcorr_{{method}}.rds",
-            method = ["rlp", "ridge"]
+            method = ["pipep", "ridge"]
         )
     output:
         "code/out/figure4.pdf"
@@ -220,7 +217,7 @@ rule figure5L:
       script = "code/figure5L.R",
         rds = expand(
             f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
-            method = ["rlp", "selectiveinference"] + (["desparsified0"] if DESPARSIFIED else [])
+            method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
         )
     output:
         "code/out/figure5L.pdf"
@@ -235,7 +232,7 @@ rule figure5R:
       script = "code/figure5R.R",
       rds = expand(
           f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_{{method}}.rds",
-          method = ["rlp", "selectiveinference"] + (["desparsified0"] if DESPARSIFIED else []),
+          method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else []),
           n = [50, 100, 400]
       )
     output:
@@ -252,7 +249,7 @@ rule figure6:
       script = "code/figure6.R",
       rds = expand(
           f"{LOC}rds/whoari_{{method}}.rds",
-          method = ["rlp", "selectiveinference"] + (["desparsified"] if DESPARSIFIED else [])
+          method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
       )
     output:
         "code/out/figure6.pdf"
@@ -266,7 +263,7 @@ rule figure7:
       script = "code/figure7.R",
       rds = expand(
           f"{LOC}rds/Scheetz2006_{{method}}.rds",
-          method = ["rlp", "selectiveinference"] + (["desparsified"] if DESPARSIFIED else [])
+          method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
       )
     output:
         "code/out/figure7.pdf"
@@ -274,23 +271,12 @@ rule figure7:
         "Rscript {input.script} "
         "--loc {LOC} "
         f"{'--desparsified' if DESPARSIFIED else ''}"
-
-rule figureA1:
-    input:
-        script = "code/figureA1.R",
-        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_traditional.rds"
-    output:
-        "code/out/figureA1.pdf"
-    shell:
-        "Rscript {input.script} "
-        "--iterations {ITER} "
-        "--loc {LOC}"
         
 rule figureC1:
     input: 
       script = "code/figureC1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_{{n}}_101_gaussian_100_rlp.rds",
+          f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_{{n}}_101_gaussian_100_pipep.rds",
           n = [50, 100, 400]
       )
     output:
@@ -300,37 +286,11 @@ rule figureC1:
         "--iterations {ITER} "
         "--loc {LOC}"
         
-rule figureF1:
-    input:
-        script = "code/figureF1.R",
-        rds    = expand(
-            f"{LOC}rds/{ITER}/gam/normal_autoregressive_0_200_{{p_family_snr}}_{{method}}.rds",
-            p_family_snr  = ["20_gaussian_19", "100_gaussian_115", "200_gaussian_239"],
-            method = ["ridgeT", "ridgebootT"]
-        )
-    output:
-        "code/out/figureF1.pdf"
-    shell:
-        "Rscript {input.script} " 
-        "--iterations {ITER} "
-        "--loc {LOC}"
-
-rule figureF2:
-    input:
-        script = "code/figureF2.R",
-        rds = f"{LOC}rds/{ITER}/bias_decomposition.rds",
-    output:
-        "code/out/figureF2.pdf"
-    shell:
-        "Rscript {input.script} "
-        "--iterations {ITER} "
-        "--loc {LOC}"
-        
 rule table1:
     input:
         script = "code/table1.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/{{dist}}_autoregressive_0_{{n}}_101_gaussian_100_rlp.rds",
+            f"{LOC}rds/{ITER}/original/{{dist}}_autoregressive_0_{{n}}_101_gaussian_100_pipep.rds",
             dist = ["laplace", "t", "normal", "uniform", "beta", "sparse3", "sparse2", "sparse1"],
             n = [50, 100, 400, 1000]
         )
@@ -345,7 +305,7 @@ rule tableD1:
     input: 
       script = "code/tableD1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinference.rds",
+          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinferenceS.rds",
           n = [50, 100, 400]
       )
     output:
@@ -360,7 +320,7 @@ rule tableE1:
       script = "code/tableE1.R",
       rds = expand(
           f"{LOC}rds/{ITER}/original/sparse1_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
-          method = ["rlp", "rmp"]
+          method = ["pipep", "rmp"]
       )
     output:
         "code/out/tableE1.tex"
@@ -396,10 +356,7 @@ rule manuscript:
         "code/out/figure5R.pdf",
         "code/out/figure6.pdf",
         "code/out/figure7.pdf",
-        "code/out/figureA1.pdf",
         "code/out/figureC1.pdf",
-        "code/out/figureF1.pdf",
-        "code/out/figureF2.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
         "code/out/tableE1.tex",
@@ -428,11 +385,10 @@ rule arxiv:
         "code/out/figure5R.pdf",
         "code/out/figure6.pdf",
         "code/out/figure7.pdf",
-        "code/out/figureA1.pdf",
+        "code/out/figure8.pdf",
         "code/out/figureC1.pdf",
-        "code/out/figureF1.pdf",
-        "code/out/figureF2.pdf",
         "code/out/table1.tex",
+        "code/out/table2.tex",
         "code/out/tableD1.tex",
         "code/out/tableE1.tex",
         "code/out/tableG1.tex"
@@ -466,10 +422,7 @@ rule biometrics_s1:
         "code/out/figure5R.pdf",
         "code/out/figure6.pdf",
         "code/out/figure7.pdf",
-        "code/out/figureA1.pdf",
         "code/out/figureC1.pdf",
-        "code/out/figureF1.pdf",
-        "code/out/figureF2.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
         "code/out/tableE1.tex",

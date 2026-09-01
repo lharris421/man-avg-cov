@@ -15,7 +15,7 @@ results_lookup <- expand.grid(
   n = c(50, 100, 400, 1000),
   rho = c(0, 50, 80)
 ) %>%
-  mutate(method = "rlp")
+  mutate(method = "pipep")
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {

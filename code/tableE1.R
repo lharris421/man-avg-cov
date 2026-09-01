@@ -14,7 +14,7 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 results_lookup <- expand.grid(
-  method = c("rlp", "rmp")
+  method = c("pipep", "pipepmcp")
 )
 
 results <- list()

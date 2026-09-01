@@ -1,0 +1,248 @@
+Given the connection between the bootstrap and Bayesian posteriors, one might suppose that bootstrap intervals also meet this alternate definition for coverage. However, we show in Section~\ref{Sec:boot-bias} that bootstrap intervals fall increasingly short of average coverage as the dimension grows.
+
+\subsection{Does the bootstrap give average coverage?}
+\label{Sec:boot-bias}
+
+The connection between the bootstrap and a Bayesian posterior was first drawn by \cite{Rubin1981} and further explored by \cite{efron1982} and \cite{Lo1987}. However, these works focused on low dimensional and asymptotic settings where $n \gg p$. \cite{Chatterjee2010} demonstrated that when applied to lasso estimators, the bootstrap is inconsistent -- even if the lasso itself is $\sqrt{n}$-consistent with respect to estimating $\bb$, showing that the frequentist properties of the bootstrap break down in high dimensions. That said, the connection between the bootstrap and a Bayesian posterior along with Theorem~\ref{Thm:bcc} would suggest that perhaps the bootstrap would give correct average coverage. However, here we provide an example showing that the connection between the bootstrap and the Bayesian posterior also breaks down for penalized regression, a problem that becomes much more noticeable when the number of parameters increases. As a consequence, the average coverage of the bootstrap is well below nominal as the bootstrap introduces ``extra bias''.
+
+To provide an example, we turn to ridge regression for two reasons. First, we do not face the complication of having estimates shrunk all the way to zero and second, posterior credible intervals can be computed in closed form for Ridge. The simulation is set up to isolate the effect of increasing dimensionality by increasing $p$ $(20, 100, 200)$ but holding $n = 200$ and $\lambda = 0.4$. For the empirical distribution of $\bb$ to be equivalent to the prior (the ideal scenario as indicated by Theorem~\ref{Thm:bcc}) the prior variance ($\tau^2$) must be set to $\sigma^2$ / $n\lam$, since $\lambda$ is the ratio of the prior precision $(1/\tau^2)$ to the information $(n / \sigma^2)$. In this simulation, $\sigma^2 = 100$, so $\tau^2 = 1.25$ and $\beta_j$ was set to the $j/(p+1)$ quantile of a $\Norm(0,\tau^2=1.25)$ distribution. The elements of $\X$ were generated independently from a $\Norm(0, 1)$ and then $\y$ was generated as $\y = \X\bb + \bvep$, where $\veps_i \iid \Norm(0, \sigma^2)$. For each $p$, 1000 data sets were generated and intervals were constructed using both a pairs bootstrap and a Bayesian posterior. Results are provided in Figure~\ref{fig:F1}, the dashed lines give the average coverages and the solid lines are the estimated coverages as functions of $\beta$.
+
+Even when dimensionality is low, the bootstrap does not entirely agree with the posterior, and the departure increases as we move from $p=20$ to $p=200$. We find that this issue is even worse for the lasso, potentially due to the additional issue of repeatedly drawing exact zeros when bootstrapping; see Supplement~\ref{sup:boot-fail}. For further explanations for the breakdown, we refer the reader to Supplement~\ref{sup:proof}. Supplement~\ref{sup:proof} starts with a simple proof in the 1 and 2 predictor setting for both ridge and lasso showing that while this issue increases with dimensionality, that it is present even in low dimensions. Additionally, these proofs indicate that this bias is heavily dependent on the size of the penalty ($\lam$). This is followed by a simulation that decomposes the source of the bootstrap bias in a high dimensional setting for lasso.
+
+In recent years, \cite{Nie2022} proposed the Bayesian Bootstrap for Spike and Slab Lasso (BBSSL). The BBSSL builds on the Weighted Likelihood Bootstrap of \cite{Newton1994} which is an extension of Rubin's Bayesian Bootstrap from non-parametric to parametric models. While the BBSSL is distinct from the lasso, it would be interesting to assess the coverage behavior of BBSSL under the average coverage paradigm.
+
+
+ Given the connection between the Bayesian posterior and the bootstrap first pointed out by \cite{Rubin1981}, this would seem to suggest that bootstrap based intervals should satisfy the above equation, but, in Section~\ref{Sec:boot-bias}, we explain why this is not the case.
+
+
+ \section{Traditional Bootstrap Example}
+\label{sup:boot-fail}
+
+Figure~\ref{fig:A1} shows the coverage as a function of the value of $\beta$ (solid line) and the average coverage (dashed line) using a traditional pairs bootstrapping approach on the simulation setup described in Section~\ref{Sec:coverage}. Compare to the right side of Figure~\ref{fig:1}.
+
+\begin{figure}[hbtp]
+  \begin{center}
+  \includegraphics[width=0.7\linewidth]{figureA1}
+  \caption{\label{fig:A1} Coverage for intervals constructed using a pairs bootstrap with equal tailed quantile intervals, computed using the simulation in Section~\ref{Sec:coverage} where 1000 datasets were generated with $n = 100$, $p = 101$, and coefficients $\boldsymbol{\beta}$ set to equally spaced quantiles of a Laplace distribution (shaded distribution). The curved line represents a smooth fit of the empirical coverage obtained using a binomial GAM. The dashed line is the coverage rate for all intervals constructed on the $1000$ data sets. The solid black line indicates the 80\% nominal coverage rate. Compare to the right side of Figure~\ref{fig:1}.}
+  \end{center}
+\end{figure}
+
+\clearpage
+
+\clearpage
+
+\section{Additional Details on Bootstrap Bias}\label{sup:proof}
+
+\begin{figure}[htb!]
+  \begin{center}
+    \includegraphics[width=0.7\linewidth]{figureF1}
+    \caption{\label{fig:F1} Coverage for pairs bootstrap (Ridge Bootstrap) and Bayesian posterior (Ridge Posterior) intervals for the simulation in Section~\ref{Sec:boot-bias} where 1000 datasets were generated for each value of $p$ with $n = 200$ and $\bb$ set the $p$ equally spaced quantiles of a Normal distribution. A fixed value of $\lam$ was set so that the penalty/prior matched the generative distribution for $\bb$. Dashed lines give the average coverages across all intervals constructed on the 1000 data sets and the solid curves are estimated coverages as functions of $\beta$.}
+  \end{center}
+\end{figure}
+
+We continue with a simple proof of the additional bias introduced by bootstrapping in one and two dimensional settings starting first with Ridge regression and then the lasso. After these simple proofs, we provide a simulation that helps generalize this issue to high dimensional settings. Note that here the goal is to provide an intuitive understanding of the issue. Others have already proved this issue more generally \citep{karoui2016, clarté2024}, however, we feel that the lack of straight forward examples may be in part why the bootstrap is still a tool used for penalized regression in general.
+
+In what follows, assume without loss of generality that $\beta_1 > 0$. 
+
+Let $\frac{1}{n}\x_1\Tr\x_1 = s_{11}$, and $s_{11}^*$ be the pairs bootstrapped version of $s_{11}$. Furthermore note more that $E_{boot}[s_{11}^*] = s_{11}$. For Ridge, it can be shown that $E(\bh_1) = (\beta_1s_{11})/(s_{11} + \lam)$, letting $g(s_{11}) = (s_{11})/(s_{11} + \lam)$ note that:
+$$
+\begin{aligned}
+g'(s_{11}) &= \lambda (s_{11} + \lam)^{-2} \\
+g''(s_{11}) &= -2\lambda (s_{11} + \lam)^{-3} < 0
+\end{aligned}
+$$
+
+\noindent Thus by Jensen's inequality we have,
+$$
+E_{boot}[g(s_{11}^*)] \leq g(E_{boot}[s_{11}^*]) = g(s_{11}).
+$$
+
+\noindent Multiplying by $\beta_1$ then gives,
+$$
+E_{boot}[\bh_1^*] = E_{boot}[g(s_{11}^*)]\beta_1 \leq g(s_{11})\beta_1 = E[\bh_1].
+$$
+
+\noindent That is, even in a single parameter setting, just due to the bootstrap variability of $s_{11}$ alone, we would expect bias in the bootstrapped estimate of $\beta_1$.
+
+Now consider a two parameter setting where we assume $\beta_2 = 0$. Let $V = \frac{1}{n}\boldsymbol{X}\Tr\boldsymbol{X} = \begin{pmatrix} s_{11} & s \\ s & s_{22} \end{pmatrix}$. Similarly here, one can find that
+$$
+\begin{aligned}
+E[\bh_1 | V, \lambda] &= \frac{s_{11}(s_{22} + \lambda) - s^2}{(s_{11} + \lambda)(s_{22} + \lambda) - s^2} \beta_1 \\
+&= g(s_{11}, s_{22}, s)\beta_1.
+\end{aligned}
+$$
+
+\noindent Furthermore, with some patience, it is possible to work out the Hessian of $g$:
+$$
+H = \nabla^{2}g
+= \frac{\lambda}{D^{3}}
+  \begin{pmatrix}
+    -2(s_{22}+\lambda)^{3} & -2(s_{22}+\lambda)s^{2} & 4(s_{22}+\lambda)^{2}s\\[6pt]
+    -2(s_{22}+\lambda)s^{2} & -2s^{2}(s_{11}+\lambda) & 2(s_{11}+\lambda)(D+2s^{2})s\\[6pt]
+     4(s_{22}+\lambda)^{2}s &  2(s_{11}+\lambda)(D+2s^{2})s & -2(s_{22}+\lambda)(A+3s^{2})
+  \end{pmatrix},
+$$
+
+\noindent Where $D$ is the determinant of $V$. Because $\lambda/D^{3}>0$, negative semidefiniteness of $H$ is equivalent to that of the scaled matrix $\tilde H = D^{3}H/\lambda$.
+$$
+\begin{aligned}
+\tilde H_{11} &= -2(s_{22}+\lambda)^{3} < 0, \\
+\det\bigl(\tilde H_{[1:2,1:2]}\bigr) &= 4(s_{22}+\lambda)^{2}s^{2}D \geq 0, \\
+\det(\tilde H) &= -\,8\,\lambda\,(s_{22}+\lambda)^{3}s^{2}\,(s_{11}+\lambda)\,D \leq 0.
+\end{aligned}
+$$
+
+\noindent As such, $H$ is negative-semidefinite and consequently $g(s_{11},s_{22},s)$ is globally concave in all three arguments. Now, let $V^*$ be the bootstrapped version of V and note that $E_{boot}[(s_{11}^*, s_{22}^*, s^*)] = (s_{11}, s_{22}, s)$. By Jensen's inequality:
+$$
+E_{boot}[g(S^*)] \leq g(E_{boot}[S^*]) = g(S).
+$$
+
+\noindent Multiplying by $\beta_1$ then gives:
+$$
+E_{boot}[\bh_1^*] = E_{boot}[g(S^*)]\beta_1 < g(S)\beta_1 = E[\bh_1].
+$$
+
+A similar argument can be made with the lasso, however, the mathematical details become more involved. Whereas with ridge we started off assuming the true values, with lasso it is easier to work with assumed conditions on the lasso estimates themselves as they directly affect the KKT conditions. Starting with a single parameter set up, assume that $\bh_1 > 0$. Then,
+$$
+\begin{aligned}
+&\tfrac{1}{n}\x_1\Tr(\y - \x_1 \bh_1) = \lambda \\
+&\Rightarrow \bh_1 = \tfrac{1}{ns_{11}}\x_1\Tr\y - \tfrac{\lambda}{s_{11}} \\
+&\Rightarrow E[\bh_1] = \beta_1 - \tfrac{\lambda}{s_{11}} \\
+\end{aligned}
+$$
+
+\noindent Let $h(s_{11}) = -\lambda / s_{11}$, then
+$$
+\begin{aligned}
+h'(s_{11}) &= \tfrac{\lambda}{s_{11}^2}, \\
+h''(s_{11}) &= \tfrac{-2\lambda}{s_{11}^3}  < 0,\\
+\end{aligned}
+$$
+
+\noindent and $h(s_{11})$ is therefore concave. So by Jensen's inequality
+$$
+\begin{aligned}
+E_{boot}[h(s_{11}^*)] \leq h(E_{booot}[s_{11}^*]) = h(s_{11}).
+\end{aligned}
+$$
+
+\noindent Adding $\beta_1$ then gives,
+$$
+\begin{aligned}
+E_{boot}[\bh_1^*] = \beta_1 + E_{boot}[h(s_{11}^*)] \leq \beta_1 + g(s_{11}) = E[\bh_1].
+\end{aligned}
+$$
+
+Now consider a two parameter setting. If we assume $\bh_1 > 0$ and $\bh_2 = 0$, bias can only be guaranteed when $\beta_2 = 0$. This boils down to the same details as the single parameter case we just considered. If both $\bh_1$ and $\bh_2$ are assumed positive, we arrive at the following KKT conditions:
+$$
+\begin{aligned}
+\tfrac{1}{n}\boldsymbol{X}\Tr\boldsymbol{X} \hat{\boldsymbol{\beta}} &= \tfrac{1}{n}\boldsymbol{X}\Tr \y - \lambda 1_2 \\
+\end{aligned}
+$$
+
+\noindent Again, let $\boldsymbol{V} = \frac{1}{n}\boldsymbol{X}\Tr\boldsymbol{X} = \begin{pmatrix} s_{11} & s \\ s & s_{22} \end{pmatrix}$ and $D$ be its determinant, then
+$$
+\begin{aligned}
+\bh_1 = \frac{s_{22}(x_1\Tr \y- n\lambda) - s(x_2\Tr \y- n\lambda)}{n(s_{11}s_{22} - s^2)}
+\end{aligned}
+$$
+
+\noindent and
+$$
+\begin{aligned}
+E(\bh|X) &= \beta_1 - \lambda\frac{s_{22} - s}{s_{11}s_{22} - s^2} \\
+&= \beta_1 + h(s_{11}, s_{22}, s).
+\end{aligned}
+$$
+
+\noindent Differentiation gives
+$$
+\nabla^{2}h \;=\; \frac{\lambda}{D^{3}}
+\begin{pmatrix}
+-2s_{22}^{2}(s_{22}-s) & -2s_{22}s^{2} & 4s_{22}^{2}s\\[6pt]
+-2s_{22}s^{2} & -2s_{11}s^{2} & 2\,s_{11}s\bigl(D+2s^{2}\bigr)\\[6pt]
+4\,s_{22}^{2}s & 2\,s_{11}s\bigl(D+2s^{2}\bigr) & -2s_{22}\bigl(s_{11}s_{22}-s^{2}+3s^{2}\bigr)
+\end{pmatrix}.
+$$
+
+\noindent With this we find that
+$$
+\begin{aligned}
+H_{11} = -\frac{2\lambda s_{22}^{2}(s_{22}-s)}{D^{3}} < 0, \\ 
+\det\bigl(H_{[1:2,1:2]}\bigr) = \frac{4\lambda^{2}s_{22}^{2}s^{2}D}{D^{6}} \geq 0, \\
+\det(H) = -\frac{8\lambda^{3}\,s_{22}^{3}s^{2}s_{11}\,s_{11}D}{D^{9}} \leq 0.
+\end{aligned}
+$$
+
+\noindent Thus, the Hessian is negative-semidefinite.  Therefore the map $g(s_{11},s_{22},s)$ is jointly concave, and multivariate Jensen's inequality implies
+$$
+E_{\text{boot}}\bigl[\bh_{1}^{*}\bigr]
+  \;\le\; E\bigl[\bh_{1}\mid \bh_1, \bh_2 > 0 \bigr],
+$$
+so the bootstrap mean of $\bh_{1}$ sits strictly closer to zero than the original estimate whenever both fitted coefficients are positive. Note that in each of these settings a common thread is that the curvature, which affects the amount of bias introduced by the bootstrap is heavily dependent on $\lambda$. Thus, the larger $\lambda$ is the more the bootstrap will be biased. We also see in the two parameter setting that the correlation between features has a considerable role in the curvature. How much each of these contribute to the bootstrap bias is problem dependent, however, our exploration, such as the example we provide next, suggests that $\lambda$ is likely the larger influencer in general. That said, full exploration is outside the scope of this work, but could be explored by considering the eigenvalues for the hessians above under various scenarios.
+
+How does this extend to high dimensions? To answer this question, we consider the following simulation study.
+
+In order to increase interpretability, we consider a simplified scenario here. Consider a set up with $n = p = 100$ where there is 1 true non-null variable, $A$ s.t. $\beta_A = 2$ that is correlated with a null variable $B$ with $\rho = 0.5$. All other variables are generated independent of $A$ and each other. For this set up, $A$ is always selected to be in the model, both with the original data and for all bootstrap replications at $\lam_{CV}$. This is important as decomposing the bias is more complicated for variables that are not selected to be in the model.
+
+Note, the bias for $\bh_j \neq 0$ is $\frac{1}{n}\x_j\Tr \epsilon + \frac{1}{n}\x_j\Tr \X_{-j}(\bb_{-j} - \bbh_{-j}) + \lam$. We can break this down further to apply to the scenario outlined above. $Bias_A = \frac{1}{n}\x_A\Tr \epsilon + \frac{1}{n}\x_A\Tr \x_{B}(\beta_{B} - \bh_{B}) + \frac{1}{n}\x_A\Tr \X_{N}(\bb_{N} - \bbh_{N}) + \lam$. That is, we can decompose the bias into four parts. The first is the irreducible bias which comes from the chance correlation between $\x_A$ and the errors. The last is the bias directly introduced by the lasso penalty. The other two components attribute bias from the single $B$ variable and all 98 $N$ variables respectively. By taking the simulation set up in the previous paragraph and repeating it 1000 times and each time saving the bias attributable to each of the components, we can get an idea of the distribution of the bias components. More specifically, for each generated dataset, we can decompose the bias for the estimates from the original data as well as from the 1000 bootstrap replications. For the bootstrap replications, we can then save the mean bias for each dataset. Figure~\ref{fig:F2} shows a summary from doing just that. The top panel gives the densities of the mean bootstrap biases across the 1000 repetitions, the middle gives the densities for the biases on the original dataset across the 1000 repetitions, and the bottom gives the densities of their paired differences. In this depiction, the contribution of $\lam$ is excluded. Additionally note here that a positive bias is used to indicated bias \emph{towards} zero.
+
+\begin{figure}[hbtp]
+    \begin{center}
+    \includegraphics[width=\linewidth]{figureF2}
+    \caption{\label{fig:F2} A decomposition of the additional bias introduced by the pairs bootstrap for the lasso using the simulation setup in Supplement~\ref{sup:proof} where 1000 datasets were generated with $n = p = 100$, $\beta_A = 2$, $\beta_B = \beta_{N_1, \ldots, N_{98}} = 0$, $\cor(\x_A,\x_B) = 0.5$ and with all $N$ variables uncorrelated with $A$, $B$, and each other.}
+    \end{center}
+\end{figure}
+
+We see in this case the cumulative effect of the 98 N variables drives the bias rather than the correlation with variable $B$. This has important implications in that even when overall correlations are low, that the sparsity in high dimensional settings is going to lead to a significant bootstrap bias. It is important to differentiate this bias and the bias inherent in the motivation for Section~\ref{Sec:IAC}. The framework put forth in Section~\ref{Sec:IAC} allows for the bias introduced by penalization which we are arguing is permissible in this newly suggested coverage framework, however, the additional bootstrap bias here is what inherently leads to the breakdown of the bootstrap even for average coverage.
+
+\clearpage
+\section{A note about stability selection}
+\label{sup:stability}
+
+It is no secret there are fundamental issues with bootstrapping lasso. The related work in this manuscript is simply meant to show easy to comprehend examples of these issues. With this in mind, a popular use of resampling techniques for the lasso is in stability selection introduced by  \cite{Meinshausen2010}. However, here, we show that stability selection is still affected by bootstrap bias.
+
+Consider the following set up: $n = 50$, $p = 500$, $\beta_{1-4} = (0.25, 0.5, 1, 2)$ and the rest are zero, $\X \iid \Norm(0, 1)$, and $\y$ was generated as $\y = \X\bb + \bvep$, where $\veps_i \iid N(0, 1)$. Using this data setup, a simulation for stability selection was performed as outlined in Algorithm~\ref{alg:singlelambda}.
+
+\begin{algorithm}[!ht]
+\caption{Bootstrap Stability Selection at a \emph{single} CV-chosen $\lambda$}
+\label{alg:singlelambda}
+\begin{algorithmic}[1]
+\Require\ $R$ replicated data sets, $B$ bootstraps per data set,
+          $p$ predictors
+\Statex \textbf{Let:}
+  $\mathbf A \in\{0,1\}^{R\times p}$, $\mathbf A^{\!*}\in[0,1]^{R\times p}$
+%
+\For{$i=1,\dots,R$}
+  \State Generate $(\mathbf X,\mathbf y)$ from the data-generating process
+  \State $\lambda_{\text{CV}}\leftarrow
+         \operatorname*{arg\,min}_{\lambda}\text{CV‐Error}(\lambda)$
+         \Comment{10-fold CV on $(\mathbf X,\mathbf y)$}
+  \State $\bbh (\lam_{\CV}) \gets \text{lasso}(\X, \y, \lam_{\CV})$
+  \State $\mathbf A_{i,\cdot}\gets\bigl[\bbh(\lambda_{\text{CV}})\neq 0\bigr]$
+  \State Initialize $\mathbf B^{\!*}\gets\mathbf 0_{B\times p}$
+  \For{$b=1,\dots,B$}                        \Comment{pairs bootstraps}
+     \State Draw indices $\mathcal I_b$ with replacement from $\{1,\dots,n\}$
+     \State $(\mathbf X^{b},\mathbf y^{b})\gets
+            (\mathbf X_{\mathcal I_b,\cdot},\mathbf y_{\mathcal I_b})$
+     \State $\bbh^* (\lam_{\CV}) \gets \text{lasso}(\X^{b}, \y^{b}, \lam_{\CV})$
+     \State $\mathbf B^{\!*}_{b,\cdot}\gets
+            \bigl[\bbh^{\!*}(\lambda_{\text{CV}})\neq 0\bigr]$
+  \EndFor
+  \State $\mathbf A^{\!*}_{i,\cdot}\gets
+         \tfrac1B\sum_{b=1}^{B}\mathbf B^{\!*}_{b,\cdot}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+After running the simulation, we computed $\bar{\mathbf A}\gets\tfrac1R\sum_{i=1}^{R}\mathbf A_{i,\cdot}$,  \; $\bar{\mathbf A}^{\!*}\gets\tfrac1R\sum_{i=1}^{R}\mathbf A^{\!*}_{i,\cdot}$ and then compared $\bar{\mathbf A}$ (prob.\ of being selected in the original fit) with $\bar{\mathbf A}^{\!*}$ (expected bootstrap stability) to evaluate how well the inclusion probabilities mirror single-$\lambda$ selection behavior. The results are presented in Table~\ref{tab:G1}.
+
+\begin{table}[hbtp]
+  \centering
+  \input{code/out/tableG1}
+  \caption{\label{tab:G1} Compares empirical and stability selection inclusion probabilities for the simulation described in Supplement~\ref{sup:stability} where 1000 datasets were generated with $n = 50$, $p = 500$, $\beta_{1-4} = (0.25, 0.5, 1, 2)$, and the rest of the parameters set equal to zero. ``Original'' provides the empirical selection probabilities for the 4 parameters while ``Bootstrap'' gives the bootstrap estimate for the selection probabilities.}
+\end{table}
+
+Clearly, there is a fundamental bias for stability selection. That said, further exploration is necessary to understand if this contradicts the claims of \cite{Meinshausen2010} as they primarily focus on FDR control for finite sample problems like the one considered here.
+
+Note, this implementation deviates from the proposed stability selection algorithm originally introduced by \cite{Meinshausen2010} in order to retain a connection to the bootstrap implementation in this manuscript, however, even when considering the entire lasso path fit on sub-bagged samples the bias remained largely the same.

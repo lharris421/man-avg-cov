@@ -6,15 +6,15 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
+  make_option(c("-d", "--desparsified"), action="store_true", default=TRUE),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 desparsified <- opt$desparsified
 
-methods <- c("rlp", "selectiveinference")
-if (desparsified) methods <- c(methods, "desparsified0")
+methods <- c("pipep", "selectiveinferenceS")
+if (desparsified) methods <- c(methods, "desparsified")
 
 results_lookup <- expand.grid(
   method = methods,
@@ -98,7 +98,7 @@ p3 <- results %>%
   ylab(expression(`Med Width`)) +
   xlab("Method") +
   theme_minimal() +
-  coord_cartesian(ylim = c(0, 20)) +
+  coord_cartesian(ylim = c(0, 30)) +
   scale_x_discrete(labels = wrap)
 
 

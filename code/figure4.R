@@ -12,7 +12,7 @@ opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 
 results_lookup <- expand.grid(
-  method = c("rlp", "ridge")
+  method = c("pipep", "ridge")
 )
 
 results <- list()
@@ -21,7 +21,7 @@ for (i in 1:nrow(results_lookup)) {
 }
 results <- bind_rows(results) %>%
   mutate(
-    estimate = ifelse(method == "rlp", coef, estimate),
+    estimate = ifelse(method == "pipep", coef, estimate),
     method = method_labels[method]
   )
 

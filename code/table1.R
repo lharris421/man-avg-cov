@@ -14,7 +14,7 @@ iterations <- opt$iterations
 results_lookup <- expand.grid(
   n = c(50, 100, 400, 1000),
   dist = c("laplace", "t", "normal", "uniform", "beta", "sparse3", "sparse2", "sparse1"),
-  method = "rlp"
+  method = "pipep"
 )
 
 results <- list()
