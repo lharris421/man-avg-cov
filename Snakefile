@@ -41,8 +41,7 @@ rule all:
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
-        "code/out/tableE1.tex",
-        "code/out/tableG1.tex"
+        "code/out/tableE1.tex"
 
 rule distribution_results:
     input:
@@ -328,17 +327,6 @@ rule tableE1:
         "Rscript {input.script} "
         "--iterations {ITER} "
         "--loc {LOC}"
-        
-rule tableG1:
-    input:
-        script = "code/tableG1.R",
-        rds = f"{LOC}rds/{ITER}/stability_selection.rds",
-    output:
-        "code/out/tableG1.tex"
-    shell:
-        "Rscript {input.script} "
-        "--iterations {ITER} "
-        "--loc {LOC}"
 
 rule manuscript:
     input:
@@ -359,8 +347,7 @@ rule manuscript:
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
-        "code/out/tableE1.tex",
-        "code/out/tableG1.tex"
+        "code/out/tableE1.tex"
     output:
         "build/avg-cov.pdf"
     shell:
@@ -390,8 +377,7 @@ rule arxiv:
         "code/out/table1.tex",
         "code/out/table2.tex",
         "code/out/tableD1.tex",
-        "code/out/tableE1.tex",
-        "code/out/tableG1.tex"
+        "code/out/tableE1.tex"
     output:
         f"sub/arxiv/avg-cov.pdf"
     shell:
@@ -425,8 +411,7 @@ rule biometrics_s1:
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
-        "code/out/tableE1.tex",
-        "code/out/tableG1.tex"
+        "code/out/tableE1.tex"
     output:
         f"sub/biometrics/build/avg-cov.pdf"
     shell:
