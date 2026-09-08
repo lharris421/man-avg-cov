@@ -5,11 +5,13 @@ if (interactive()) {
 }
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+alpha <- opt$alpha
 
 results_lookup <- expand.grid(
   method = c("pipep", "ridge")
@@ -17,7 +19,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/highcorr_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/original/highcorr_{results_lookup[i,'method']}.rds"))
 }
 results <- bind_rows(results) %>%
   mutate(
@@ -69,7 +71,7 @@ for (i in 1:length(unique(results$method))) {
     theme_minimal() +
     xlab("") +
     theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) +
-    coord_cartesian(ylim = c(-2, 2)) +
+    coord_cartesian(ylim = c(-3, 3)) +
     theme(
       legend.position = "none"
     ) +
@@ -83,7 +85,7 @@ for (i in 1:length(unique(results$method))) {
       size = 4
     ) +
     xlab("Iterations") +
-    ylab("80% CI")
+    ylab(glue::glue("{100 - alpha}% CI"))
 
   plots[[2 + 2*(i-1)]] <- example_res %>%
     mutate(variable = factor(variable, levels = rev(c("A", "B", glue::glue("N{1:18}"))))) %>%
@@ -91,9 +93,9 @@ for (i in 1:length(unique(results$method))) {
     geom_errorbar(aes(xmin = lower, xmax = upper, y = variable)) +
     geom_point(aes(x = estimate, y = variable)) +
     theme_minimal() +
-    coord_cartesian(xlim = c(-2, 2)) +
+    coord_cartesian(xlim = c(-3, 3)) +
     ylab(NULL) +
-    xlab("Estimate (80% CI)")
+    xlab(glue::glue("Estimate ({100 - alpha}% CI)"))
 
 }
 

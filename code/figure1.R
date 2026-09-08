@@ -5,15 +5,17 @@ if (interactive()) {
 }
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--seed"), type="double", default=1234),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+alpha <- opt$alpha
 seed <- opt$seed
 
-results <- readRDS(glue("{opt$loc}rds/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"))
+results <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"))
 
 line_data <- results %>%
   mutate(method = method_labels[method])
@@ -25,7 +27,7 @@ density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414
 p1 <- ggplot() +
   geom_line(data = line_data, aes(x = x, y = y, color = method)) +
   geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
-  geom_hline(aes(yintercept = 0.8), linetype = 1, alpha = .5) +
+  geom_hline(aes(yintercept = 1 - (alpha / 100)), linetype = 1, alpha = .5) +
   geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
   theme_minimal() +
   xlab(expression(beta)) +
@@ -37,13 +39,13 @@ p1 <- ggplot() +
 
 ## Ridge
 ## Set parameters
-alpha <- 0.2
+## alpha <- 1 - (alpha / 100)
 prior_mean <- 0
 prior_variance <- 1^2
 sigma2 <- 1^2     # Likelihood variance
 n <- 1         # Sample size
 theta_values <- seq(-3, 3, length.out = 1000)  # Range of theta values
-z <- qnorm(1 - alpha / 2)
+z <- qnorm(1 - (alpha/100) / 2)
 
 # Calculate prior and likelihood precisions
 precision_prior <- 1 / prior_variance
@@ -80,7 +82,7 @@ data <- data.frame(
 
 # Calculate horizontal lines
 coverage_avg <- sum(prior_dens * coverage_probs) / sum(prior_dens)
-threshold <- 1 - alpha
+threshold <- 1 - (alpha / 100)
 
 # Plot using ggplot2
 p2 <- ggplot(data, aes(x = theta_values)) +

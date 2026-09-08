@@ -3,6 +3,7 @@ import getpass
 
 configfile: "config.yaml"
 ITER         = config["iterations"]
+ALPHA        = config["alpha"]
 SEED         = config["seed"]
 DESPARSIFIED = config.get("desparsified", False)
 SUPP_PAGE = config["supp_page"]
@@ -21,7 +22,7 @@ if not config.get("res-loc", False):
 else:
     LOC = config["res-loc"]
     
-os.makedirs(f"{LOC}rds/{ITER}", exist_ok=True)
+os.makedirs(f"{LOC}rds/{ALPHA}/{ITER}", exist_ok=True)
 
 wildcard_constraints:
     dataset = "[A-Za-z0-9_]+"
@@ -36,8 +37,7 @@ rule all:
         "code/out/figure4.pdf",
         "code/out/figure5L.pdf",
         "code/out/figure5R.pdf",
-        "code/out/figure6.pdf",
-        "code/out/figure7.pdf",
+        "code/out/figure8.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
@@ -47,9 +47,10 @@ rule distribution_results:
     input:
         script = f"{LOC}scripts/distribution_results.R"
     output:
-        f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        f"{LOC}rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--n {wildcards.n} "
@@ -66,9 +67,10 @@ rule highcorr_results:
     input:
         script = f"{LOC}scripts/highcorr_results.R"
     output:
-        f"{LOC}rds/{ITER}/original/highcorr_{{method}}.rds"
+        f"{LOC}rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--method {wildcards.method} "
@@ -78,9 +80,10 @@ rule data_results:
     input:
         script = f"{LOC}scripts/data_results.R"
     output:
-        f"{LOC}rds/{{dataset}}_{{method}}.rds"
+        f"{LOC}rds/{ALPHA}/{{dataset}}_{{method}}.rds"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--seed {SEED} "
         "--method {wildcards.method} "
         "--data {wildcards.dataset} "
@@ -89,11 +92,12 @@ rule data_results:
 rule fit_gam:
     input:
         script = f"{LOC}scripts/fit_gam.R",
-        rds    = f"{LOC}rds/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        rds    = f"{LOC}rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
     output:
-        rds_out = f"{LOC}rds/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        rds_out = f"{LOC}rds/{ALPHA}/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--n {wildcards.n} "
@@ -110,9 +114,10 @@ rule across_lambda_coverage:
     input:
         script = f"{LOC}scripts/across_lambda_coverage.R"
     output:
-        f"{LOC}rds/{ITER}/across_lambda_coverage.rds"
+        f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--loc {LOC}"
@@ -120,32 +125,23 @@ rule across_lambda_coverage:
 rule across_lambda_gam:
     input:
         script = f"{LOC}scripts/across_lambda_gam.R",
-        rds    = f"{LOC}rds/{ITER}/across_lambda_coverage.rds"
+        rds    = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
     output:
-        f"{LOC}rds/{ITER}/across_lambda_gam.rds"
+        f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
-        "--loc {LOC}"
-        
-rule bias_decomposition:
-    input:
-        script = f"{LOC}scripts/bias_decomposition.R",
-    output:
-        rds_out = f"{LOC}rds/{ITER}/bias_decomposition.rds"
-    shell:
-        "Rscript {input.script} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
         "--loc {LOC}"
         
 rule stability_selection:
     input:
         script = f"{LOC}scripts/stability_selection.R",
     output:
-        f"{LOC}rds/{ITER}/stability_selection.rds"
+        f"{LOC}rds/{ALPHA}/{ITER}/stability_selection.rds"
     shell:
-        "Rscript {input.script} " 
+        "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--seed {SEED} "
         "--loc {LOC}"
@@ -162,11 +158,12 @@ rule figure0:
 rule figure1:
     input:
         script = "code/figure1.R",
-        rds    = f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"
+        rds    = f"{LOC}rds/{ALPHA}/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"
     output:
         "code/out/figure1.pdf"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
         
@@ -174,26 +171,28 @@ rule figure2:
     input:
         script = "code/figure2.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_pipep.rds",
+            f"{LOC}rds/{ALPHA}/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_pipep.rds",
             rho = [0, 50, 80],               
             n = [50, 100, 400, 1000]
         )
     output:
         "code/out/figure2.pdf"
     shell:
-        "Rscript {input.script} " 
+        "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
         
 rule figure3:
     input:
         script = "code/figure3.R",
-        rds1 = f"{LOC}rds/{ITER}/across_lambda_coverage.rds",
-        rds2 = f"{LOC}rds/{ITER}/across_lambda_gam.rds"
+        rds1 = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds",
+        rds2 = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
     output:
         "code/out/figure3.png"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
         
@@ -201,13 +200,14 @@ rule figure4:
     input:
         script = "code/figure4.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/highcorr_{{method}}.rds",
+            f"{LOC}rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds",
             method = ["pipep", "ridge"]
         )
     output:
         "code/out/figure4.pdf"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
     
@@ -215,13 +215,14 @@ rule figure5L:
     input: 
       script = "code/figure5L.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
+            f"{LOC}rds/{ALPHA}/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
             method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
         )
     output:
         "code/out/figure5L.pdf"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC} "
         f"{'--desparsified' if DESPARSIFIED else ''}"
@@ -230,7 +231,7 @@ rule figure5R:
     input: 
       script = "code/figure5R.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_{{method}}.rds",
+          f"{LOC}rds/{ALPHA}/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_{{method}}.rds",
           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else []),
           n = [50, 100, 400]
       )
@@ -238,36 +239,54 @@ rule figure5R:
         "code/out/figure5R.pdf"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC} "
         f"{'--desparsified' if DESPARSIFIED else ''}"
         
         
-rule figure6:
-    input:
-      script = "code/figure6.R",
-      rds = expand(
-          f"{LOC}rds/whoari_{{method}}.rds",
-          method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
-      )
-    output:
-        "code/out/figure6.pdf"
-    shell:
-        "Rscript {input.script} "
-        "--loc {LOC} "
-        f"{'--desparsified' if DESPARSIFIED else ''}"
+# rule figure6:
+#     input:
+#       script = "code/figure6.R",
+#       rds = expand(
+#           f"{LOC}rds/{ALPHA}/whoari_{{method}}.rds",
+#           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
+#       )
+#     output:
+#         "code/out/figure6.pdf"
+#     shell:
+#         "Rscript {input.script} "
+#         "--alpha {ALPHA} "
+#         "--loc {LOC} "
+#         f"{'--desparsified' if DESPARSIFIED else ''}"
+#         
+# rule figure7:
+#     input:
+#       script = "code/figure7.R",
+#       rds = expand(
+#           f"{LOC}rds/{ALPHA}/Scheetz2006_{{method}}.rds",
+#           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
+#       )
+#     output:
+#         "code/out/figure7.pdf"
+#     shell:
+#         "Rscript {input.script} "
+#         "--alpha {ALPHA} "
+#         "--loc {LOC} "
+#         f"{'--desparsified' if DESPARSIFIED else ''}"
         
-rule figure7:
+rule figure8:
     input:
-      script = "code/figure7.R",
+      script = "code/figure8.R",
       rds = expand(
-          f"{LOC}rds/Scheetz2006_{{method}}.rds",
+          f"{LOC}rds/{ALPHA}/brca1_{{method}}.rds",
           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
       )
     output:
-        "code/out/figure7.pdf"
+        "code/out/figure8.pdf"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--loc {LOC} "
         f"{'--desparsified' if DESPARSIFIED else ''}"
         
@@ -275,13 +294,14 @@ rule figureC1:
     input: 
       script = "code/figureC1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/gam/laplace_autoregressive_0_{{n}}_101_gaussian_100_pipep.rds",
+          f"{LOC}rds/{ALPHA}/{ITER}/gam/laplace_autoregressive_0_{{n}}_101_gaussian_100_pipep.rds",
           n = [50, 100, 400]
       )
     output:
         "code/out/figureC1.pdf"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
         
@@ -289,7 +309,7 @@ rule table1:
     input:
         script = "code/table1.R",
         rds = expand(
-            f"{LOC}rds/{ITER}/original/{{dist}}_autoregressive_0_{{n}}_101_gaussian_100_pipep.rds",
+            f"{LOC}rds/{ALPHA}/{ITER}/original/{{dist}}_autoregressive_0_{{n}}_101_gaussian_100_pipep.rds",
             dist = ["laplace", "t", "normal", "uniform", "beta", "sparse3", "sparse2", "sparse1"],
             n = [50, 100, 400, 1000]
         )
@@ -297,6 +317,7 @@ rule table1:
         "code/out/table1.tex"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
         
@@ -304,13 +325,14 @@ rule tableD1:
     input: 
       script = "code/tableD1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinferenceS.rds",
+          f"{LOC}rds/{ALPHA}/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_selectiveinferenceS.rds",
           n = [50, 100, 400]
       )
     output:
         "code/out/tableD1.tex"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
         
@@ -318,13 +340,14 @@ rule tableE1:
     input: 
       script = "code/tableE1.R",
       rds = expand(
-          f"{LOC}rds/{ITER}/original/sparse1_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
-          method = ["pipep", "rmp"]
+          f"{LOC}rds/{ALPHA}/{ITER}/original/sparse1_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
+          method = ["pipep", "pipepmcp"]
       )
     output:
         "code/out/tableE1.tex"
     shell:
         "Rscript {input.script} "
+        "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
 
@@ -342,8 +365,7 @@ rule manuscript:
         "code/out/figure4.pdf",
         "code/out/figure5L.pdf",
         "code/out/figure5R.pdf",
-        "code/out/figure6.pdf",
-        "code/out/figure7.pdf",
+        "code/out/figure8.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
@@ -370,8 +392,6 @@ rule arxiv:
         "code/out/figure4.pdf",
         "code/out/figure5L.pdf",
         "code/out/figure5R.pdf",
-        "code/out/figure6.pdf",
-        "code/out/figure7.pdf",
         "code/out/figure8.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
@@ -406,8 +426,7 @@ rule biometrics_s1:
         "code/out/figure4.pdf",
         "code/out/figure5L.pdf",
         "code/out/figure5R.pdf",
-        "code/out/figure6.pdf",
-        "code/out/figure7.pdf",
+        "code/out/figure8.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",

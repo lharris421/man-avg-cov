@@ -7,11 +7,13 @@ if (interactive()) {
 }
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+alpha <- opt$alpha
 
 results_lookup <- expand.grid(
   n = c(50, 100, 400)
@@ -19,7 +21,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_selectiveinferenceS.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_selectiveinferenceS.rds"))
 }
 res <- bind_rows(results) %>%
   mutate(
@@ -28,14 +30,10 @@ res <- bind_rows(results) %>%
 
 # 1) # Simulations Null Selected
 null_sel <- res %>%
-  filter(variable == "V001") %>%
   group_by(n, iteration) %>%
-  summarise(selected = any(!is.na(lower)), .groups = "drop") %>%
-  group_by(n) %>%
+  summarise(n_selected = sum(!is.na(lower))) %>%
   summarise(
-    denom         = n(),
-    null_selected = denom - sum(selected),
-    .groups       = "drop"
+    null_selected = sum(n_selected == 0),
   ) %>%
   dplyr::select(n, null_selected)
 

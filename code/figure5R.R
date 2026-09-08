@@ -5,12 +5,15 @@ if (interactive()) {
 }
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("-d", "--desparsified"), action="store_true", default=TRUE),
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
+print(opt)
 iterations <- opt$iterations
+alpha <- opt$alpha
 desparsified <- opt$desparsified
 
 methods <- c("pipep", "selectiveinferenceS")
@@ -23,7 +26,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_{results_lookup[i,'method']}.rds"))
 }
 results <- bind_rows(results) %>%
   mutate(
@@ -68,7 +71,7 @@ p1 <- results %>%
   ungroup() %>%
   ggplot(aes(x = method, y = coverage, fill = n)) +
   geom_violin(color = NA) +
-  geom_hline(yintercept = 0.8) +
+  geom_hline(yintercept = 1 - (alpha / 100)) +
   fill_scale +
   ylab("Coverage") +
   xlab("Method") +

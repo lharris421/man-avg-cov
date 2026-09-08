@@ -5,14 +5,16 @@ if (interactive()) {
 }
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+alpha <- opt$alpha
 
-res_list <- readRDS(glue("{opt$loc}rds/{iterations}/across_lambda_coverage.rds"))
-model_cov <- readRDS(glue("{opt$loc}rds/{iterations}/across_lambda_gam.rds"))
+res_list <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/across_lambda_coverage.rds"))
+model_cov <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/across_lambda_gam.rds"))
 
 lambdas <- res_list$lambdas
 res <- res_list$res
@@ -25,13 +27,20 @@ pdat <- res %>%
                 truth = abs(truth))
 
 
+cov_targ <- 1 - (alpha / 100)
+
 lambda_cov <- pdat %>%
-  group_by(group, lambda) %>%
-  summarise(off_coverage = abs(mean(covered) - .8)) %>%
-  arrange(off_coverage) %>%
-  summarise(lambda = first(lambda)) %>%
+  filter(!is.na(covered)) %>%
+  group_by(lambda, group) %>%
+  summarise(
+    coverage = mean(covered)
+  ) %>%
+  summarise(
+    off_coverage_sq = mean(abs(coverage - cov_targ))
+  ) %>%
+  arrange(off_coverage_sq) %>%
   pull(lambda) %>%
-  median()
+  first()
 
 # Create a grid for prediction on the transformed lambda scale
 min_lam <- min(c(lambdas, lambda_cov))
@@ -41,7 +50,7 @@ grid <- expand.grid(lambda = lambda_seq, truth = truth_seq) %>% data.frame()
 
 # Predict coverage probability
 grid$coverage <- predict(model_cov, newdata = grid, type ="response")
-grid$adjusted_coverage <- grid$coverage - 0.8
+grid$adjusted_coverage <- grid$coverage - cov_targ
 
 
 my_breaks <- c(1, 0.5, 0.2, 0.1, 0.05)

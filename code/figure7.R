@@ -6,11 +6,13 @@ if (interactive()) {
 
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 desparsified <- opt$desparsified
+alpha <- opt$alpha
 
 methods <- c("pipep", "selectiveinferenceS")
 if (desparsified) methods <- c(methods, "desparsified")
@@ -21,7 +23,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/Scheetz2006_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/Scheetz2006_{results_lookup[i,'method']}.rds"))
 }
 
 results <- bind_rows(results) %>%

@@ -7,11 +7,13 @@ if (interactive()) {
 }
 
 option_list <- list(
+  make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
+alpha <- opt$alpha
 
 results_lookup <- expand.grid(
   method = c("pipep", "pipepmcp")
@@ -19,7 +21,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{iterations}/original/sparse1_autoregressive_0_100_101_gaussian_100_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/original/sparse1_autoregressive_0_100_101_gaussian_100_{results_lookup[i,'method']}.rds"))
 }
 res <- bind_rows(results) %>%
   mutate(
