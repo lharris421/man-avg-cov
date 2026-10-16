@@ -8,9 +8,9 @@ SEED         = config["seed"]
 DESPARSIFIED = config.get("desparsified", False)
 SUPP_PAGE = config["supp_page"]
 
-if not config.get("res-loc", False):
-    user = getpass.getuser()
+user = getpass.getuser()
 
+if not config.get("res-loc", False):
     LOC = {
         "pbreheny": "~/res/lasso-confint/",
         "loganharris": "~/github/lasso-confint/",
@@ -23,6 +23,16 @@ else:
     LOC = config["res-loc"]
     
 os.makedirs(f"{LOC}rds/{ALPHA}/{ITER}", exist_ok=True)
+
+# Run simulations? If False, simulations are treated as fixed inputs (obtained
+# via dat pull), so snakemake won't regenerate or delete them.
+# 
+# By default, this is based on user; can be overridden with
+# --config run-sims=True
+if "run-sims" in config:
+    RUN_SIMS = config["run-sims"]
+else:
+    RUN_SIMS = user not in {"pbreheny"}
 
 wildcard_constraints:
     dataset = "[A-Za-z0-9_]+"
@@ -43,108 +53,109 @@ rule all:
         "code/out/tableD1.tex",
         "code/out/tableE1.tex"
 
-rule distribution_results:
-    input:
-        script = f"{LOC}scripts/distribution_results.R"
-    output:
-        f"{LOC}rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--n {wildcards.n} "
-        "--p {wildcards.p} "
-        "--family {wildcards.family} "
-        "--snr {wildcards.snr} " ## Signal as a percent of noise
-        "--distribution {wildcards.distribution} "
-        "--corr {wildcards.corr} "
-        "--rho {wildcards.rho} " ## As a percent
-        "--method {wildcards.method} "
-        "--loc {LOC}"
+if RUN_SIMS:
+    rule distribution_results:
+        input:
+            script = f"{LOC}scripts/distribution_results.R"
+        output:
+            f"{LOC}rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--n {wildcards.n} "
+            "--p {wildcards.p} "
+            "--family {wildcards.family} "
+            "--snr {wildcards.snr} " ## Signal as a percent of noise
+            "--distribution {wildcards.distribution} "
+            "--corr {wildcards.corr} "
+            "--rho {wildcards.rho} " ## As a percent
+            "--method {wildcards.method} "
+            "--loc {LOC}"
         
-rule highcorr_results:
-    input:
-        script = f"{LOC}scripts/highcorr_results.R"
-    output:
-        f"{LOC}rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--method {wildcards.method} "
-        "--loc {LOC}"
+    rule highcorr_results:
+        input:
+            script = f"{LOC}scripts/highcorr_results.R"
+        output:
+            f"{LOC}rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--method {wildcards.method} "
+            "--loc {LOC}"
         
-rule data_results:
-    input:
-        script = f"{LOC}scripts/data_results.R"
-    output:
-        f"{LOC}rds/{ALPHA}/{{dataset}}_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--seed {SEED} "
-        "--method {wildcards.method} "
-        "--data {wildcards.dataset} "
-        "--loc {LOC}"
+    rule data_results:
+        input:
+            script = f"{LOC}scripts/data_results.R"
+        output:
+            f"{LOC}rds/{ALPHA}/{{dataset}}_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--seed {SEED} "
+            "--method {wildcards.method} "
+            "--data {wildcards.dataset} "
+            "--loc {LOC}"
         
-rule fit_gam:
-    input:
-        script = f"{LOC}scripts/fit_gam.R",
-        rds    = f"{LOC}rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
-    output:
-        rds_out = f"{LOC}rds/{ALPHA}/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--n {wildcards.n} "
-        "--p {wildcards.p} "
-        "--family {wildcards.family} "
-        "--snr {wildcards.snr} " ## Signal as a percent of noise
-        "--distribution {wildcards.distribution} "
-        "--corr {wildcards.corr} "
-        "--rho {wildcards.rho} "
-        "--method {wildcards.method} "
-        "--loc {LOC}"
+    rule fit_gam:
+        input:
+            script = f"{LOC}scripts/fit_gam.R",
+            rds    = f"{LOC}rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        output:
+            rds_out = f"{LOC}rds/{ALPHA}/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--n {wildcards.n} "
+            "--p {wildcards.p} "
+            "--family {wildcards.family} "
+            "--snr {wildcards.snr} " ## Signal as a percent of noise
+            "--distribution {wildcards.distribution} "
+            "--corr {wildcards.corr} "
+            "--rho {wildcards.rho} "
+            "--method {wildcards.method} "
+            "--loc {LOC}"
         
-rule across_lambda_coverage:
-    input:
-        script = f"{LOC}scripts/across_lambda_coverage.R"
-    output:
-        f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--loc {LOC}"
+    rule across_lambda_coverage:
+        input:
+            script = f"{LOC}scripts/across_lambda_coverage.R"
+        output:
+            f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--loc {LOC}"
         
-rule across_lambda_gam:
-    input:
-        script = f"{LOC}scripts/across_lambda_gam.R",
-        rds    = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
-    output:
-        f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--loc {LOC}"
+    rule across_lambda_gam:
+        input:
+            script = f"{LOC}scripts/across_lambda_gam.R",
+            rds    = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
+        output:
+            f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--loc {LOC}"
         
-rule stability_selection:
-    input:
-        script = f"{LOC}scripts/stability_selection.R",
-    output:
-        f"{LOC}rds/{ALPHA}/{ITER}/stability_selection.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--loc {LOC}"
+    rule stability_selection:
+        input:
+            script = f"{LOC}scripts/stability_selection.R",
+        output:
+            f"{LOC}rds/{ALPHA}/{ITER}/stability_selection.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--loc {LOC}"
 
 rule figure0:
     input:
