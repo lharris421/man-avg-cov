@@ -8,6 +8,7 @@
 .vscode/
 latex/
 code/github
+avg-cov/
 build/
 sub/arxiv
 sub/biometrics/*.bib
