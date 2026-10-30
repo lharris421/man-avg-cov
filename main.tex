@@ -123,7 +123,7 @@ The shape of a Laplace-Normal distribution varies considerably based on the rela
 \begin{figure}[hbt!]
   \begin{center}
     \includegraphics[width=0.7\linewidth]{figure3}
-    \caption{\label{fig:3} Examples of four Laplace-Normal distributions with increasing likelihood means ($z_j$ = 0.1, 0.3, 0.6, 1) \pb{should the figure be $z_j$? fig says $\mu$} and fixed values for the likelihood variance $\hat{\sigma}^2 / \tilde{n} = 1$ and regularization parameter $\lambda = 0.5$. The rate parameter for the Laplace prior is  $\tilde{n}\lam / \hat{\sigma}^2 = 0.5$. The depiction shows that the Laplace-Normal is a mixture of two truncated Normal distributions; solid lines show the portion of each scaled Normal density within its component's support, and dotted lines show the portion that is truncated away.}
+    \caption{\label{fig:3} Examples of four Laplace-Normal distributions with increasing likelihood means ($\mu$ = 0.1, 0.3, 0.6, 1) and fixed values for the likelihood variance $\hat{\sigma}^2 / \tilde{n} = 1$ and regularization parameter $\lambda = 0.5$. The rate parameter for the Laplace prior is  $\tilde{n}\lam / \hat{\sigma}^2 = 0.5$. The depiction shows that the Laplace-Normal is a mixture of two truncated Normal distributions; solid lines show the portion of each scaled Normal density within its component's support, and dotted lines show the portion that is truncated away.}
   \end{center}
 \end{figure}
 
@@ -195,7 +195,8 @@ To obtain average coverage near nominal, $\lam$ should be chosen such that the o
 
 However, clearly the value of $\lam$ does matter, again supporting the idea presented in Section~\ref{sec:ac-hdi}. This simulation is similar to when $\bb$ is distributed as alternative distributions, but here, instead of altering the data generating mechanism, we are adjusting the prior implied by the lasso penalty. When this implied prior is reasonably close to the data generating mechanism, coverage is near nominal. When the implied prior is more concentrated at zero (e.g. $\lambda$ near $\lambda_{\max}$) or more diffuse (e.g. $\lambda$ near $\lambda_{\min}$), then coverage is below and above nominal, respectively.
 
-\subsection{Effect of Correlation on Individual Intervals} \label{Sec:Ridge}
+\subsection{Effect of Correlation on Individual Intervals}
+\label{Sec:Ridge}
 
 As shown in Figure~\ref{fig:4}, the average coverage of the proposed PIPE-P method is conservative to increasing correlation. In this section, we illustrate the effect of correlation between features on the intervals themselves and contrast the intervals produced by lasso with those produced by ridge regression. \pb{SHOULD WE DEFINE RIDGE POSTERIOR INTERVALS?}
 
@@ -233,7 +234,7 @@ Selective Inference, de-sparsified lasso, and PIPE-P are based on different prin
       \centering
       \includegraphics[width=\linewidth]{figure7R}
     \end{minipage}
-    \caption{\label{fig:7} Results for PIPE-P, Selective Inference, and the De-sparsified Lasso intervals for the simulation in Section~\ref{Sec:Comparison} where 1000 datasets were generated with $\bb$ set to be $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution in left plot) for 3 different sample sizes, $n = 50, 100, 400$. \textbf{Left:} For $n = 100$, coverage modeled as a smooth function of $\beta$ using Binomial GAMs. The dashed lines represent the average coverage for each method across the 1000 datasets and the solid black line indicates the nominal coverage rate. \textbf{Right:} The top is distributions of average coverages across the 1000 datasets, the middle is a bar plot of the median interval widths, and the bottom is a bar plot of the average run times. The y limits have been truncated for the median width from 150 to 20 \pb{LOOKS LIKE 30?}.}
+    \caption{\label{fig:7} \pb{top left 0.75 to 1 coord cartesian} Results for PIPE-P, Selective Inference, and the De-sparsified Lasso intervals for the simulation in Section~\ref{Sec:Comparison} where 1000 datasets were generated with $\bb$ set to be $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution in left plot) for 3 different sample sizes, $n = 50, 100, 400$. \textbf{Left:} For $n = 100$, coverage modeled as a smooth function of $\beta$ using Binomial GAMs. The dashed lines represent the average coverage for each method across the 1000 datasets and the solid black line indicates the nominal coverage rate. \textbf{Right:} The top is distributions of average coverages across the 1000 datasets, the middle is a bar plot of the median interval widths, and the bottom is a bar plot of the average run times. The y limits have been truncated for the median width from 110 to 30.}
   \end{center}
 \end{figure}
 
@@ -243,11 +244,11 @@ Selective Inference and de-sparsified lasso adopt a more classical frequentist p
 
 The right side of Figure~\ref{fig:7} illustrates how the coverage, interval width, and computational burden of these methods compare. The top panel shows the distribution of average coverage across all 1000 simulations. The average coverage of the de-sparsified lasso is centered around the nominal 95\% coverage, but with a notable skew towards zero. More extreme, the distribution of average coverage for Selective Inference is very wide: for some data sets, average coverage was 100\% while for other data sets average coverage was 0\%. For $n = 50$ and $n = 100$, although centered around nominal coverage, average coverage was often well above or well below the nominal rate. The average coverage is less variable at $n = 400$, although it remains consistently above the nominal rate with a tail down to 0\%. The behavior for PIPE-P has been covered previously: it is slightly conservative when $n$ is small but converges to nominal coverage as $n$ increases and is comparatively robust in terms of average coverage.
 
-The middle plot provides the median interval width across all covariates from all 1000 simulations. The de-sparsified lasso tends to produce wider intervals, specifically when $p \ge n$, than PIPE-P. However, these differences are dwarfed by Selective Inference which produces much wider intervals than the other two methods. In fact, the vertical limits of the panel had to be truncated --- to capture the full bar for Selective Inference when $n = 50$, the vertical limit would need to go up to 110 \pb{CAPTION SAYS 150?; also n=100 is affected?}.
+The middle plot provides the median interval width across all covariates from all 1000 simulations. The de-sparsified lasso tends to produce wider intervals, specifically when $p \ge n$, than PIPE-P. However, these differences are dwarfed by Selective Inference which produces much wider intervals than the other two methods. In fact, the vertical limits of the panel had to be truncated --- for example, to capture the full bar for Selective Inference when $n = 50$, the vertical limit would need to go up to 110.
 
 Selective Inference differs from de-sparsified lasso and PIPE-P in that it does not provide intervals for all parameters, only the subset of parameters with nonzero coefficients. And even when Selective Inference does construct intervals, they are often infinitely wide (we will see this again for the real data in Section~\ref{Sec:RDA}). More information on how often these two issues arise in this simulation is found in Supplement~\ref{sup:si_int_info}. \citet{Kivaranovic2021} provide an in-depth discussion of the widths of intervals produced by methods like Selective Inference that use a polyhedral approach and show that the expected value of interval width is infinite.
 
-The bottom panel of the right side of Figure~\ref{fig:7} provides the average run times for each of the methods. PIPE-P was faster than the other two methods by over an order of magnitude. \pb{should we qualify this? It's much faster than hdi, but not necessarily always faster than SI}
+The bottom panel of the right side of Figure~\ref{fig:7} provides the average run times for each of the methods. PIPE-P was faster than the other two methods by over an order of magnitude.
 
 \section{Applications to Real Data}
 \label{Sec:RDA}
