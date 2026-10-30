@@ -59,9 +59,9 @@ p1 <- ggplot() +
   )
 
 if (interactive()) {
-  pdf("out/figure5L.pdf", height = 3.1, width = 2.2)
+  pdf("out/figure7L.pdf", height = 3.1, width = 2.2)
 } else {
-  pdf("code/out/figure5L.pdf", height = 3.1, width = 2.2)
+  pdf("code/out/figure7L.pdf", height = 3.1, width = 2.2)
 }
 p1
 dev.off()

@@ -106,9 +106,9 @@ p3 <- results %>%
 
 
 if (interactive()) {
-  pdf("out/figure5R.pdf", height = 3.3, width = 4.2)
+  pdf("out/figure7R.pdf", height = 3.3, width = 4.2)
 } else {
-  pdf("code/out/figure5R.pdf", height = 3.3, width = 4.2)
+  pdf("code/out/figure7R.pdf", height = 3.3, width = 4.2)
 }
 (p1 / p3 / p2) + plot_layout(guides = "collect", axes = "collect")
 dev.off()

@@ -40,15 +40,14 @@ wildcard_constraints:
 rule all:
     input:
         "build/avg-cov.pdf",
-        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
-        "code/out/figure3.png",
+        "code/out/figure3.pdf",
         "code/out/figure4.pdf",
-        "code/out/figure5L.pdf",
-        "code/out/figure5R.pdf",
-        "code/out/figure8.pdf",
-        "code/out/figureC1.pdf",
+        "code/out/figure5.png",
+        "code/out/figure6.pdf",
+        "code/out/figure7L.pdf",
+        "code/out/figure7R.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
         "code/out/tableE1.tex"
@@ -157,35 +156,25 @@ if RUN_SIMS:
             "--seed {SEED} "
             "--loc {LOC}"
 
-rule figure0:
-    input:
-        script = "code/figure0.R",
-    output:
-        "code/out/figure0.pdf"
-    shell:
-        "Rscript {input.script} "
-        "--loc {LOC}"
-
 rule figure1:
     input:
-        script = "code/figure1.R",
-        rds    = f"{LOC}rds/{ALPHA}/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"
+      script = "code/figure1.R",
+      rds = expand(
+          f"{LOC}rds/{ALPHA}/brca1_{{method}}.rds",
+          method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
+      )
     output:
         "code/out/figure1.pdf"
     shell:
         "Rscript {input.script} "
         "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--loc {LOC}"
-        
+        "--loc {LOC} "
+        f"{'--desparsified' if DESPARSIFIED else ''}"
+
 rule figure2:
     input:
         script = "code/figure2.R",
-        rds = expand(
-            f"{LOC}rds/{ALPHA}/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_pipep.rds",
-            rho = [0, 50, 80],               
-            n = [50, 100, 400, 1000]
-        )
+        rds    = f"{LOC}rds/{ALPHA}/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"
     output:
         "code/out/figure2.pdf"
     shell:
@@ -193,26 +182,23 @@ rule figure2:
         "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
-        
+
 rule figure3:
     input:
         script = "code/figure3.R",
-        rds1 = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds",
-        rds2 = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
     output:
-        "code/out/figure3.png"
+        "code/out/figure3.pdf"
     shell:
         "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
         "--loc {LOC}"
         
 rule figure4:
     input:
         script = "code/figure4.R",
         rds = expand(
-            f"{LOC}rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds",
-            method = ["pipep", "ridge"]
+            f"{LOC}rds/{ALPHA}/{ITER}/original/laplace_autoregressive_{{rho}}_{{n}}_101_gaussian_100_pipep.rds",
+            rho = [0, 50, 80],               
+            n = [50, 100, 400, 1000]
         )
     output:
         "code/out/figure4.pdf"
@@ -221,16 +207,44 @@ rule figure4:
         "--alpha {ALPHA} "
         "--iterations {ITER} "
         "--loc {LOC}"
+        
+rule figure5:
+    input:
+        script = "code/figure5.R",
+        rds1 = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_coverage.rds",
+        rds2 = f"{LOC}rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
+    output:
+        "code/out/figure5.png"
+    shell:
+        "Rscript {input.script} "
+        "--alpha {ALPHA} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
+        
+rule figure6:
+    input:
+        script = "code/figure6.R",
+        rds = expand(
+            f"{LOC}rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds",
+            method = ["pipep", "ridge"]
+        )
+    output:
+        "code/out/figure6.pdf"
+    shell:
+        "Rscript {input.script} "
+        "--alpha {ALPHA} "
+        "--iterations {ITER} "
+        "--loc {LOC}"
     
-rule figure5L:
+rule figure7L:
     input: 
-      script = "code/figure5L.R",
+      script = "code/figure7L.R",
         rds = expand(
             f"{LOC}rds/{ALPHA}/{ITER}/gam/laplace_autoregressive_0_100_101_gaussian_100_{{method}}.rds",
             method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
         )
     output:
-        "code/out/figure5L.pdf"
+        "code/out/figure7L.pdf"
     shell:
         "Rscript {input.script} "
         "--alpha {ALPHA} "
@@ -238,66 +252,20 @@ rule figure5L:
         "--loc {LOC} "
         f"{'--desparsified' if DESPARSIFIED else ''}"
         
-rule figure5R:
+rule figure7R:
     input: 
-      script = "code/figure5R.R",
+      script = "code/figure7R.R",
       rds = expand(
           f"{LOC}rds/{ALPHA}/{ITER}/original/laplace_autoregressive_0_{{n}}_101_gaussian_100_{{method}}.rds",
           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else []),
           n = [50, 100, 400]
       )
     output:
-        "code/out/figure5R.pdf"
+        "code/out/figure7R.pdf"
     shell:
         "Rscript {input.script} "
         "--alpha {ALPHA} "
         "--iterations {ITER} "
-        "--loc {LOC} "
-        f"{'--desparsified' if DESPARSIFIED else ''}"
-        
-        
-# rule figure6:
-#     input:
-#       script = "code/figure6.R",
-#       rds = expand(
-#           f"{LOC}rds/{ALPHA}/whoari_{{method}}.rds",
-#           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
-#       )
-#     output:
-#         "code/out/figure6.pdf"
-#     shell:
-#         "Rscript {input.script} "
-#         "--alpha {ALPHA} "
-#         "--loc {LOC} "
-#         f"{'--desparsified' if DESPARSIFIED else ''}"
-#         
-# rule figure7:
-#     input:
-#       script = "code/figure7.R",
-#       rds = expand(
-#           f"{LOC}rds/{ALPHA}/Scheetz2006_{{method}}.rds",
-#           method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
-#       )
-#     output:
-#         "code/out/figure7.pdf"
-#     shell:
-#         "Rscript {input.script} "
-#         "--alpha {ALPHA} "
-#         "--loc {LOC} "
-#         f"{'--desparsified' if DESPARSIFIED else ''}"
-        
-rule figure8:
-    input:
-      script = "code/figure8.R",
-      rds = expand(
-          f"{LOC}rds/{ALPHA}/brca1_{{method}}.rds",
-          method = ["pipep", "selectiveinferenceS"] + (["desparsified"] if DESPARSIFIED else [])
-      )
-    output:
-        "code/out/figure8.pdf"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
         "--loc {LOC} "
         f"{'--desparsified' if DESPARSIFIED else ''}"
         
@@ -369,14 +337,14 @@ rule manuscript:
         "main.tex",
         "supp.tex",
         "config.yaml",
-        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
-        "code/out/figure3.png",
+        "code/out/figure3.pdf",
         "code/out/figure4.pdf",
-        "code/out/figure5L.pdf",
-        "code/out/figure5R.pdf",
-        "code/out/figure8.pdf",
+        "code/out/figure5.png",
+        "code/out/figure6.pdf",
+        "code/out/figure7L.pdf",
+        "code/out/figure7R.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",
@@ -396,14 +364,14 @@ rule arxiv:
         "main.tex",
         "supp.tex",
         "config.yaml",
-        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
-        "code/out/figure3.png",
+        "code/out/figure3.pdf",
         "code/out/figure4.pdf",
-        "code/out/figure5L.pdf",
-        "code/out/figure5R.pdf",
-        "code/out/figure8.pdf",
+        "code/out/figure5.png",
+        "code/out/figure6.pdf",
+        "code/out/figure7L.pdf",
+        "code/out/figure7R.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/table2.tex",
@@ -430,14 +398,14 @@ rule biometrics_s1:
         "main.tex",
         "supp.tex",
         "config.yaml",
-        "code/out/figure0.pdf",
         "code/out/figure1.pdf",
         "code/out/figure2.pdf",
-        "code/out/figure3.png",
+        "code/out/figure3.pdf",
         "code/out/figure4.pdf",
-        "code/out/figure5L.pdf",
-        "code/out/figure5R.pdf",
-        "code/out/figure8.pdf",
+        "code/out/figure5.png",
+        "code/out/figure6.pdf",
+        "code/out/figure7L.pdf",
+        "code/out/figure7R.pdf",
         "code/out/figureC1.pdf",
         "code/out/table1.tex",
         "code/out/tableD1.tex",

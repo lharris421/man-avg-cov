@@ -7,49 +7,97 @@ if (interactive()) {
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
+  make_option(c("--seed"), type="double", default=1234),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 alpha <- opt$alpha
+seed <- opt$seed
 
-results_lookup <- expand.grid(
-  n = c(50, 100, 400, 1000),
-  rho = c(0, 50, 80)
-) %>%
-  mutate(method = "pipep")
+results <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"))
 
-results <- list()
-for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/original/laplace_autoregressive_{results_lookup[i,'rho']}_{results_lookup[i,'n']}_101_gaussian_100_{results_lookup[i,'method']}.rds"))
-}
-res <- bind_rows(results) %>%
+line_data <- results %>%
   mutate(method = method_labels[method])
 
-# Transform and summarize data
-coverage_data <- res %>%
-  mutate(rho = rho / 100) %>%
-  mutate(covered = lower <= truth & upper >= truth, n = as.factor(n), rho = factor(rho)) %>%
-  group_by(iteration, method, rho, n) %>%
-  summarise(coverage = mean(covered, na.rm = TRUE), .groups = 'drop')
+cutoff <- max(line_data$x)
+xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
+density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414))
 
-# Create a single plot with facets for each rho
-final_plot <- coverage_data %>%
-  ggplot(aes(x = rho, y = coverage, fill = rho)) +
-  geom_violin(adjust = 3) +
-  # geom_boxplot(outlier.shape = NA) +
-  facet_wrap(method~n, as.table = FALSE, labeller = label_bquote(n == .(results_lookup$n[n])), nrow = 1) +
-  labs(x = expression(rho), y = "Coverage Rate") +
+p1 <- ggplot() +
+  geom_line(data = line_data, aes(x = x, y = y, color = method)) +
+  geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
+  geom_hline(aes(yintercept = 1 - (alpha / 100)), linetype = 1, alpha = .5) +
+  geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
   theme_minimal() +
-  theme(legend.position = "none") +
-  geom_hline(yintercept = 1 - (alpha / 100)) +
-  coord_cartesian(ylim = c(0, 1))
+  xlab(expression(beta)) +
+  ylab("Estimated Coverage") +
+  coord_cartesian(ylim = c(0, 1)) +
+  scale_color_manual(name = "Method", values = colors) +
+  theme(legend.position = "none")
 
-# Print the plot
+
+## Ridge
+## Set parameters
+## alpha <- 1 - (alpha / 100)
+prior_mean <- 0
+prior_variance <- 1^2
+sigma2 <- 1^2     # Likelihood variance
+n <- 1         # Sample size
+theta_values <- seq(-3, 3, length.out = 1000)  # Range of theta values
+z <- qnorm(1 - (alpha/100) / 2)
+
+# Calculate prior and likelihood precisions
+precision_prior <- 1 / prior_variance
+precision_likelihood <- n / sigma2
+precision_post <- precision_prior + precision_likelihood
+
+# Posterior variance (for credible interval)
+sigma2_post <- 1 / precision_post
+sigma_post <- sqrt(sigma2_post)
+
+# Weights
+prior_weight <- precision_prior / precision_post
+lik_weight <- 1 - prior_weight
+
+# Mean difference between posterior mean and true theta
+posterior_mean <- prior_weight * prior_mean + lik_weight * theta_values
+sd_mu_post <- sqrt(lik_weight^2 * (sigma2 / n))
+
+# Compute coverage probability analytically (centering at zero for ease of computation)
+upper_limit <- (posterior_mean + z * sigma_post)
+lower_limit <- (posterior_mean - z * sigma_post)
+
+coverage_probs <- pnorm(theta_values, upper_limit, sd = sd_mu_post, lower.tail = FALSE) - pnorm(theta_values, lower_limit, sd = sd_mu_post, lower.tail = FALSE)
+
+## prior dens
+prior_dens <- dnorm(theta_values, sd = sqrt(prior_variance))
+
+# Plot coverage probability vs theta
+data <- data.frame(
+  theta_values = theta_values,
+  coverage_probs = coverage_probs,
+  prior_dens_scaled = prior_dens / max(prior_dens)  # Scale prior density for plotting
+)
+
+# Calculate horizontal lines
+coverage_avg <- sum(prior_dens * coverage_probs) / sum(prior_dens)
+threshold <- 1 - (alpha / 100)
+
+# Plot using ggplot2
+p2 <- ggplot(data, aes(x = theta_values)) +
+  geom_line(aes(y = coverage_probs), color = "green3") +  # Line for coverage_probs
+  geom_ribbon(aes(ymin = 0, ymax = prior_dens_scaled), fill = "grey", alpha = 0.5) +  # Shaded region for prior_dens
+  geom_hline(yintercept = threshold, color = "black") +  # Horizontal line at 1 - alpha
+  geom_hline(yintercept = coverage_avg, color = "green3", linetype = "dashed") +  # Horizontal line for weighted avg
+  labs(x = expression(theta), y = "Coverage Probability") +
+  ylim(0, 1) +  # Set y-axis limits
+  theme_minimal()  # Minimal theme for clarity
+
 if (interactive()) {
   pdf("out/figure2.pdf", height = 2.6, width = 5.2)
 } else {
   pdf("code/out/figure2.pdf", height = 2.6, width = 5.2)
 }
-final_plot
+p2 + p1 + patchwork::plot_layout(axes = "collect")
 dev.off()

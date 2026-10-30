@@ -6,98 +6,73 @@ if (interactive()) {
 
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
-  make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--seed"), type="double", default=1234),
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
   make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
 )
 opt <- parse_args(OptionParser(option_list=option_list))
-iterations <- opt$iterations
+desparsified <- opt$desparsified
 alpha <- opt$alpha
-seed <- opt$seed
 
-results <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"))
+methods <- c("pipep", "selectiveinferenceS")
+if (desparsified) methods <- c(methods, "desparsified")
 
-line_data <- results %>%
-  mutate(method = method_labels[method])
-
-cutoff <- max(line_data$x)
-xvals <- seq(from = -cutoff, to = cutoff, length.out = cutoff * 100 + 1)
-density_data <- data.frame(x = xvals, density = 2 * dlaplace(xvals, rate = 1.414))
-
-p1 <- ggplot() +
-  geom_line(data = line_data, aes(x = x, y = y, color = method)) +
-  geom_hline(data = line_data, aes(yintercept = average_coverage, color = method), linetype = 2) +
-  geom_hline(aes(yintercept = 1 - (alpha / 100)), linetype = 1, alpha = .5) +
-  geom_area(data = density_data, aes(x = x, y = density / max(density)), fill = "grey", alpha = 0.5) +
-  theme_minimal() +
-  xlab(expression(beta)) +
-  ylab("Estimated Coverage") +
-  coord_cartesian(ylim = c(0, 1)) +
-  scale_color_manual(name = "Method", values = colors) +
-  theme(legend.position = "none")
-
-
-## Ridge
-## Set parameters
-## alpha <- 1 - (alpha / 100)
-prior_mean <- 0
-prior_variance <- 1^2
-sigma2 <- 1^2     # Likelihood variance
-n <- 1         # Sample size
-theta_values <- seq(-3, 3, length.out = 1000)  # Range of theta values
-z <- qnorm(1 - (alpha/100) / 2)
-
-# Calculate prior and likelihood precisions
-precision_prior <- 1 / prior_variance
-precision_likelihood <- n / sigma2
-precision_post <- precision_prior + precision_likelihood
-
-# Posterior variance (for credible interval)
-sigma2_post <- 1 / precision_post
-sigma_post <- sqrt(sigma2_post)
-
-# Weights
-prior_weight <- precision_prior / precision_post
-lik_weight <- 1 - prior_weight
-
-# Mean difference between posterior mean and true theta
-posterior_mean <- prior_weight * prior_mean + lik_weight * theta_values
-sd_mu_post <- sqrt(lik_weight^2 * (sigma2 / n))
-
-# Compute coverage probability analytically (centering at zero for ease of computation)
-upper_limit <- (posterior_mean + z * sigma_post)
-lower_limit <- (posterior_mean - z * sigma_post)
-
-coverage_probs <- pnorm(theta_values, upper_limit, sd = sd_mu_post, lower.tail = FALSE) - pnorm(theta_values, lower_limit, sd = sd_mu_post, lower.tail = FALSE)
-
-## prior dens
-prior_dens <- dnorm(theta_values, sd = sqrt(prior_variance))
-
-# Plot coverage probability vs theta
-data <- data.frame(
-  theta_values = theta_values,
-  coverage_probs = coverage_probs,
-  prior_dens_scaled = prior_dens / max(prior_dens)  # Scale prior density for plotting
+results_lookup <- expand.grid(
+  method = methods
 )
 
-# Calculate horizontal lines
-coverage_avg <- sum(prior_dens * coverage_probs) / sum(prior_dens)
-threshold <- 1 - (alpha / 100)
+results <- list()
+for (i in 1:nrow(results_lookup)) {
+  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/brca1_{results_lookup[i,'method']}.rds"))
+}
 
-# Plot using ggplot2
-p2 <- ggplot(data, aes(x = theta_values)) +
-  geom_line(aes(y = coverage_probs), color = "green3") +  # Line for coverage_probs
-  geom_ribbon(aes(ymin = 0, ymax = prior_dens_scaled), fill = "grey", alpha = 0.5) +  # Shaded region for prior_dens
-  geom_hline(yintercept = threshold, color = "black") +  # Horizontal line at 1 - alpha
-  geom_hline(yintercept = coverage_avg, color = "green3", linetype = "dashed") +  # Horizontal line for weighted avg
-  labs(x = expression(theta), y = "Coverage Probability") +
-  ylim(0, 1) +  # Set y-axis limits
-  theme_minimal()  # Minimal theme for clarity
+cis <- bind_rows(results) %>%
+  mutate(method = method_labels[method],
+         estimate = ifelse(method == "PIPE Posterior", coef, estimate))
+
+plot_vars <- cis %>%
+  filter(method == "PIPE Posterior") %>%
+  dplyr::arrange(desc(abs(estimate))) %>%
+  slice_head(n = 30) %>%
+  dplyr::arrange(desc(estimate)) %>%
+  pull(variable)
+
+plot_res <- cis %>%
+  filter(variable %in% plot_vars) %>%
+  dplyr::arrange(desc(estimate))
+
+plot_res$variable <- factor(plot_res$variable, levels = rev(plot_vars))
+plot_res$method <- factor(plot_res$method, levels = c("Desparsified Lasso", "Selective Inference", "PIPE Posterior"))
 
 if (interactive()) {
-  pdf("out/figure1.pdf", height = 2.6, width = 5.2)
+  pdf("out/figure1.pdf", height = 3.9, width = 5.9)
 } else {
-  pdf("code/out/figure1.pdf", height = 2.6, width = 5.2)
+  pdf("code/out/figure1.pdf", height = 3.9, width = 5.9)
 }
-p2 + p1 + patchwork::plot_layout(axes = "collect")
+plot_res %>%
+  group_by(variable) %>%
+  arrange(method) %>%
+  mutate(
+    estimate = ifelse(is.na(estimate), NA, last(estimate)),
+    lowerF    = ifelse(is.infinite(lower), NA, lower),
+    upperF    = ifelse(is.infinite(upper), NA, upper)
+  ) %>%
+  ungroup() %>%
+  ggplot() +
+  geom_errorbar(aes(xmin = lower, xmax = upper, y = variable), width = 0) +
+  geom_segment(aes(x = lowerF, xend = lowerF,
+                   y = as.numeric(variable) - 0.5,
+                   yend = as.numeric(variable) + 0.5)) +
+  geom_segment(aes(x = upperF, xend = upperF,
+                   y = as.numeric(variable) - 0.5,
+                   yend = as.numeric(variable) + 0.5)) +
+  geom_point(aes(x = estimate, y = variable)) +
+  theme_minimal() +
+  ylab(NULL) + xlab(NULL) +
+  scale_color_manual(name = "Method", values = colors) +
+  theme(legend.position = "none",
+        legend.justification = c("right", "bottom"),
+        legend.box.just = "right",
+        legend.margin = margin(6, 6, 6, 6),
+        legend.background = element_rect(fill = "transparent")) +
+  facet_wrap(~method, scales = "free_x", nrow = 1)
 dev.off()

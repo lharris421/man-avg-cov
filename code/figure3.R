@@ -4,81 +4,73 @@ if (interactive()) {
   source("code/setup.R")
 }
 
-option_list <- list(
-  make_option(c("--alpha"), type="integer", default=5),
-  make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
-)
-opt <- parse_args(OptionParser(option_list=option_list))
-iterations <- opt$iterations
-alpha <- opt$alpha
+beta_seq <- seq(-4, 4, by = .01)
+lambda   <- 0.5
+sigma2   <- 1
+n        <- 1
+zjs      <- c(0.1, 0.3, 0.6, 1)
 
-res_list <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/across_lambda_coverage.rds"))
-model_cov <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/across_lambda_gam.rds"))
-
-lambdas <- res_list$lambdas
-res <- res_list$res
-lambda_maxs <- res %>% group_by(group) %>% filter(row_number() == 1) %>% pull(lambda_max)
-
-pdat <- res %>%
-  dplyr::mutate(covered = truth >= lower & truth <= upper,
-                group = as.factor(group),
-                lambda = round(lambda / lambda_max, 3),
-                truth = abs(truth))
-
-
-cov_targ <- 1 - (alpha / 100)
-
-lambda_cov <- pdat %>%
-  filter(!is.na(covered)) %>%
-  group_by(lambda, group) %>%
-  summarise(
-    coverage = mean(covered)
-  ) %>%
-  summarise(
-    off_coverage_sq = mean(abs(coverage - cov_targ))
-  ) %>%
-  arrange(off_coverage_sq) %>%
-  pull(lambda) %>%
-  first()
-
-# Create a grid for prediction on the transformed lambda scale
-min_lam <- min(c(lambdas, lambda_cov))
-lambda_seq <- 10^seq(log(.05, 10), log(1, 10), length.out = 100)
-truth_seq <- seq(0, 3, length.out = 100)
-grid <- expand.grid(lambda = lambda_seq, truth = truth_seq) %>% data.frame()
-
-# Predict coverage probability
-grid$coverage <- predict(model_cov, newdata = grid, type ="response")
-grid$adjusted_coverage <- grid$coverage - cov_targ
-
-
-my_breaks <- c(1, 0.5, 0.2, 0.1, 0.05)
-my_labels <- function(x) {
-  parse(text = sapply(x, function(val) {
-    frac_val <- paste0(" / ", 1/val)
-    if (frac_val == " / 1") frac_val <- "    "
-    paste("lambda[max]", frac_val)
-  }))
+# Lasso (piecewise normal) component kernels, unnormalized (your form)
+neg_full <- function(x, n, lambda, zj, sigma2) {
+  exp((zj*lambda*n)/sigma2) * exp(-(n/(2*sigma2))*(x - (zj + lambda))^2)
+}
+pos_full <- function(x, n, lambda, zj, sigma2) {
+  exp(-(zj*lambda*n)/sigma2) * exp(-(n/(2*sigma2))*(x - (zj - lambda))^2)
 }
 
-# Plot the heatmap with reversed lambda on the log10 scale
-plt_cov <- ggplot(grid, aes(x = lambda, y = truth, fill = adjusted_coverage)) +
-  geom_tile() +
-  scale_fill_gradient2(low = "#DF536B", high = "#2297E6", mid = "white", midpoint = 0, labels   = percent_format(accuracy = 1)) +
-  labs(y = expression(abs(beta)), fill = "Rel. Cov.", x = expression(lambda)) +
-  scale_x_log10(trans   = c("log10", "reverse"), breaks  = my_breaks, labels  = my_labels) +
-  geom_vline(xintercept = median(lambdas), alpha = .5, col = "black", linetype = "dashed") +
-  geom_vline(xintercept = lambda_cov, alpha = .5, col = "blue") +
-  geom_vline(xintercept = c(quantile(lambdas, 0.125), quantile(lambdas, 0.875))) +
-  theme_minimal()
+res <- lapply(zjs, function(zj) {
+  x <- beta_seq
+  y_neg_full <- neg_full(x, n, lambda, zj, sigma2)
+  y_pos_full <- pos_full(x, n, lambda, zj, sigma2)
 
+  # dotted reference curves (full normals on both sides)
+  df_ref <- rbind(
+    data.frame(x = x, y = y_neg_full, component = "Negative", layer = "ref"),
+    data.frame(x = x, y = y_pos_full, component = "Positive", layer = "ref")
+  )
 
+  # solid "used" halves (posterior chooses side by sign of x)
+  df_used <- rbind(
+    data.frame(x = x, y = ifelse(x <= 0, y_neg_full, NA_real_), component = "Negative", layer = "used"),
+    data.frame(x = x, y = ifelse(x >  0, y_pos_full, NA_real_), component = "Positive", layer = "used")
+  )
+
+  dplyr::bind_rows(df_ref, df_used) |>
+    dplyr::mutate(zj = zj)
+})
+
+df_all <- dplyr::bind_rows(res)
+
+# Write the figure
 if (interactive()) {
-  png("out/figure3.png", height = 3.1, width = 3.9, units='in', res = 300)
+  pdf("out/figure3.pdf", width = 4.5, height = 4.5)
 } else {
-  png("code/out/figure3.png", height = 3.1, width = 3.9, units='in', res = 300)
+  pdf("code/out/figure3.pdf", width = 4.5, height = 4.5)
 }
-plt_cov
-dev.off()
 
+ggplot2::ggplot() +
+  # dotted, faded full normals first (unused portions visible)
+  ggplot2::geom_line(
+    data = subset(df_all, layer == "ref"),
+    ggplot2::aes(x = x, y = y, color = component),
+    linetype = "dotted", alpha = 0.7, linewidth = 0.9, na.rm = TRUE
+  ) +
+  # solid "used" halves on top (posterior)
+  ggplot2::geom_line(
+    data = subset(df_all, layer == "used"),
+    ggplot2::aes(x = x, y = y, color = component),
+    linewidth = 1.2, na.rm = TRUE
+  ) +
+  ggplot2::scale_color_manual(values = c(
+    "Negative" = "red",
+    "Positive" = "blue"
+  )) +
+  ggplot2::facet_wrap(~zj, labeller = label_bquote(mu == .(zj)), nrow = 2) +
+  ggplot2::guides(color = "none") +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.spacing = grid::unit(1, "lines")) +
+  ggplot2::xlab(expression(beta)) +
+  ggplot2::ylab("Density") +
+  coord_cartesian(ylim = c(0, 1.1))
+
+dev.off()
