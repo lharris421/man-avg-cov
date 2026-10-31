@@ -1,20 +1,19 @@
 if (interactive()) {
-  source("setup.R")
+  source("scripts/setup.R")
 } else {
-  source("code/setup.R")
+  source("./code/scripts/setup.R")
 }
 
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
-  make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
+  make_option(c("--iterations"), type="integer", default=1000)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 alpha <- opt$alpha
 
-res_list <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/across_lambda_coverage.rds"))
-model_cov <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/across_lambda_gam.rds"))
+res_list <- readRDS(glue("{rds_dir}/{alpha}/{iterations}/across_lambda_coverage.rds"))
+model_cov <- readRDS(glue("{rds_dir}/{alpha}/{iterations}/across_lambda_gam.rds"))
 
 lambdas <- res_list$lambdas
 res <- res_list$res
@@ -80,5 +79,5 @@ if (interactive()) {
   png("code/out/figure5.png", height = 3.1, width = 3.9, units='in', res = 300)
 }
 plt_cov
-dev.off()
+invisible(dev.off())
 

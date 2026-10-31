@@ -1,13 +1,14 @@
 if (interactive()) {
-  source("setup.R")
+  source("scripts/setup.R")
 } else {
-  source("code/setup.R")
+  source("./code/scripts/setup.R")
 }
 
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
   make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
-  make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
+  make_option(c("--dataset"), type="character", default="brca1",
+              help="brca1 (full data) or brca1_small (smoke test)")
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 desparsified <- opt$desparsified
@@ -22,7 +23,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/brca1_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{rds_dir}/{alpha}/{opt$dataset}_{results_lookup[i,'method']}.rds"))
 }
 
 cis <- bind_rows(results) %>%
@@ -58,14 +59,14 @@ plot_res %>%
   ) %>%
   ungroup() %>%
   ggplot() +
-  geom_errorbar(aes(xmin = lower, xmax = upper, y = variable), width = 0) +
+  geom_errorbar(aes(xmin = lower, xmax = upper, y = variable), width = 0, na.rm = TRUE) +
   geom_segment(aes(x = lowerF, xend = lowerF,
                    y = as.numeric(variable) - 0.5,
-                   yend = as.numeric(variable) + 0.5)) +
+                   yend = as.numeric(variable) + 0.5), na.rm = TRUE) +
   geom_segment(aes(x = upperF, xend = upperF,
                    y = as.numeric(variable) - 0.5,
-                   yend = as.numeric(variable) + 0.5)) +
-  geom_point(aes(x = estimate, y = variable)) +
+                   yend = as.numeric(variable) + 0.5), na.rm = TRUE) +
+  geom_point(aes(x = estimate, y = variable), na.rm = TRUE) +
   theme_minimal() +
   ylab(NULL) + xlab(NULL) +
   scale_color_manual(name = "Method", values = colors) +
@@ -75,4 +76,4 @@ plot_res %>%
         legend.margin = margin(6, 6, 6, 6),
         legend.background = element_rect(fill = "transparent")) +
   facet_wrap(~method, scales = "free_x", nrow = 1)
-dev.off()
+invisible(dev.off())

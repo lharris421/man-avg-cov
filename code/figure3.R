@@ -1,7 +1,7 @@
 if (interactive()) {
-  source("setup.R")
+  source("scripts/setup.R")
 } else {
-  source("code/setup.R")
+  source("./code/scripts/setup.R")
 }
 
 beta_seq <- seq(-4, 4, by = .01)
@@ -73,4 +73,4 @@ ggplot2::ggplot() +
   ggplot2::ylab("Density") +
   coord_cartesian(ylim = c(0, 1.1))
 
-dev.off()
+invisible(dev.off())

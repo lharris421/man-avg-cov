@@ -1,0 +1,11 @@
+# Files renv should not scan for R package dependencies.
+# brca1.R is a one-off TCGA download using Bioconductor packages; it is not
+# part of the Snakemake build and its packages are not in renv.lock.
+code/scripts/brca1.R
+# Non-source directories
+.Rproj.user/
+code/.Rproj.user/
+build/
+sub/
+.snakemake/
+renv/

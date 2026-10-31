@@ -1,21 +1,20 @@
 if (interactive()) {
-  source("setup.R")
+  source("scripts/setup.R")
 } else {
-  source("code/setup.R")
+  source("./code/scripts/setup.R")
 }
 
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--seed"), type="double", default=1234),
-  make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
+  make_option(c("--seed"), type="double", default=1234)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
 alpha <- opt$alpha
 seed <- opt$seed
 
-results <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"))
+results <- readRDS(glue("{rds_dir}/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_pipep.rds"))
 
 line_data <- results %>%
   mutate(method = method_labels[method])
@@ -100,4 +99,4 @@ if (interactive()) {
   pdf("code/out/figure2.pdf", height = 2.6, width = 5.2)
 }
 p2 + p1 + patchwork::plot_layout(axes = "collect")
-dev.off()
+invisible(dev.off())

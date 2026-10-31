@@ -1,14 +1,13 @@
 if (interactive()) {
-  source("setup.R")
+  source("scripts/setup.R")
 } else {
-  source("code/setup.R")
+  source("./code/scripts/setup.R")
 }
 
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
   make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE),
-  make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
+  make_option(c("-d", "--desparsified"), action="store_true", default=FALSE)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -25,7 +24,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_{results_lookup[i,'method']}.rds"))
+  results[[i]] <- readRDS(glue("{rds_dir}/{alpha}/{iterations}/gam/laplace_autoregressive_0_100_101_gaussian_100_{results_lookup[i,'method']}.rds"))
 }
 line_data <- bind_rows(results) %>%
   mutate(
@@ -64,4 +63,4 @@ if (interactive()) {
   pdf("code/out/figure7L.pdf", height = 3.1, width = 2.2)
 }
 p1
-dev.off()
+invisible(dev.off())

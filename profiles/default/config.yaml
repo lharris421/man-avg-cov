@@ -1,0 +1,8 @@
+# Workflow profile, picked up automatically by Snakemake (>= 8) when run from
+# this directory. Pass --workflow-profile none to ignore it.
+#
+# Use the greedy job scheduler. The default ILP scheduler needs the CBC solver
+# binary that some Snakemake installs (e.g. Homebrew) ship without; when it is
+# missing Snakemake falls back to greedy anyway, after printing a warning on
+# every run. For this workflow the two schedulers behave the same.
+scheduler: greedy

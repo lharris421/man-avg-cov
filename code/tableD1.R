@@ -1,15 +1,14 @@
 if (interactive()) {
-  source("setup.R")
+  source("scripts/setup.R")
   path_pre <- glue("out/")
 } else {
-  source("code/setup.R")
+  source("./code/scripts/setup.R")
   path_pre <- glue("code/out/")
 }
 
 option_list <- list(
   make_option(c("--alpha"), type="integer", default=5),
-  make_option(c("--iterations"), type="integer", default=1000),
-  make_option(c("--loc"), type="character", default=glue("{res_dir}/"))
+  make_option(c("--iterations"), type="integer", default=1000)
 )
 opt <- parse_args(OptionParser(option_list=option_list))
 iterations <- opt$iterations
@@ -21,7 +20,7 @@ results_lookup <- expand.grid(
 
 results <- list()
 for (i in 1:nrow(results_lookup)) {
-  results[[i]] <- readRDS(glue("{opt$loc}rds/{alpha}/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_selectiveinferenceS.rds"))
+  results[[i]] <- readRDS(glue("{rds_dir}/{alpha}/{iterations}/original/laplace_autoregressive_0_{results_lookup[i,'n']}_101_gaussian_100_selectiveinferenceS.rds"))
 }
 res <- bind_rows(results) %>%
   mutate(
