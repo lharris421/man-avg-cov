@@ -81,8 +81,8 @@ This algorithm is described explicitly in Algorithm~\ref{alg:quantile}; note tha
     $z_j,\;\hat{\sigma}^2,\;\tilde{n}_j,\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, probability of interest}
   \Statex
   \State // 1. Compute constants on log scale
-  \State $\tilde{C}_{1} = z_j \lambda \tilde{n}/\sigma^2$
-  \State $\tilde{C}_{2} = -z_j \lambda \tilde{n}/\sigma^2$
+  \State $\tilde{C}_{1} \gets z_j \lambda \tilde{n}/\sigma^2$
+  \State $\tilde{C}_{2} \gets -z_j \lambda \tilde{n}/\sigma^2$
   \Statex
   \State // 2. Compute total log probability in left/right Normals over respective supports
   \State $\tilde{U}_{1} \gets \log \Phi(0; \, z_j + \lambda,\; \hat{\sigma}^2 / \tilde{n}_j)$
