@@ -27,33 +27,33 @@ The above theorem concerns a single parameter of interest $\theta_j$ and its cre
 
 Let $\y$ be a length $n$ vector of independent outcomes and $\X$ be an $n \times p$ matrix of features. Here we assume $\X$ has been standardized s.t. $\x_j\Tr\x_j = n$.  Let $\hat{S} = \lbrace k: \bh_k \neq  0 \rbrace$ denote the set of selected features. Then, let $\hat{S}_j$ denote the set of selected features that excludes feature $j$, so that $\hat{S}_j = \hat{S} \text{ if } j \notin \hat{S}$ and $\hat{S}_j = \hat{S} - \lbrace j \rbrace \text{ if } j \in \hat{S}$. Define $\Q_{\hat{S}_j}$ as $\I - \X_{\hat{S}_j}(\X_{\hat{S}_j}\Tr \X_{\hat{S}_j})^{-1} \X_{\hat{S}_j}\Tr$, the projection matrix onto the orthogonal complement of the features selected by the lasso. The PIPE likelihood for $\beta_j$ conditional on the selected features is
 $$
-  L(\beta_j \mid \hat{S}_j) \propto \exp(-\tfrac{\tilde{n}}{2\sigma^2}(\beta_{j} - z_j)^2),
+  L(\beta_j \mid \hat{S}_j) \propto \exp(-\tfrac{\tilde{n}_j}{2\sigma^2}(\beta_{j} - z_j)^2),
 $$
-\noindent where $z_j = \x_j \Tr \r_{-j}/n$ and $\tilde{n} = \x_j\Tr \Q_{\hat{S}_j} \x_j$. \pb{n tilde needs j subscript everywhere}
+\noindent where $z_j = \x_j \Tr \r_{-j}/n$ and $\tilde{n}_j = \x_j\Tr \Q_{\hat{S}_j} \x_j$.
 
-The lasso can be formulated as a Bayesian regression model with a Laplace (double exponential) prior. In this case, the prior for $\beta_j$ is proportional to $\exp(-\frac{\tilde{n} \lambda} {\sigma^2} \abs{\beta_j})$. This prior keeps the value of $\lam$ consistent with the estimation procedure.
+The lasso can be formulated as a Bayesian regression model with a Laplace (double exponential) prior. In this case, the prior for $\beta_j$ is proportional to $\exp(-\frac{\tilde{n}_j \lambda} {\sigma^2} \abs{\beta_j})$. This prior keeps the value of $\lam$ consistent with the estimation procedure.
 
 With this the form of the conditional posterior can be worked out as follows:
 \as{
-p(\beta_j \mid \hat{S}_j) &\propto \exp(-\tfrac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2z_j\beta_j)) \exp(-\tfrac{\tilde{n} \lambda} {\sigma^2} \abs{\beta_j}) \\
-&= \exp(-\tfrac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2 z_j\beta_j +  2 \lambda \abs{\beta_j})) \\
-&= \exp(-\tfrac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2(z_j\beta_j - \lambda \abs{\beta_j}))) \\
+p(\beta_j \mid \hat{S}_j) &\propto \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2z_j\beta_j)) \exp(-\tfrac{\tilde{n}_j \lambda} {\sigma^2} \abs{\beta_j}) \\
+&= \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2 z_j\beta_j +  2 \lambda \abs{\beta_j})) \\
+&= \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j\beta_j - \lambda \abs{\beta_j}))) \\
 &=
 \begin{cases}
-\exp(-\frac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2(z_j + \lambda)\beta_j)), \text{ if } \beta_j < 0, \\
-\exp(-\frac{\tilde{n}}{2\sigma^2} (\beta_j^2 - 2(z_j - \lambda)\beta_j )), \text{ if } \beta_j \geq 0 \\
+\exp(-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j + \lambda)\beta_j)), \text{ if } \beta_j < 0, \\
+\exp(-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j - \lambda)\beta_j )), \text{ if } \beta_j \geq 0 \\
 \end{cases} \\
 &\propto
 \begin{cases}
-C_{1} \exp\{-\frac{\tilde{n}}{2\sigma^2} (\beta_j - (z_j + \lambda))^2\}, \text{ if } \beta_j < 0, \\
-C_{2} \exp\{-\frac{\tilde{n}}{2\sigma^2} (\beta_j - (z_j - \lambda))^2\}, \text{ if } \beta_j \geq 0 \\
+C_{1} \exp\{-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j - (z_j + \lambda))^2\}, \text{ if } \beta_j < 0, \\
+C_{2} \exp\{-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j - (z_j - \lambda))^2\}, \text{ if } \beta_j \geq 0 \\
 \end{cases}
 }
-where $C_{1} = \exp(z_j \lambda \tilde{n}/\sigma^2)$ and $C_{2} = \exp(-z_j \lambda \tilde{n}/\sigma^2)$. This distribution is therefore a mixture of two truncated Normal distributions, $\Norm(z_j + \lam, \sigma^2/\tilde{n})$ truncated to $(-\infty, 0)$ and $\Norm(z_j - \lam, \sigma^2/\tilde{n})$ truncated to $[0, \infty)$, with mixing weights $P_1$ and $P_2$ defined below.
+where $C_{1} = \exp(z_j \lambda \tilde{n}_j/\sigma^2)$ and $C_{2} = \exp(-z_j \lambda \tilde{n}_j/\sigma^2)$. This distribution is therefore a mixture of two truncated Normal distributions, $\Norm(z_j + \lam, \sigma^2/\tilde{n}_j)$ truncated to $(-\infty, 0)$ and $\Norm(z_j - \lam, \sigma^2/\tilde{n}_j)$ truncated to $[0, \infty)$, with mixing weights $P_1$ and $P_2$ defined below.
 
-The general idea to compute the quantiles is to map $p$ corresponding to a quantile of interest $q$ to a corresponding $p_*$ on one of the underlying (unscaled) Normal distributions ($\Norm(z_j \pm \lam, \sigma^2 / \tilde{n})$) where the CDF can be inverted to compute the quantile $q$.
+The general idea to compute the quantiles is to map $p$ corresponding to a quantile of interest $q$ to a corresponding $p_*$ on one of the underlying (unscaled) Normal distributions ($\Norm(z_j \pm \lam, \sigma^2 / \tilde{n}_j)$) where the CDF can be inverted to compute the quantile $q$.
 
-While the process will be described on the standard scale, in practice all computations occur on the log scale. Assume $\hat{\sigma}^2$ has been estimated. Let $i = 1$ refer to the left half of the Laplace-Normal and $i = 2$ refer to the right half. Then let $I_i = [\ell_i, u_i]$ be the support for the respective half, that is $I_1=(-\infty,0)$ and $I_2=[0,\infty)$. Let $\Phi_i(x)$ and $\Phi_i^{-1}(x)$ be the CDF and its inverse for the $i^{th}$ underlying Normal, again that is $\Norm(z_j \pm \lambda, \hat{\sigma}^2 / \tilde{n})$. On their respective support, let the total probability in the underlying Normals be $U_i = \Phi_i(u_i) - \Phi_i(\ell_i)$. Additionally let the probability in the left and right halves of the Laplace-Normal be denoted $P_i$. $P_i$ can be computed stably as follows. Let $r_i = \log(C_iU_i)$ and $m = \max\{r_1, r_2\}$, then $c = m + \log(\exp(r_1 - m) + \exp(r_2 - m))$ and $P_i = \exp(r_i - c)$. Note $P_1 + P_2 = 1$. Using $P_i$, we can determine which half $q$ comes from. If $p < P_1$ then the quantile comes from the left otherwise it comes from the right.
+While the process will be described on the standard scale, in practice all computations occur on the log scale. Assume $\hat{\sigma}^2$ has been estimated. Let $i = 1$ refer to the left half of the Laplace-Normal and $i = 2$ refer to the right half. Then let $I_i = [\ell_i, u_i]$ be the support for the respective half, that is $I_1=(-\infty,0)$ and $I_2=[0,\infty)$. Let $\Phi_i(x)$ and $\Phi_i^{-1}(x)$ be the CDF and its inverse for the $i^{th}$ underlying Normal, again that is $\Norm(z_j \pm \lambda, \hat{\sigma}^2 / \tilde{n}_j)$. On their respective support, let the total probability in the underlying Normals be $U_i = \Phi_i(u_i) - \Phi_i(\ell_i)$. Additionally let the probability in the left and right halves of the Laplace-Normal be denoted $P_i$. $P_i$ can be computed stably as follows. Let $r_i = \log(C_iU_i)$ and $m = \max\{r_1, r_2\}$, then $c = m + \log(\exp(r_1 - m) + \exp(r_2 - m))$ and $P_i = \exp(r_i - c)$. Note $P_1 + P_2 = 1$. Using $P_i$, we can determine which half $q$ comes from. If $p < P_1$ then the quantile comes from the left otherwise it comes from the right.
 
 Then, the transformation to map $p$ to $p_*$ if $q$ comes from the left side of the Laplace-Normal is simply: 
 
@@ -61,7 +61,7 @@ $$
 p_* = \frac{U_{1}}{P_{1}}p.
 $$
 
-This follows because, on $I_1$, the Laplace-Normal density is the density of $\Norm(z_j + \lam, \hat{\sigma}^2/\tilde{n})$ rescaled so that it integrates to $P_1$ rather than $U_1$. The Laplace-Normal CDF at $q < 0$ is therefore $(P_1/U_1) \Phi_1(q)$, and setting this equal to $p$ gives $\Phi_1(q) = (U_1/P_1) p$. If the quantile is in the right half, the map is slightly more involved:
+This follows because, on $I_1$, the Laplace-Normal density is the density of $\Norm(z_j + \lam, \hat{\sigma}^2/\tilde{n}_j)$ rescaled so that it integrates to $P_1$ rather than $U_1$. The Laplace-Normal CDF at $q < 0$ is therefore $(P_1/U_1) \Phi_1(q)$, and setting this equal to $p$ gives $\Phi_1(q) = (U_1/P_1) p$. If the quantile is in the right half, the map is slightly more involved:
 
 $$
 p_* = \frac{U_{2}}{P_{2}} (p - P_1) + \Phi_{2}(0).
@@ -78,28 +78,32 @@ This algorithm is described explicitly in Algorithm~\ref{alg:quantile}; note tha
 \label{alg:quantile}
 \begin{algorithmic}[1]
   \Require
-    $z_j,\;\hat{\sigma}^2,\;\tilde{n},\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, probability of interest} \pb{$\tilde{n}$ depends on j}
+    $z_j,\;\hat{\sigma}^2,\;\tilde{n}_j,\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, probability of interest}
   \Statex
-  \State // 1. Compute total log probability in left/right Normals over respective supports
-  \State $U_{1} \gets \log \Phi(0; \, z_j + \lambda,\; \hat{\sigma}^2 / \tilde{n})$ \pb{This doesn't seem to match the text, where U is a regular probability, not a log}
-  \State $U_{2} \gets \log \left(1 - \Phi\bigl(0;\,z_j - \lambda,\;\tfrac{\hat{\sigma}^2}{\tilde{n}}\bigr)\right)$
+  \State // 1. Compute constants on log scale
+  \State $\tilde{C}_{1} = z_j \lambda \tilde{n}/\sigma^2$
+  \State $\tilde{C}_{2} = -z_j \lambda \tilde{n}/\sigma^2$
   \Statex
-  \State // 2. Compute $P_{1}, P_{2}$
-  \State $r_{1} \gets \log C_{1} + U_{1}$
-  \State $r_{2} \gets \log C_{2} + U_{2}$
+  \State // 2. Compute total log probability in left/right Normals over respective supports
+  \State $\tilde{U}_{1} \gets \log \Phi(0; \, z_j + \lambda,\; \hat{\sigma}^2 / \tilde{n}_j)$
+  \State $\tilde{U}_{2} \gets \log \left(1 - \Phi\bigl(0;\,z_j - \lambda,\;\tfrac{\hat{\sigma}^2}{\tilde{n}_j}\bigr)\right)$
+  \Statex
+  \State // 3. Compute $P_{1}, P_{2}$
+  \State $r_{1} \gets \log \tilde{C}_{1} + \tilde{U}_{1}$
+  \State $r_{2} \gets \log \tilde{C}_{2} + \tilde{U}_{2}$
   \State $m \gets \max \lbrace r_{1}, r_{2} \rbrace$
   \State $c \gets m + \log\left(\exp(r_{1} - m) + \exp(r_{2} - m)\right)$
   \State $P_{1} \gets \exp(r_{1} - c)$
   \State $P_{2} \gets 1 - P_{1}$
   \Statex
-  \State // 3. Invert CDF on the appropriate unscaled Normal
+  \State // 4. Invert CDF on the appropriate unscaled Normal
   \If{$p \le P_{1}$}
-    \State $w \gets \dfrac{U_{1}}{P_{1}}$ \pb{should this be $\exp(U)$? it's a log probability above, but now a regular probability?}
-    \State $q \gets \Phi^{-1}(p \,w;\;z_j + \lambda, \; \hat{\sigma}^2 / \tilde{n})$
+    \State $w \gets \exp(\tilde{U}_{1} - \tilde{P}_{1})$ 
+    \State $q \gets \Phi^{-1}(p \,w;\;z_j + \lambda, \; \hat{\sigma}^2 / \tilde{n}_j)$
   \Else
-    \State $w \gets \dfrac{U_{2}}{P_{2}}$
-    \State $s \gets \Phi(0; z_j - \lambda, \hat{\sigma}^2 / \tilde{n})$
-    \State $q \gets \Phi^{-1}\!(w(p - P_{1}) + s;z_j - \lambda, \hat{\sigma}^2 / \tilde{n})$
+    \State $w \gets \exp(\tilde{U}_{2} - \tilde{P}_{2})$
+    \State $s \gets \Phi(0; z_j - \lambda, \hat{\sigma}^2 / \tilde{n}_j)$
+    \State $q \gets \Phi^{-1}\!(w(p - P_{1}) + s;z_j - \lambda, \hat{\sigma}^2 / \tilde{n}_j)$
   \EndIf
   \State \Return $q$
 \end{algorithmic}
