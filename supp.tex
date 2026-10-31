@@ -6,54 +6,55 @@
 \end{thm}
 
 \begin{proof}
-By definition, a $100(1-\alpha)\%$ credible region for $\theta_j$ is any set $\cA_j(\y)$ such that $\int I\{\theta_j \in \cA_j(\y)\} p(\bt \mid \y)\,d\bt = 1 - \alpha$. The coverage probability, meanwhile, is defined as $\int I\{\theta_j \in \cA_j(\y)\} p(\y \mid \bt)d\y$. The expected coverage, integrated with respect to the prior $p(\bt)$, is therefore
+  By definition, a $100(1-\alpha)\%$ credible region for $\theta_j$ is any set $\cA_j(\y)$ such that $\int I\{\theta_j \in \cA_j(\y)\} p(\bt \mid \y)\,d\bt = 1 - \alpha$. The coverage probability, meanwhile, is defined as $\int I\{\theta_j \in \cA_j(\y)\} p(\y \mid \bt)d\y$. The expected coverage, integrated with respect to the prior $p(\bt)$, is therefore
 
-\as{
-\int \int I\{\theta_j \in \cA_j(\y)\} p(\y \mid \bt) p(\bt) d\y d\bt
-&=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt \mid \y) p(\y) d\y d\bt \\
-&=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt \mid \y) d\bt p(\y) d\y \\
-&=  \int  (1 - \alpha) p(\y) d\y \\
-&=  1 - \alpha,
-}
+  \as{
+    \int \int I\{\theta_j \in \cA_j(\y)\} p(\y \mid \bt) p(\bt) d\y d\bt
+    &=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt \mid \y) p(\y) d\y d\bt \\
+    &=  \int \int I\{\theta_j \in \cA_j(\y)\} p(\bt \mid \y) d\bt p(\y) d\y \\
+    &=  \int  (1 - \alpha) p(\y) d\y \\
+    &=  1 - \alpha,
+  }
 
-\noindent and as a result the expected coverage is equal to the nominal coverage.
+  \noindent and as a result the expected coverage is equal to the nominal coverage.
 \end{proof}
 
 The above theorem concerns a single parameter of interest $\theta_j$ and its credible interval. An immediate corollary of this result is that the average coverage of $p$ such intervals will also be equal to $1-\alpha$.
 
 \clearpage
 
-\section{Computing Quantiles from the Conditional Posterior}\label{sup:A}
+\section{Computing Quantiles from the Conditional Posterior}
+\label{sup:A}
 
 Let $\y$ be a length $n$ vector of independent outcomes and $\X$ be an $n \times p$ matrix of features. Here we assume $\X$ has been standardized s.t. $\x_j\Tr\x_j = n$.  Let $\hat{S} = \lbrace k: \bh_k \neq  0 \rbrace$ denote the set of selected features. Then, let $\hat{S}_j$ denote the set of selected features that excludes feature $j$, so that $\hat{S}_j = \hat{S} \text{ if } j \notin \hat{S}$ and $\hat{S}_j = \hat{S} - \lbrace j \rbrace \text{ if } j \in \hat{S}$. Define $\Q_{\hat{S}_j}$ as $\I - \X_{\hat{S}_j}(\X_{\hat{S}_j}\Tr \X_{\hat{S}_j})^{-1} \X_{\hat{S}_j}\Tr$, the projection matrix onto the orthogonal complement of the features selected by the lasso. The PIPE likelihood for $\beta_j$ conditional on the selected features is
 $$
-  L(\beta_j \mid \hat{S}_j) \propto \exp(-\tfrac{\tilde{n}_j}{2\sigma^2}(\beta_{j} - z_j)^2),
+L(\beta_j \mid \hat{S}_j) \propto \exp(-\tfrac{\tilde{n}_j}{2\sigma^2}(\beta_{j} - z_j)^2),
 $$
 \noindent where $z_j = \x_j \Tr \r_{-j}/n$ and $\tilde{n}_j = \x_j\Tr \Q_{\hat{S}_j} \x_j$.
 
 The lasso can be formulated as a Bayesian regression model with a Laplace (double exponential) prior. In this case, the prior for $\beta_j$ is proportional to $\exp(-\frac{\tilde{n}_j \lambda} {\sigma^2} \abs{\beta_j})$. This prior keeps the value of $\lam$ consistent with the estimation procedure.
 
-With this the form of the conditional posterior can be worked out as follows:
-\as{
-p(\beta_j \mid \hat{S}_j) &\propto \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2z_j\beta_j)) \exp(-\tfrac{\tilde{n}_j \lambda} {\sigma^2} \abs{\beta_j}) \\
-&= \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2 z_j\beta_j +  2 \lambda \abs{\beta_j})) \\
-&= \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j\beta_j - \lambda \abs{\beta_j}))) \\
-&=
-\begin{cases}
-\exp(-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j + \lambda)\beta_j)), \text{ if } \beta_j < 0, \\
-\exp(-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j - \lambda)\beta_j )), \text{ if } \beta_j \geq 0 \\
-\end{cases} \\
-&\propto
-\begin{cases}
-C_{1} \exp\{-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j - (z_j + \lambda))^2\}, \text{ if } \beta_j < 0, \\
-C_{2} \exp\{-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j - (z_j - \lambda))^2\}, \text{ if } \beta_j \geq 0 \\
-\end{cases}
-}
+With this, the form of the conditional posterior can be worked out as follows:
+\begin{align*}
+  p(\beta_j \mid \hat{S}_j) &\propto \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2z_j\beta_j)) \exp(-\tfrac{\tilde{n}_j \lambda} {\sigma^2} \abs{\beta_j}) \\
+                            &= \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2 z_j\beta_j +  2 \lambda \abs{\beta_j})) \\
+                            &= \exp(-\tfrac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j\beta_j - \lambda \abs{\beta_j}))) \\
+                            &=
+                              \begin{cases}
+                                \exp(-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j + \lambda)\beta_j)), \text{ if } \beta_j < 0, \\
+                                \exp(-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j^2 - 2(z_j - \lambda)\beta_j )), \text{ if } \beta_j \geq 0 \\
+                              \end{cases} \\
+                            &\propto
+                              \begin{cases}
+                                C_{1} \exp\{-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j - (z_j + \lambda))^2\}, \text{ if } \beta_j < 0, \\
+                                C_{2} \exp\{-\frac{\tilde{n}_j}{2\sigma^2} (\beta_j - (z_j - \lambda))^2\}, \text{ if } \beta_j \geq 0 \\
+                              \end{cases}
+\end{align*}
 where $C_{1} = \exp(z_j \lambda \tilde{n}_j/\sigma^2)$ and $C_{2} = \exp(-z_j \lambda \tilde{n}_j/\sigma^2)$. This distribution is therefore a mixture of two truncated Normal distributions, $\Norm(z_j + \lam, \sigma^2/\tilde{n}_j)$ truncated to $(-\infty, 0)$ and $\Norm(z_j - \lam, \sigma^2/\tilde{n}_j)$ truncated to $[0, \infty)$, with mixing weights $P_1$ and $P_2$ defined below.
 
 The general idea to compute the quantiles is to map $p$ corresponding to a quantile of interest $q$ to a corresponding $p_*$ on one of the underlying (unscaled) Normal distributions ($\Norm(z_j \pm \lam, \sigma^2 / \tilde{n}_j)$) where the CDF can be inverted to compute the quantile $q$.
 
-While the process will be described on the standard scale, in practice all computations occur on the log \logan{probability} scale \logan{for numerical stability}. \logan{We had this note here, could to it as such and then I don't know if we need to say this again at the end?}. Assume $\hat{\sigma}^2$ has been estimated. Let $i = 1$ refer to the left half of the Laplace-Normal and $i = 2$ refer to the right half. Then let $I_i = [\ell_i, u_i]$ be the support for the respective half, that is $I_1=(-\infty,0)$ and $I_2=[0,\infty)$. Let $\Phi_i(x)$ and $\Phi_i^{-1}(x)$ be the CDF and its inverse for the $i^{th}$ underlying Normal, again that is $\Norm(z_j \pm \lambda, \hat{\sigma}^2 / \tilde{n}_j)$. On their respective support, let the total probability in the underlying Normals be $U_i = \Phi_i(u_i) - \Phi_i(\ell_i)$. Additionally let the probability in the left and right halves of the Laplace-Normal be denoted $P_i$. $P_i$ can be computed stably as follows. Let $r_i = \log(C_iU_i)$ and $m = \max\{r_1, r_2\}$, then $c = m + \log(\exp(r_1 - m) + \exp(r_2 - m))$ and $P_i = \exp(r_i - c)$. Note $P_1 + P_2 = 1$. Using $P_i$, we can determine which half $q$ comes from. If $p < P_1$ then the quantile comes from the left otherwise it comes from the right.
+Assume $\hat{\sigma}^2$ has been estimated. Let $i = 1$ refer to the left half of the Laplace-Normal and $i = 2$ refer to the right half. Then let $I_i = [\ell_i, u_i]$ be the support for the respective half, that is $I_1=(-\infty,0)$ and $I_2=[0,\infty)$. Let $\Phi_i(x)$ and $\Phi_i^{-1}(x)$ be the CDF and its inverse for the $i^{th}$ underlying Normal, again that is $\Norm(z_j \pm \lambda, \hat{\sigma}^2 / \tilde{n}_j)$. On their respective support, let the total probability in the underlying Normals be $U_i = \Phi_i(u_i) - \Phi_i(\ell_i)$. Additionally let the probability in the left and right halves of the Laplace-Normal be denoted $P_i$. $P_i$ can be computed stably as follows. Let $r_i = \log(C_iU_i)$ and $m = \max\{r_1, r_2\}$, then $c = m + \log(\exp(r_1 - m) + \exp(r_2 - m))$ and $P_i = \exp(r_i - c)$. Note $P_1 + P_2 = 1$. Using $P_i$, we can determine which half $q$ comes from. If $p < P_1$ then the quantile comes from the left otherwise it comes from the right.
 
 Then, the transformation to map $p$ to $p_*$ if $q$ comes from the left side of the Laplace-Normal is simply: 
 
@@ -67,46 +68,46 @@ $$
 p_* = \frac{U_{2}}{P_{2}} (p - P_1) + \Phi_{2}(0).
 $$
 
-For $q \ge 0$, the Laplace-Normal CDF is $P_1 + (P_2/U_2){\Phi_2(q) - \Phi_2(0)}$. This is all of the probability in the left half, plus the probability in the right half between 0 and $q$, rescaled as before. Setting this equal to $p$ and solving for $\Phi_2(q)$ gives the expression above. In words, $p - P_1$ is the probability still needed after the left half, the factor $U_2/P_2$ converts it to the scale of the underlying Normal, and $\Phi_2(0)$ adds back that Normal's probability below zero, which is not part of the Laplace-Normal.
+For $q \ge 0$, the Laplace-Normal CDF is $P_1 + (P_2/U_2)\{\Phi_2(q) - \Phi_2(0)\}$. This is all of the probability in the left half, plus the probability in the right half between 0 and $q$, rescaled as before. Setting this equal to $p$ and solving for $\Phi_2(q)$ gives the expression above. In words, $p - P_1$ is the probability still needed after the left half, the factor $U_2/P_2$ converts it to the scale of the underlying Normal, and $\Phi_2(0)$ adds back that Normal's probability below zero, which is not part of the Laplace-Normal.
 
 Once $p_*$ has been computed, then $q = \Phi_1^{-1}(p_*)$ if the quantile comes from the left side and $q = \Phi_2^{-1}(p_*)$ if it comes from the right.
 
-This algorithm is described explicitly in Algorithm~\ref{alg:quantile}; note that the algorithm performs its computations on the log probability scale for numerical stability. \pb{maybe improve this sentence?}
+This algorithm is described explicitly in Algorithm~\ref{alg:quantile}. Above, we described the calculations as occurring on the probability scale; in our actual implementation, the computations occur on the log probability scale for numerical stability and this is reflected in Algorithm~\ref{alg:quantile}.
 
 \begin{algorithm}
-\caption{Compute Quantile for Laplace-Normal Distribution}
-\label{alg:quantile}
-\begin{algorithmic}[1]
-  \Require
+  \caption{Compute Quantile for Laplace-Normal Distribution}
+  \label{alg:quantile}
+  \begin{algorithmic}[1]
+    \Require
     $z_j,\;\hat{\sigma}^2,\;\tilde{n}_j,\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, probability of interest}
-  \Statex
-  \State // 1. Compute constants on log scale
-  \State $\tilde{C}_{1} \gets z_j \lambda \tilde{n}/\sigma^2$
-  \State $\tilde{C}_{2} \gets -z_j \lambda \tilde{n}/\sigma^2$
-  \Statex
-  \State // 2. Compute total log probability in left/right Normals over respective supports
-  \State $\tilde{U}_{1} \gets \log \Phi(0; \, z_j + \lambda,\; \hat{\sigma}^2 / \tilde{n}_j)$
-  \State $\tilde{U}_{2} \gets \log \left(1 - \Phi\bigl(0;\,z_j - \lambda,\;\tfrac{\hat{\sigma}^2}{\tilde{n}_j}\bigr)\right)$
-  \Statex
-  \State // 3. Compute $P_{1}, P_{2}$
-  \State $r_{1} \gets \tilde{C}_{1} + \tilde{U}_{1}$
-  \State $r_{2} \gets \tilde{C}_{2} + \tilde{U}_{2}$
-  \State $m \gets \max \lbrace r_{1}, r_{2} \rbrace$
-  \State $c \gets m + \log\left(\exp(r_{1} - m) + \exp(r_{2} - m)\right)$
-  \State $P_{1} \gets \exp(r_{1} - c)$
-  \State $P_{2} \gets 1 - P_{1}$
-  \Statex
-  \State // 4. Invert CDF on the appropriate unscaled Normal
-  \If{$p \le P_{1}$}
+    \Statex
+    \State // 1. Compute constants on log scale
+    \State $\tilde{C}_{1} \gets z_j \lambda \tilde{n}_j/\sigma^2$
+    \State $\tilde{C}_{2} \gets -z_j \lambda \tilde{n}_j/\sigma^2$
+    \Statex
+    \State // 2. Compute total log probability in left/right Normals over respective supports
+    \State $\tilde{U}_{1} \gets \log \Phi(0; \, z_j + \lambda,\; \hat{\sigma}^2 / \tilde{n}_j)$
+    \State $\tilde{U}_{2} \gets \log \left(1 - \Phi\bigl(0;\,z_j - \lambda,\;\tfrac{\hat{\sigma}^2}{\tilde{n}_j}\bigr)\right)$
+    \Statex
+    \State // 3. Compute $P_{1}, P_{2}$
+    \State $r_{1} \gets \tilde{C}_{1} + \tilde{U}_{1}$
+    \State $r_{2} \gets \tilde{C}_{2} + \tilde{U}_{2}$
+    \State $m \gets \max \lbrace r_{1}, r_{2} \rbrace$
+    \State $c \gets m + \log\left(\exp(r_{1} - m) + \exp(r_{2} - m)\right)$
+    \State $P_{1} \gets \exp(r_{1} - c)$
+    \State $P_{2} \gets 1 - P_{1}$
+    \Statex
+    \State // 4. Invert CDF on the appropriate unscaled Normal
+    \If{$p \le P_{1}$}
     \State $w \gets \exp(\tilde{U}_{1} - \log(P_{1}))$ 
     \State $q \gets \Phi^{-1}(p \,w;\;z_j + \lambda, \; \hat{\sigma}^2 / \tilde{n}_j)$
-  \Else
+    \Else
     \State $w \gets \exp(\tilde{U}_{2} - \log(P_{2}))$
     \State $s \gets \Phi(0; z_j - \lambda, \hat{\sigma}^2 / \tilde{n}_j)$
     \State $q \gets \Phi^{-1}\!(w(p - P_{1}) + s;z_j - \lambda, \hat{\sigma}^2 / \tilde{n}_j)$
-  \EndIf
-  \State \Return $q$
-\end{algorithmic}
+    \EndIf
+    \State \Return $q$
+  \end{algorithmic}
 \end{algorithm}
 
 \clearpage
@@ -117,8 +118,8 @@ Figure~\ref{fig:C1} displays coverage estimates as a smooth function of $\beta$ 
 
 \begin{figure}[hbtp]
   \begin{center}
-  \includegraphics[width=0.6\linewidth]{figureC1}
-  \caption{\label{fig:C1} Coverage for PIPE-P intervals by sample size, computed using the simulation in Section~\ref{Sec:coverage} where for each sample size, 1000 datasets were generated with coefficients $\boldsymbol{\beta}$ set to $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution). The curved lines represent smoothed fits of the empirical coverages obtained using binomial GAMs. The dashed lines are the average coverage rates for all intervals constructed on the $1000$ data sets. The solid black line indicates the 95\% nominal coverage rate.}
+    \includegraphics[width=0.6\linewidth]{figureC1}
+    \caption{\label{fig:C1} Coverage for PIPE-P intervals by sample size, computed using the simulation in Section~\ref{Sec:coverage} where for each sample size, 1000 datasets were generated with coefficients $\boldsymbol{\beta}$ set to $p = 101$ equally spaced quantiles of a Laplace distribution (shaded distribution). The curved lines represent smoothed fits of the empirical coverages obtained using binomial GAMs. The dashed lines are the average coverage rates for all intervals constructed on the $1000$ data sets. The solid black line indicates the 95\% nominal coverage rate.}
   \end{center}
 \end{figure}
 
