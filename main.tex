@@ -198,7 +198,7 @@ However, clearly the value of $\lam$ does matter, again supporting the idea pres
 \subsection{Effect of Correlation on Individual Intervals}
 \label{Sec:Ridge}
 
-As shown in Figure~\ref{fig:4}, the average coverage of the proposed PIPE-P method is conservative to increasing correlation. In this section, we illustrate the effect of correlation between features on the intervals themselves and contrast the intervals produced by lasso with those produced by ridge regression. \pb{SHOULD WE DEFINE RIDGE POSTERIOR INTERVALS?}
+As shown in Figure~\ref{fig:4}, the average coverage of the proposed PIPE-P method is conservative to increasing correlation. In this section, we illustrate the effect of correlation between features on the intervals themselves and contrast the intervals produced by lasso with those produced by ridge regression. We refer the latter as ridge posterior intervals, as the ridge penalty corresponds to a Gaussian prior on the regression coefficients, which is conjugate to the Gaussian likelihood. \logan{How does that sound? On page 64 of the 12th edition of ESL (Hastie, Tibshirani, Friedman) this is noted so could reference that.}
 
 In this simulation, we have $n = p = 100$. However, only one $\beta_j$ is non-zero: $\beta_{A} = 1$ and $\beta_{B}, \beta_{N1}, \ldots, \beta_{N98} = 0$. Additionally, the data are simulated such that $\cor(\x_{A}, \x_{B}) = 0.99$ but all of the $N$ (noise) variables are uncorrelated with $A$, $B$, and each other. The distribution of $\X$ and $\y$ is unchanged from Section~\ref{Sec:coverage}, although here $\sigma^2 = 1$.
 
