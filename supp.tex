@@ -29,7 +29,7 @@ Let $\y$ be a length $n$ vector of independent outcomes and $\X$ be an $n \times
 $$
   L(\beta_j \mid \hat{S}_j) \propto \exp(-\tfrac{\tilde{n}}{2\sigma^2}(\beta_{j} - z_j)^2),
 $$
-\noindent where $z_j = (\x_j\Tr \Q_{\hat{S}_j} \x_j)^{-1} \x_j\Tr \Q_{\hat{S}_j} \y$ and $\tilde{n} = \x_j\Tr \Q_{\hat{S}_j} \x_j$. \pb{I THINK THIS IS WRONG? THIS IS THE ORIGINAL PIPE Z, BUT OUR Z IS $\x_j^\top\r_{-j}/n$. IF WE USE THIS Z, THE POSTERIOR MODE ISN'T THE LASSO ESTIMATE.}
+\noindent where $z_j = \x_j \Tr \r_{-j}/n$ and $\tilde{n} = \x_j\Tr \Q_{\hat{S}_j} \x_j$. \pb{n tilde needs j subscript everywhere}
 
 The lasso can be formulated as a Bayesian regression model with a Laplace (double exponential) prior. In this case, the prior for $\beta_j$ is proportional to $\exp(-\frac{\tilde{n} \lambda} {\sigma^2} \abs{\beta_j})$. This prior keeps the value of $\lam$ consistent with the estimation procedure.
 
@@ -71,12 +71,14 @@ For $q \ge 0$, the Laplace-Normal CDF is $P_1 + (P_2/U_2){\Phi_2(q) - \Phi_2(0)}
 
 Once $p_*$ has been computed, then $q = \Phi_1^{-1}(p_*)$ if the quantile comes from the left side and $q = \Phi_2^{-1}(p_*)$ if it comes from the right.
 
+This algorithm is described explicitly in Algorithm~\ref{alg:quantile}; note that the algorithm performs its computations on the log probability scale for numerical stability. \pb{maybe improve this sentence?}
+
 \begin{algorithm}
-\caption{Compute Quantile for \pb{RL-P Laplace-Normal Distribution}}
+\caption{Compute Quantile for Laplace-Normal Distribution}
 \label{alg:quantile}
 \begin{algorithmic}[1]
   \Require
-    $z_j,\;\hat{\sigma}^2,\;\tilde{n},\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, probability of interest} \pb{DOESN'T $\tilde{n}$ depend on j?}
+    $z_j,\;\hat{\sigma}^2,\;\tilde{n},\lambda,\;p$ \Comment{mean, variance, effective sample size, penalty, probability of interest} \pb{$\tilde{n}$ depends on j}
   \Statex
   \State // 1. Compute total log probability in left/right Normals over respective supports
   \State $U_{1} \gets \log \Phi(0; \, z_j + \lambda,\; \hat{\sigma}^2 / \tilde{n})$ \pb{This doesn't seem to match the text, where U is a regular probability, not a log}
@@ -93,11 +95,11 @@ Once $p_*$ has been computed, then $q = \Phi_1^{-1}(p_*)$ if the quantile comes 
   \State // 3. Invert CDF on the appropriate unscaled Normal
   \If{$p \le P_{1}$}
     \State $w \gets \dfrac{U_{1}}{P_{1}}$ \pb{should this be $\exp(U)$? it's a log probability above, but now a regular probability?}
-    \State $q \gets \Phi^{-1}(p \,w;\;z_j + \lambda, \; \hat{\sigma}^2 / \tilde{n})$ \pb{TILDE?}
+    \State $q \gets \Phi^{-1}(p \,w;\;z_j + \lambda, \; \hat{\sigma}^2 / \tilde{n})$
   \Else
     \State $w \gets \dfrac{U_{2}}{P_{2}}$
-    \State $s \gets \Phi(0; z_j - \lambda, \hat{\sigma}^2 / \tilde{n})$ \pb{TILDE?}
-    \State $q \gets \Phi^{-1}\!(w(p - P_{1}) + s;z_j - \lambda, \hat{\sigma}^2 / \tilde{n})$ \pb{TILDE?}
+    \State $s \gets \Phi(0; z_j - \lambda, \hat{\sigma}^2 / \tilde{n})$
+    \State $q \gets \Phi^{-1}\!(w(p - P_{1}) + s;z_j - \lambda, \hat{\sigma}^2 / \tilde{n})$
   \EndIf
   \State \Return $q$
 \end{algorithmic}
