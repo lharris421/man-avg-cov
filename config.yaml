@@ -9,4 +9,4 @@ smoke: true
 
 # Quiet mode: only the simulation progress bars print (R messages and warnings
 # are silenced; errors are not). Snakemake's own -q flag turns this on as well.
-quiet: false
+quiet: true

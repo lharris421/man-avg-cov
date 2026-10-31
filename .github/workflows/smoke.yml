@@ -1,0 +1,75 @@
+# Smoke test: build the whole manuscript pipeline on a clean Ubuntu runner using
+# the small BRCA1 dataset and ten simulation iterations. This checks that the
+# repository is self-contained (no machine-specific paths, every input tracked,
+# renv.lock complete) rather than reproducing the paper's numbers.
+#
+# The first run installs ~150 R packages, mostly from source, and can take
+# 30-40 minutes. setup-renv caches the library keyed on renv.lock, so later
+# runs skip the install unless the lockfile changes.
+
+name: smoke-test
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      # Lets renv fetch the GitHub-sourced packages (hdrm, hdi fork) without
+      # hitting the anonymous rate limit.
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: System libraries needed to build the R packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libgmp-dev libmpfr-dev \
+            libcurl4-openssl-dev libssl-dev libxml2-dev \
+            libfontconfig1-dev libharfbuzz-dev libfribidi-dev libfreetype6-dev \
+            libpng-dev libtiff5-dev libjpeg-dev
+
+      - name: TeX Live (latexmk, lualatex, texfot, and the packages the manuscript uses)
+        run: |
+          sudo apt-get install -y --no-install-recommends \
+            latexmk texlive-luatex texlive-latex-recommended texlive-latex-extra \
+            texlive-science texlive-pictures texlive-bibtex-extra \
+            texlive-fonts-recommended texlive-extra-utils
+          which latexmk lualatex texfot
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'renv'       # read the R version from renv.lock
+          use-public-rspm: true   # binary packages where available; renv honours this
+
+      - name: Restore the R library from renv.lock (cached on the lockfile hash)
+        uses: r-lib/actions/setup-renv@v2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Snakemake
+        run: pip install 'snakemake==9.*'
+
+      - name: Build everything on the smoke-test settings
+        run: snakemake --cores 4 --config smoke=true iterations=10
+
+      - name: Keep the outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-outputs
+          path: |
+            build/avg-cov.pdf
+            code/out/
+          if-no-files-found: warn

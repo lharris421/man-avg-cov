@@ -54,7 +54,7 @@ if (interactive()) {
 }
 
 ## Load the package functions in code/R (gen_data_*, posterior_intervals, dlaplace, ...)
-devtools::load_all(pkg_dir, quiet = TRUE)
+pkgload::load_all(pkg_dir, quiet = TRUE)
 
 method_labels <- c(
   "selectiveinferenceS" = "Selective Inference",
