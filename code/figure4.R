@@ -35,14 +35,14 @@ coverage_data <- res %>%
 # Create a single plot with facets for each rho
 final_plot <- coverage_data %>%
   ggplot(aes(x = rho, y = coverage, fill = rho)) +
-  geom_violin(adjust = 3) +
+  geom_violin(adjust = 3, color = NA) +
   # geom_boxplot(outlier.shape = NA) +
   facet_wrap(method~n, as.table = FALSE, labeller = label_bquote(n == .(results_lookup$n[n])), nrow = 1) +
   labs(x = expression(rho), y = "Coverage Rate") +
   theme_minimal() +
   theme(legend.position = "none") +
   geom_hline(yintercept = 1 - (alpha / 100)) +
-  coord_cartesian(ylim = c(0, 1))
+  coord_cartesian(ylim = c(0.75, 1))
 
 # Print the plot
 if (interactive()) {

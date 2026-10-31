@@ -74,7 +74,8 @@ p1 <- results %>%
   ylab("Coverage") +
   xlab("Method") +
   theme_minimal() +
-  scale_x_discrete(labels = wrap)
+  scale_x_discrete(labels = wrap) +
+  coord_cartesian(ylim = c(0.75, 1))
 
 p2 <- results_per_sim %>%
   group_by(method, n) %>%
