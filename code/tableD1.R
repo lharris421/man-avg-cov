@@ -80,7 +80,7 @@ kbl(
   format     = "latex",
   booktabs   = TRUE,
   align      = c("c", rep(">{\\raggedright\\arraybackslash}p{3cm}", 4)),
-  digits     = 3,
+  digits     = 0,
   col.names  = col_names,
   table.envir= NULL,
   linesep    = ""
