@@ -1,47 +1,39 @@
 # A New Perspective on High Dimensional Confidence Intervals
 
-A minimal reproducible repository.
+Code, simulations, and manuscript for the paper. The Snakefile lays out the flow of the build; start there.
 
-# Packages
+# Requirements
 
-Before continuing, ensure you have th following packages installed:
+- R 4.5 (the lockfile records 4.5.2). R packages are installed automatically by renv the first time you run snakemake, so the first run needs an internet connection. On Linux you also need the system libraries listed in `.github/workflows/smoke.yml`.
+- snakemake 8 or later.
+- TeX Live with `latexmk`, `lualatex`, and `texfot`.
 
-- ncvreg (3.16.0)
-- hdrm   (remotes::install_github("pbreheny/hdrm"))
-- selectiveInference
-- glmnet
-- dplyr
-- glue
-- mgcv
-- progress
-- optparse
+# Results
 
-Additionally to create all the plots / tables you will need:
+The simulation results (`code/rds/`, about 360 MB) are not tracked in git. [TODO: where to get them.] Put them in `code/rds/` and snakemake treats them as up to date. Without them, snakemake regenerates everything from scratch, which takes days at 1000 iterations.
 
-- ggplot2
-- patchwork
-- grid
-- kableExtra
-- stringr
-- tidyr
-- purrr
+The raw BRCA1 data (`data/brca1.rds`, 69 MB) is not tracked either. It is only needed to regenerate the BRCA1 results, and is built from TCGA by `code/scripts/brca1.R`.
 
 # Compiling
 
-There are a couple of ways to run code in this repo. With a working installation of snakemake (https://snakemake.readthedocs.io/en/stable/) you should be able to run: `snakemake --cores=1` to run the simulations and build the manuscript. Note, this can take a while, but snakemake can run in parallel if you are willing to allow it to run on more cores.
+From the repository root:
 
-We recommend you start with the Snakefile as that will help layout the flow of the manuscript build.
+    snakemake --cores 4
 
-From there, we recommend running `snakemake figure1`. This will just produce figure1.pdf in code/out. Once you confirm that works, then you can proceed with `snakemake --cores=1`.
+This produces the figures and tables in `code/out/` and the manuscript at `build/avg-cov.pdf`. To check your setup before a full run, `snakemake --cores 1 code/out/figure3.pdf` builds the one figure that needs no results.
 
-However, note, all the scripts can be run interactively as well.
+The scripts can also be run interactively from `code/`.
 
 # Options
 
-There are a few options that should be consider before building as running the simulations from scratch is quite time consuming.
+Set in `config.yaml`, or override on the command line, e.g. `snakemake --cores 4 --config smoke=true iterations=10`.
 
-These can be adjusted in `config.yaml`.
+- `iterations`: simulation iterations per setting. The manuscript uses 1000. Results are stored by iteration count (`code/rds/5/<iterations>/`), so changing this never overwrites the manuscript results.
+- `smoke`: use `data/brca1_small.rds` (tracked; 150 samples x 300 genes) in place of the full BRCA1 data. With `iterations: 10` the whole pipeline, manuscript included, builds in a few minutes. Numbers from a smoke run are not the paper's.
+- `quiet`: print only the simulation progress bars. `snakemake -q` does the same.
+- `desparsified`: include the desparsified lasso. It is slow, and on the full BRCA1 data takes hours. It uses the fork of `hdi` at https://github.com/lharris421/hdi, which renv installs.
+- `alpha` (5, so 95% intervals) and `seed` should be left alone.
 
-1. The number of iterations in the original manuscript is 1000 for each simulation, but leaving this at 100 will greatly reduce computational costs. 
-2. Running the desparsified lasso is slow in general and applying it to the Scheetz2006 dataset takes hours. The default here is to not produce these results. If you do wish to, you will also need the version of `hdi` that was updated for this manuscript which can be found here: https://github.com/lharris421/hdi
+# Smoke test
 
+Every push runs `.github/workflows/smoke.yml`, which builds everything on a clean Ubuntu machine with the smoke settings. Pushes to `main`, or a manual run of the workflow, also publish the resulting PDF at https://lharris421.github.io/man-avg-cov/avg-cov.pdf.
