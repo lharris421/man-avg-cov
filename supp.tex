@@ -89,8 +89,8 @@ This algorithm is described explicitly in Algorithm~\ref{alg:quantile}; note tha
   \State $\tilde{U}_{2} \gets \log \left(1 - \Phi\bigl(0;\,z_j - \lambda,\;\tfrac{\hat{\sigma}^2}{\tilde{n}_j}\bigr)\right)$
   \Statex
   \State // 3. Compute $P_{1}, P_{2}$
-  \State $r_{1} \gets \log \tilde{C}_{1} + \tilde{U}_{1}$
-  \State $r_{2} \gets \log \tilde{C}_{2} + \tilde{U}_{2}$
+  \State $r_{1} \gets \tilde{C}_{1} + \tilde{U}_{1}$
+  \State $r_{2} \gets \tilde{C}_{2} + \tilde{U}_{2}$
   \State $m \gets \max \lbrace r_{1}, r_{2} \rbrace$
   \State $c \gets m + \log\left(\exp(r_{1} - m) + \exp(r_{2} - m)\right)$
   \State $P_{1} \gets \exp(r_{1} - c)$
