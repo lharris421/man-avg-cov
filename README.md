@@ -1,10 +1,10 @@
 # A New Perspective on High Dimensional Confidence Intervals
 
-Code, simulations, and manuscript for the paper. The Snakefile lays out the flow of the build; start there.
+Code, simulations, and manuscript for the paper. The Snakefile lays out the flow of the build.
 
 # Requirements
 
-- R 4.5 (the lockfile records 4.5.2). R packages are installed automatically by renv the first time you run snakemake, so the first run needs an internet connection. On Linux you also need the system libraries listed in `.github/workflows/smoke.yml`.
+- R 4.5 (the lockfile records 4.5.2). R packages are installed automatically by renv the first time you run snakemake, so the first run needs an internet connection.
 - snakemake 8 or later.
 - TeX Live with `latexmk`, `lualatex`, and `texfot`.
 
