@@ -98,10 +98,10 @@ This algorithm is described explicitly in Algorithm~\ref{alg:quantile}; note tha
   \Statex
   \State // 4. Invert CDF on the appropriate unscaled Normal
   \If{$p \le P_{1}$}
-    \State $w \gets \exp(\tilde{U}_{1} - \tilde{P}_{1})$ 
+    \State $w \gets \exp(\tilde{U}_{1} - \log(P_{1}))$ 
     \State $q \gets \Phi^{-1}(p \,w;\;z_j + \lambda, \; \hat{\sigma}^2 / \tilde{n}_j)$
   \Else
-    \State $w \gets \exp(\tilde{U}_{2} - \tilde{P}_{2})$
+    \State $w \gets \exp(\tilde{U}_{2} - \log(P_{2}))$
     \State $s \gets \Phi(0; z_j - \lambda, \hat{\sigma}^2 / \tilde{n}_j)$
     \State $q \gets \Phi^{-1}\!(w(p - P_{1}) + s;z_j - \lambda, \hat{\sigma}^2 / \tilde{n}_j)$
   \EndIf
