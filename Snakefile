@@ -31,6 +31,15 @@ QUIET        = flag("quiet") or bool(getattr(workflow.output_settings, "quiet", 
 if QUIET:
     os.environ["AVGCOV_QUIET"] = "1"
 
+# Protect results. When true (the default), the rules that produce the files
+# under code/rds are not defined at all, so existing results are plain inputs:
+# Snakemake never regenerates or deletes them, whatever their timestamps, and
+# stops with a "missing input" message if one is absent. Set protect_results to
+# false (or pass --config protect_results=false) to let Snakemake rebuild
+# missing or outdated results. Smoke runs always regenerate their own results.
+PROTECT      = flag("protect_results", True)
+RUN_SIMS     = SMOKE or not PROTECT
+
 # Make sure the R packages recorded in renv.lock are installed before any job
 # runs. renv::restore() installs only what is missing or mismatched, so once the
 # project library is in sync this is a one-second no-op. Dry runs skip it.
@@ -58,95 +67,97 @@ rule all:
         "code/out/tableD1.tex",
         "code/out/tableE1.tex"
 
-rule distribution_results:
-    input:
-        script = f"code/scripts/distribution_results.R"
-    output:
-        f"code/rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--n {wildcards.n} "
-        "--p {wildcards.p} "
-        "--family {wildcards.family} "
-        "--snr {wildcards.snr} " ## Signal as a percent of noise
-        "--distribution {wildcards.distribution} "
-        "--corr {wildcards.corr} "
-        "--rho {wildcards.rho} " ## As a percent
-        "--method {wildcards.method} "
+if RUN_SIMS:
+    # Everything below writes to code/rds.
+    rule distribution_results:
+        input:
+            script = f"code/scripts/distribution_results.R"
+        output:
+            f"code/rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--n {wildcards.n} "
+            "--p {wildcards.p} "
+            "--family {wildcards.family} "
+            "--snr {wildcards.snr} " ## Signal as a percent of noise
+            "--distribution {wildcards.distribution} "
+            "--corr {wildcards.corr} "
+            "--rho {wildcards.rho} " ## As a percent
+            "--method {wildcards.method} "
         
     
-rule highcorr_results:
-    input:
-        script = f"code/scripts/highcorr_results.R"
-    output:
-        f"code/rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--method {wildcards.method} "
+    rule highcorr_results:
+        input:
+            script = f"code/scripts/highcorr_results.R"
+        output:
+            f"code/rds/{ALPHA}/{ITER}/original/highcorr_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--method {wildcards.method} "
         
     
-rule data_results:
-    input:
-        script = f"code/scripts/data_results.R"
-    output:
-        f"code/rds/{ALPHA}/{{dataset}}_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--seed {SEED} "
-        "--method {wildcards.method} "
-        "--dataset {wildcards.dataset} "
+    rule data_results:
+        input:
+            script = f"code/scripts/data_results.R"
+        output:
+            f"code/rds/{ALPHA}/{{dataset}}_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--seed {SEED} "
+            "--method {wildcards.method} "
+            "--dataset {wildcards.dataset} "
         
     
-rule fit_gam:
-    input:
-        script = f"code/scripts/fit_gam.R",
-        rds    = f"code/rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
-    output:
-        rds_out = f"code/rds/{ALPHA}/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
-        "--n {wildcards.n} "
-        "--p {wildcards.p} "
-        "--family {wildcards.family} "
-        "--snr {wildcards.snr} " ## Signal as a percent of noise
-        "--distribution {wildcards.distribution} "
-        "--corr {wildcards.corr} "
-        "--rho {wildcards.rho} "
-        "--method {wildcards.method} "
+    rule fit_gam:
+        input:
+            script = f"code/scripts/fit_gam.R",
+            rds    = f"code/rds/{ALPHA}/{ITER}/original/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        output:
+            rds_out = f"code/rds/{ALPHA}/{ITER}/gam/{{distribution}}_{{corr}}_{{rho}}_{{n}}_{{p}}_{{family}}_{{snr}}_{{method}}.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
+            "--n {wildcards.n} "
+            "--p {wildcards.p} "
+            "--family {wildcards.family} "
+            "--snr {wildcards.snr} " ## Signal as a percent of noise
+            "--distribution {wildcards.distribution} "
+            "--corr {wildcards.corr} "
+            "--rho {wildcards.rho} "
+            "--method {wildcards.method} "
         
     
-rule across_lambda_coverage:
-    input:
-        script = f"code/scripts/across_lambda_coverage.R"
-    output:
-        f"code/rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
-        "--seed {SEED} "
+    rule across_lambda_coverage:
+        input:
+            script = f"code/scripts/across_lambda_coverage.R"
+        output:
+            f"code/rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
+            "--seed {SEED} "
         
     
-rule across_lambda_gam:
-    input:
-        script = f"code/scripts/across_lambda_gam.R",
-        rds    = f"code/rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
-    output:
-        f"code/rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
-    shell:
-        "Rscript {input.script} "
-        "--alpha {ALPHA} "
-        "--iterations {ITER} "
+    rule across_lambda_gam:
+        input:
+            script = f"code/scripts/across_lambda_gam.R",
+            rds    = f"code/rds/{ALPHA}/{ITER}/across_lambda_coverage.rds"
+        output:
+            f"code/rds/{ALPHA}/{ITER}/across_lambda_gam.rds"
+        shell:
+            "Rscript {input.script} "
+            "--alpha {ALPHA} "
+            "--iterations {ITER} "
         
 
 rule figure1:
@@ -347,3 +358,17 @@ rule manuscript:
         latexmk -pdf -outdir=build -silent avg-cov.tex
         texfot lualatex -interaction=nonstopmode -output-directory=build avg-cov.tex
         """
+
+# With results protected, Snakemake only notices a missing result when a figure
+# has to be rebuilt; an existing figure would silently be kept. So check every
+# result the figure and table rules name up front and stop with a clear list.
+if not RUN_SIMS:
+    from snakemake.exceptions import WorkflowError
+    _missing = sorted({str(f) for r in workflow.rules for f in r.input
+                       if str(f).startswith("code/rds/") and not os.path.exists(str(f))})
+    if _missing:
+        raise WorkflowError(
+            "protect_results is on, but these result files are missing:\n  "
+            + "\n  ".join(_missing)
+            + "\nFetch them into code/rds/ (see README), or set protect_results: false "
+              "to regenerate them.")
