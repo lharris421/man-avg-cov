@@ -20,7 +20,7 @@ From the repository root:
 
     snakemake --cores 4
 
-This produces the figures and tables in `code/out/` and the manuscript at `build/avg-cov.pdf`. To check your setup before a full run, `snakemake --cores 1 code/out/figure3.pdf` builds the one figure that needs no results.
+This produces the figures and tables in `code/out/` and the manuscript at `build/avg-cov.pdf`. To check your setup before a full run, `snakemake --cores 1 code/out/figure3.pdf` builds the one figure that needs no results. Also see options below for doing a less demanding full run.
 
 The scripts can also be run interactively from `code/`.
 
@@ -29,11 +29,8 @@ The scripts can also be run interactively from `code/`.
 Set in `config.yaml`, or override on the command line, e.g. `snakemake --cores 4 --config smoke=true iterations=10`.
 
 - `iterations`: simulation iterations per setting. The manuscript uses 1000. Results are stored by iteration count (`code/rds/5/<iterations>/`), so changing this never overwrites the manuscript results.
-- `smoke`: use `data/brca1_small.rds` (tracked; 150 samples x 300 genes) in place of the full BRCA1 data. With `iterations: 10` the whole pipeline, manuscript included, builds in a few minutes. Numbers from a smoke run are not the paper's.
+- `smoke`: use `data/brca1_small.rds` (tracked; 150 samples x 300 genes) in place of the full BRCA1 data. With `iterations: 10` the whole pipeline, manuscript included, builds in a few minutes.
 - `quiet`: print only the simulation progress bars. `snakemake -q` does the same.
 - `desparsified`: include the desparsified lasso. It is slow, and on the full BRCA1 data takes hours. It uses the fork of `hdi` at https://github.com/lharris421/hdi, which renv installs.
-- `alpha` (5, so 95% intervals) and `seed` should be left alone.
-
-# Smoke test
-
-Every push runs `.github/workflows/smoke.yml`, which builds everything on a clean Ubuntu machine with the smoke settings. Pushes to `main`, or a manual run of the workflow, also publish the resulting PDF at https://lharris421.github.io/man-avg-cov/avg-cov.pdf.
+- `alpha` (5, so 95% intervals)
+- `seed`
