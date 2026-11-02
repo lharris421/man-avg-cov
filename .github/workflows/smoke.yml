@@ -7,11 +7,13 @@
 # 30-40 minutes. setup-renv caches the library keyed on renv.lock, so later
 # runs skip the install unless the lockfile changes.
 #
-# On pushes to main, and on manual runs from any branch, the built PDF and
-# figures are also published to GitHub Pages as proof:
-#   https://lharris421.github.io/man-avg-cov/avg-cov.pdf
-# One-time setup if the publish job cannot enable Pages itself:
-#   Settings -> Pages -> Source: "GitHub Actions".
+# The built PDF and figures are kept as a downloadable workflow artifact
+# ("smoke-outputs" on the run page) and summarised on the run's summary tab.
+#
+# Publishing to GitHub Pages is commented out below. The Actions token cannot
+# create the Pages site itself ("Resource not accessible by integration"), so
+# to turn it back on: Settings -> Pages -> Source: "GitHub Actions" (once),
+# then uncomment the "Upload the proof page" step and the publish job.
 
 name: smoke-test
 
@@ -81,10 +83,10 @@ jobs:
           .github/scripts/make-site.sh site
           cat site/summary.md >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Upload the proof page for publishing
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
+      # - name: Upload the proof page for publishing
+      #   uses: actions/upload-pages-artifact@v3
+      #   with:
+      #     path: site
 
       - name: Keep the outputs
         if: always()
@@ -96,24 +98,25 @@ jobs:
             code/out/
           if-no-files-found: warn
 
-  publish:
-    needs: smoke
-    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    concurrency:
-      group: pages
-      cancel-in-progress: false
-    steps:
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true   # creates the Pages site on first use when the token allows it
-      - id: deployment
-        uses: actions/deploy-pages@v4
-      - name: Link the PDF from the job summary
-        run: echo "**Published:** ${{ steps.deployment.outputs.page_url }}avg-cov.pdf" >> "$GITHUB_STEP_SUMMARY"
+  # Publishing is disabled; see the note at the top of this file.
+  # publish:
+  #   needs: smoke
+  #   if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     pages: write
+  #     id-token: write
+  #   environment:
+  #     name: github-pages
+  #     url: ${{ steps.deployment.outputs.page_url }}
+  #   concurrency:
+  #     group: pages
+  #     cancel-in-progress: false
+  #   steps:
+  #     - uses: actions/configure-pages@v5
+  #       with:
+  #         enablement: true   # creates the Pages site on first use when the token allows it
+  #     - id: deployment
+  #       uses: actions/deploy-pages@v4
+  #     - name: Link the PDF from the job summary
+  #       run: echo "**Published:** ${{ steps.deployment.outputs.page_url }}avg-cov.pdf" >> "$GITHUB_STEP_SUMMARY"

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Assemble a small static site holding the built manuscript and figures, with
 # an index page that records exactly which commit and run produced them. The
-# smoke-test workflow publishes this directory to GitHub Pages as proof that
-# the repository builds from scratch.
+# smoke-test workflow appends summary.md to the run's summary tab; publishing
+# the directory to GitHub Pages is currently commented out in smoke.yml.
 #
 # Usage (from the repository root, after a build):
 #   .github/scripts/make-site.sh OUT_DIR
