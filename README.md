@@ -10,9 +10,9 @@ Code, simulations, and manuscript for the paper. The Snakefile lays out the flow
 
 # Results
 
-The simulation results (`code/rds/`, about 360 MB) are not tracked in git. [TODO: where to get them.] Put them in `code/rds/`. They are protected by default (`protect_results: true`): snakemake treats them as given, never regenerates or deletes them, and stops with a clear message if one is missing. Set `protect_results: false` to regenerate them from scratch, which takes days at 1000 iterations.
+The simulation results (`code/rds/`, about 360 MB) are not tracked in git. Set `fetch_results: true` to download them from Zenodo (https://doi.org/10.5281/zenodo.23894706) into `code/rds/`, or put them there yourself. They are protected by default (`protect_results: true`): snakemake treats them as given, never regenerates or deletes them, and stops with a clear message if one is missing. Set `protect_results: false` to regenerate them from scratch, which takes days at 1000 iterations.
 
-The raw BRCA1 data (`data/brca1.rds`, 69 MB) is not tracked either. It is only needed to regenerate the BRCA1 results, and is built from TCGA by `code/scripts/brca1.R`.
+The raw BRCA1 data (`data/brca1.rds`, 69 MB) is not tracked either. Figure 1 uses it whenever it is present, and the tracked `data/brca1_small.rds` otherwise; set `fetch_brca1: true` to download it from Zenodo (https://doi.org/10.5281/zenodo.23894238) if missing. It is built from TCGA by `code/scripts/brca1.R`.
 
 # Compiling
 
@@ -29,7 +29,8 @@ The scripts can also be run interactively from `code/`.
 Set in `config.yaml`, or override on the command line, e.g. `snakemake --cores 4 --config smoke=true iterations=10`.
 
 - `iterations`: simulation iterations per setting. The manuscript uses 1000. Results are stored by iteration count (`code/rds/5/<iterations>/`), so changing this never overwrites the manuscript results.
-- `smoke`: use `data/brca1_small.rds` (tracked; 150 samples x 300 genes) in place of the full BRCA1 data. With `iterations: 10` the whole pipeline, manuscript included, builds in a few minutes.
+- `smoke`: regenerate all results on `data/brca1_small.rds` (tracked; 150 samples x 300 genes). With `iterations: 10` the whole pipeline, manuscript included, builds in a few minutes.
+- `fetch_brca1`, `fetch_results`: see Results. Both off by default, only download what is missing, and are ignored by smoke runs.
 - `quiet`: print only the simulation progress bars. `snakemake -q` does the same.
 - `desparsified`: include the desparsified lasso. It is slow, and on the full BRCA1 data takes hours. It uses the fork of `hdi` at https://github.com/lharris421/hdi, which renv installs.
 - `protect_results`: see Results. Smoke runs always regenerate their own results regardless.

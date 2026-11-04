@@ -1,7 +1,9 @@
-# Smoke test: build the whole manuscript pipeline on a clean Ubuntu runner using
-# the small BRCA1 dataset and ten simulation iterations. This checks that the
-# repository is self-contained (no machine-specific paths, every input tracked,
-# renv.lock complete) rather than reproducing the paper's numbers.
+# Two builds of the whole manuscript pipeline on a clean Ubuntu runner:
+#   smoke: small BRCA1 dataset, ten iterations, everything regenerated. Checks
+#          the repository is self-contained; does not reproduce the paper.
+#   fetch: results and BRCA1 data downloaded from Zenodo, nothing regenerated.
+#          Checks the downloads (against Zenodo's checksums) and that the paper
+#          builds from the published results. The data file is only downloaded.
 #
 # The first run installs ~150 R packages, mostly from source, and can take
 # 30-40 minutes. setup-renv caches the library keyed on renv.lock, so later
@@ -29,9 +31,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  smoke:
+  build:
+    name: ${{ matrix.build }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - build: smoke
+            config: smoke=true iterations=10
+          - build: fetch
+            config: fetch_results=true fetch_brca1=true
     env:
       # Lets renv fetch the GitHub-sourced packages (hdrm, hdi fork) without
       # hitting the anonymous rate limit.
@@ -73,12 +84,23 @@ jobs:
       - name: Snakemake
         run: pip install 'snakemake==9.*'
 
-      - name: Build everything on the smoke-test settings
-        run: snakemake --cores 4 --config smoke=true iterations=10
+      - name: Build everything (${{ matrix.config }})
+        run: snakemake --cores 4 --config ${{ matrix.config }}
+
+      # The BRCA1 record lists the data file and its three results; the latter
+      # come out of the results zip, so this checks both downloads.
+      - name: Check the Zenodo downloads against the record's checksums
+        if: matrix.build == 'fetch'
+        run: |
+          curl -fsSL https://zenodo.org/api/records/23894239 \
+            | jq -r '.files[] | "\(.checksum | ltrimstr("md5:"))  \(.key)"' \
+            | sed -E 's#  (brca1_)#  code/rds/5/\1#; s#  brca1\.rds$#  data/brca1.rds#' \
+            | md5sum -c -
 
       - name: Assemble the proof page (PDF, figures, build provenance)
         env:
-          BUILD_CONFIG: smoke=true iterations=10
+          BUILD: ${{ matrix.build }}
+          BUILD_CONFIG: ${{ matrix.config }}
         run: |
           .github/scripts/make-site.sh site
           cat site/summary.md >> "$GITHUB_STEP_SUMMARY"
@@ -92,7 +114,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: smoke-outputs
+          name: ${{ matrix.build }}-outputs
           path: |
             build/avg-cov.pdf
             code/out/
@@ -100,7 +122,7 @@ jobs:
 
   # Publishing is disabled; see the note at the top of this file.
   # publish:
-  #   needs: smoke
+  #   needs: build
   #   if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
   #   runs-on: ubuntu-latest
   #   permissions:

@@ -5,7 +5,7 @@
 # the directory to GitHub Pages is currently commented out in smoke.yml.
 #
 # Usage (from the repository root, after a build):
-#   .github/scripts/make-site.sh OUT_DIR
+#   BUILD=smoke|fetch .github/scripts/make-site.sh OUT_DIR
 # Reads GITHUB_* variables when run inside Actions; falls back to git locally.
 set -euo pipefail
 
@@ -25,6 +25,13 @@ commit_url=""; [ -n "$repo" ] && commit_url="$server/$repo/commit/$sha"
 run_url="";    [ -n "$repo" ] && [ -n "${GITHUB_RUN_ID:-}" ] && run_url="$server/$repo/actions/runs/$GITHUB_RUN_ID"
 when="$(date -u +'%Y-%m-%d %H:%M UTC')"
 config="${BUILD_CONFIG:-config.yaml defaults}"
+build="${BUILD:-smoke}"
+case "$build" in
+  fetch) label="Fetch"
+         notice="This PDF was built from the published results and BRCA1 data downloaded from Zenodo (<code>$config</code>); nothing was regenerated. It proves the downloads work and the paper builds from them." ;;
+  *)     label="Smoke"
+         notice="This PDF was produced with the smoke-test settings (<code>$config</code>): the small BRCA1 dataset and a handful of simulation iterations. It proves the pipeline builds; its numbers are not the paper's." ;;
+esac
 rver="$(Rscript -e 'cat(as.character(getRversion()))' 2>/dev/null || echo unknown)"
 pages="$(qpdf --show-npages "$pdf" 2>/dev/null || echo '?')"
 size="$(du -h "$pdf" | cut -f1)"
@@ -48,7 +55,7 @@ link() { [ -n "$2" ] && printf '<a href="%s">%s</a>' "$2" "$1" || printf '%s' "$
 
 cat > "$out/index.html" <<HTML
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>man-avg-cov smoke build</title>
+<html lang="en"><head><meta charset="utf-8"><title>man-avg-cov $build build</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
   body{font:16px/1.5 system-ui,sans-serif;max-width:52rem;margin:2rem auto;padding:0 1rem;color:#222}
@@ -56,10 +63,10 @@ cat > "$out/index.html" <<HTML
   dt{font-weight:600;margin-top:.5rem} dd{margin:0 0 0 1rem} img{max-width:260px;border:1px solid #ccc;float:right;margin:0 0 1rem 1rem}
   code{background:#f3f3f3;padding:0 .25rem}
 </style></head><body>
-<h1>man-avg-cov: smoke-test build</h1>
+<h1>man-avg-cov: $build build</h1>
 $( [ -n "$preview" ] && printf '<a href="avg-cov.pdf"><img src="%s" alt="first page of the manuscript"></a>' "$preview" )
 <p><strong><a href="avg-cov.pdf">avg-cov.pdf</a></strong> ($pages pages, $size), built from scratch by the <code>smoke-test</code> workflow.</p>
-<div class="warn">This PDF was produced with the smoke-test settings (<code>$config</code>): the small BRCA1 dataset and a handful of simulation iterations. It proves the pipeline builds; its numbers are not the paper's.</div>
+<div class="warn">$notice</div>
 <dl>
   <dt>Commit</dt><dd>$(link "$sha" "$commit_url") on <code>$ref</code></dd>
   <dt>Workflow run</dt><dd>$(link "${GITHUB_RUN_ID:-local build}" "$run_url")</dd>
@@ -76,7 +83,7 @@ HTML
 
 # Markdown summary for the Actions job page.
 {
-  echo "## Smoke build"
+  echo "## $label build"
   echo
   echo "- **PDF:** avg-cov.pdf, $pages pages, $size"
   echo "- **Commit:** $sha on \`$ref\`"

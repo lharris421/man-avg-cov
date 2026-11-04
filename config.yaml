@@ -3,9 +3,17 @@ alpha: 5
 seed: 1234
 desparsified: true
 
-# Smoke test: run the data analysis (figure 1) on data/brca1_small.rds instead
-# of data/brca1.rds.
+# Smoke test: regenerate everything on data/brca1_small.rds (use with
+# iterations: 10).
 smoke: false
+
+# Zenodo downloads, off by default and only of what is missing. fetch_brca1:
+# the full BRCA1 data; figure 1 uses it whenever data/brca1.rds exists, else
+# data/brca1_small.rds. fetch_results: the published results (alpha 5, 1000
+# iterations) into code/rds; otherwise they are regenerated when
+# protect_results is false. Smoke runs ignore both.
+fetch_brca1: false
+fetch_results: false
 
 # Quiet mode: only the simulation progress bars print (R messages and warnings
 # are silenced; errors are not). Snakemake's own -q flag turns this on as well.
@@ -13,6 +21,6 @@ quiet: true
 
 # Results under code/rds are protected: the rules that produce them are not
 # defined, so snakemake never regenerates or deletes them. Set false to let
-# snakemake rebuild missing or outdated results. Smoke runs ignore this and
-# always regenerate their own small results.
-protect_results: true
+# snakemake rebuild missing or outdated results (unless fetch_results is on).
+# Smoke runs ignore this and always regenerate their own small results.
+protect_results: false

@@ -30,6 +30,22 @@ cis <- bind_rows(results) %>%
   mutate(method = method_labels[method],
          estimate = ifelse(method == "PIPE Posterior", coef, estimate))
 
+coefs <- cis %>%
+  filter(method == "PIPE Posterior") %>%
+  select(variable, coef)
+
+cis %>%
+  select(-coef) %>%
+  left_join(coefs, by = "variable") %>%
+  group_by(method) %>%
+  summarize(
+    non_zero = sum(lower >= 0 | upper <= 0, na.rm = TRUE),
+    unselected_non_zero = sum((lower >= 0 | upper <= 0) & coef == 0, na.rm = TRUE)
+  )
+
+cis %>% filter(method == "Selective Inference") |>
+  summarise(infinite = sum(is.infinite(lower) | is.infinite(upper), na.rm = TRUE))
+
 plot_vars <- cis %>%
   filter(method == "PIPE Posterior") %>%
   dplyr::arrange(desc(abs(estimate))) %>%
@@ -77,3 +93,4 @@ plot_res %>%
         legend.background = element_rect(fill = "transparent")) +
   facet_wrap(~method, scales = "free_x", nrow = 1)
 invisible(dev.off())
+
