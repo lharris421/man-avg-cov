@@ -19,7 +19,36 @@
   \noindent and as a result the expected coverage is equal to the nominal coverage.
 \end{proof}
 
-The above theorem concerns a single parameter of interest $\theta_j$ and its credible interval. An immediate corollary of this result is that the average coverage of $p$ such intervals will also be equal to $1-\alpha$.
+Theorem~\ref{Thm:bcc} concerns a single parameter $\theta_j$. Averaging over $j$
+gives the following.
+
+\newtheorem{corr}{Corollary}
+\theoremstyle{remark}
+\newtheorem{rem}{Remark}
+
+\begin{corr}
+  \label{Cor:ac}
+  Under the conditions of Theorem~\ref{Thm:bcc}, for any $p$,
+  \as{
+    \int \Bigl\{ \tfrac{1}{p} \sum_{j=1}^p \cvr(\theta_j) \Bigr\} p(\bt) \, d\bt
+    = 1 - \alpha,
+  }
+  that is, the average coverage of the $p$ credible intervals equals $1-\alpha$
+  in expectation over the prior.
+\end{corr}
+
+\begin{proof}
+  Exchange the finite sum and the integral and apply Theorem~\ref{Thm:bcc} to each $j$.
+\end{proof}
+
+\begin{rem}
+  \label{Rem:ac}
+  For a fixed $\bt$, the average coverage $\tfrac{1}{p} \sum_{j=1}^p \cvr(\theta_j)$ is a number, not an expectation, and Corollary~\ref{Cor:ac} does not assert that it equals $1-\alpha$. Equality holds only in the sense of a law of large numbers over $p$. Suppose the $\theta_j$ are independent and identically distributed under the prior with marginal density $\pi$, and that $\cvr(\theta_j)$ depends on $\bt$ only through $\theta_j$. The summands are then independent and by Theorem~\ref{Thm:bcc} each has mean $1-\alpha$, so $\tfrac{1}{p} \sum_{j=1}^p \cvr(\theta_j) \to 1-\alpha$ almost surely as $p \to \infty$. Writing $F_p$ for the empirical distribution of $\theta_1, \ldots, \theta_p$,
+  \as{
+    \tfrac{1}{p} \sum_{j=1}^p \cvr(\theta_j) = \int \cvr(\theta) \, dF_p(\theta),
+  }
+  which approximates $\int \cvr(\theta) \pi(\theta) \, d\theta = 1-\alpha$ when $F_p$ is close to $\pi$. Setting $\theta_j$ to the $j/(p+1)$ quantiles of $\pi$, as in the simulations of Section~\ref{Sec:coverage}, makes the sum a quadrature for that integral. If the $\theta_j$ are dependent under the prior, or $\cvr(\theta_j)$ depends on other components of $\bt$, the convergence requires conditions under which a law of large numbers applies.
+\end{rem}
 
 \clearpage
 
