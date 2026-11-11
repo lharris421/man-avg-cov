@@ -1,0 +1,12 @@
+\section{Reproducibility}
+
+All code needed to reproduce this manuscript is available at \url{https://github.com/lharris421/man-avg-cov} (branch
+\texttt{jrs}). After cloning the repository, running
+\begin{verbatim}
+snakemake --cores 4
+\end{verbatim}
+from the project root rebuilds every simulation, the real-data analysis, all figures and tables, and the manuscript itself. A single master seed (\texttt{seed: 1234} in \texttt{config.yaml}) is passed to every simulation and to the real-data analysis.
+
+The computing environment is pinned with \texttt{renv}: the lockfile (\texttt{renv.lock}) records R 4.5.2 and the exact version of every package, including \texttt{ncvreg} 3.16.0 and \texttt{selectiveInference} 1.2.5, and these are installed automatically on the first run. Because \texttt{hdi} is no longer on CRAN, version 0.1-9 is installed from an archived copy at \url{https://github.com/lharris421/hdi}. 
+
+The BRCA1 data (\url{https://doi.org/10.5281/zenodo.23894238}) archived on Zenodo and can be retrieved automatically by setting \texttt{fetch\_brca1: true} in \texttt{config.yaml}. The simulation results reported can be also be downloaded from Zenodo (\url{https://doi.org/10.5281/zenodo.23894706}) by setting \texttt{fetch\_results: true} in \texttt{config.yaml} in place of regenerating the results, which takes several hours to days depending on the system. Further options are described in the repository README.
